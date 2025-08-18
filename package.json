@@ -1,0 +1,25 @@
+{
+	"name": "buzz-ui-monorepo",
+	"private": true,
+	"version": "0.1.0",
+	"license": "MIT",
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"scripts": {
+		"build": "npm run -w @creo-team/buzz-ui build && npm run -w @buzz-ui/site build",
+		"dev": "npm run -w @buzz-ui/site dev",
+		"lint": "npm run -w @buzz-ui/site lint",
+		"test": "npm run -w @creo-team/buzz-ui test",
+		"typecheck": "npm run -w @creo-team/buzz-ui typecheck && npm run -w @buzz-ui/site typecheck"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/creo-team/buzz-ui.git"
+	},
+	"bugs": {
+		"url": "https://github.com/creo-team/buzz-ui/issues"
+	},
+	"homepage": "https://github.com/creo-team/buzz-ui#readme"
+}

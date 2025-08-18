@@ -1,0 +1,330 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Modern Design System inspired by Umbro */
+:root {
+	/* Base theme tokens - Umbro Light */
+	--c-background: #ffffff;
+	--c-text: #1f2937;
+	--c-text-secondary: #6b7280;
+	--c-text-muted: #9ca3af;
+	--c-surface: #ffffff;
+	--c-surface-2: #f9fafb;
+	--c-surface-3: #f3f4f6;
+	--c-border: #e5e7eb;
+	--c-border-strong: #d1d5db;
+	--c-hover: rgba(0,0,0,0.04);
+	--c-active: rgba(0,0,0,0.08);
+	--c-focus: rgba(59, 130, 246, 0.5);
+	
+	/* Primary colors - Umbro red */
+	--c-primary: #dc2626;
+	--c-primary-hover: #b91c1c;
+	--c-primary-light: #fef2f2;
+	--c-on-primary: #ffffff;
+	--c-primary-ring: rgba(220, 38, 38, 0.2);
+	
+	/* Semantic colors */
+	--c-success: #059669;
+	--c-success-light: #f0fdf4;
+	--c-warning: #d97706;
+	--c-warning-light: #fffbeb;
+	--c-danger: #dc2626;
+	--c-danger-light: #fef2f2;
+	--c-info: #2563eb;
+	--c-info-light: #eff6ff;
+	
+	/* Radius system */
+	--radius-sm: 6px;
+	--radius-md: 8px;
+	--radius-lg: 10px;
+	--radius-xl: 12px;
+	--radius-2xl: 16px;
+	
+	/* Shadow system */
+	--shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+	--shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+	--shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+	--shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+/* Simple Light/Dark Theme System */
+:root {
+	/* Light theme (default) */
+	--background: #fafafa;
+	--foreground: #191919;
+	--card: #ffffff;
+	--border: #ebebeb;
+	--muted: #666666;
+	--primary: #0284c7;
+}
+
+.dark {
+	/* Dark theme */
+	--background: #0f0f23;
+	--foreground: #ffffff;
+	--card: #1a1b3e;
+	--border: #2d3748;
+	--muted: #a0aec0;
+	--primary: #a855f7;
+}
+
+/* Frosted Glass Effects */
+.frosted-glass {
+	background: rgba(255, 255, 255, 0.8);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 9999px;
+	padding: 4px;
+}
+
+.dark .frosted-glass {
+	background: rgba(26, 27, 62, 0.8);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Button Styles */
+.theme-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	border-radius: 6px;
+	border: none;
+	background: transparent;
+	color: var(--muted);
+	cursor: pointer;
+	transition: all 0.2s ease;
+	position: relative;
+	z-index: 10;
+}
+
+.theme-btn:hover {
+	color: var(--foreground);
+}
+
+.theme-btn.active {
+	color: var(--foreground);
+}
+
+.theme-indicator {
+	position: absolute;
+	inset: 0;
+	background: var(--background);
+	border-radius: 6px;
+	z-index: -1;
+}
+
+html[data-theme='light'] {
+	/* Light theme - Umbro inspired */
+	--c-background: #ffffff;
+	--c-text: #1f2937;
+	--c-text-secondary: #6b7280;
+	--c-text-muted: #9ca3af;
+	--c-surface: #ffffff;
+	--c-surface-2: #f9fafb;
+	--c-surface-3: #f3f4f6;
+	--c-border: #e5e7eb;
+	--c-border-strong: #d1d5db;
+	--c-hover: rgba(0,0,0,0.04);
+	--c-active: rgba(0,0,0,0.08);
+	--c-focus: rgba(59, 130, 246, 0.5);
+	--c-primary: #dc2626;
+	--c-primary-hover: #b91c1c;
+	--c-primary-light: #fef2f2;
+	--c-on-primary: #ffffff;
+	--c-primary-ring: rgba(220, 38, 38, 0.2);
+}
+
+html[data-theme='dark'] {
+	/* Dark theme - Modern dark */
+	--c-background: #0f172a;
+	--c-text: #f9fafb;
+	--c-text-secondary: #d1d5db;
+	--c-text-muted: #9ca3af;
+	--c-surface: #111827;
+	--c-surface-2: #1f2937;
+	--c-surface-3: #374151;
+	--c-border: #374151;
+	--c-border-strong: #4b5563;
+	--c-hover: rgba(255,255,255,0.05);
+	--c-active: rgba(255,255,255,0.1);
+	--c-focus: rgba(59, 130, 246, 0.5);
+	--c-primary: #ef4444;
+	--c-primary-hover: #dc2626;
+	--c-primary-light: rgba(239, 68, 68, 0.1);
+	--c-on-primary: #ffffff;
+	--c-primary-ring: rgba(239, 68, 68, 0.3);
+	--c-success: #10b981;
+	--c-success-light: rgba(16, 185, 129, 0.1);
+	--c-warning: #f59e0b;
+	--c-warning-light: rgba(245, 158, 11, 0.1);
+	--c-danger: #ef4444;
+	--c-danger-light: rgba(239, 68, 68, 0.1);
+	--c-info: #3b82f6;
+	--c-info-light: rgba(59, 130, 246, 0.1);
+}
+
+html[data-theme='midnight'] {
+	/* Midnight theme - Deep blue dark */
+	--c-background: #020617;
+	--c-text: #e2e8f0;
+	--c-text-secondary: #cbd5e1;
+	--c-text-muted: #94a3b8;
+	--c-surface: #0f172a;
+	--c-surface-2: #1e293b;
+	--c-surface-3: #334155;
+	--c-border: #334155;
+	--c-border-strong: #475569;
+	--c-hover: rgba(255,255,255,0.05);
+	--c-active: rgba(255,255,255,0.1);
+	--c-focus: rgba(99, 102, 241, 0.5);
+	--c-primary: #6366f1;
+	--c-primary-hover: #4f46e5;
+	--c-primary-light: rgba(99, 102, 241, 0.1);
+	--c-on-primary: #ffffff;
+	--c-primary-ring: rgba(99, 102, 241, 0.3);
+	--c-success: #22c55e;
+	--c-success-light: rgba(34, 197, 94, 0.1);
+	--c-warning: #f59e0b;
+	--c-warning-light: rgba(245, 158, 11, 0.1);
+	--c-danger: #ef4444;
+	--c-danger-light: rgba(239, 68, 68, 0.1);
+	--c-info: #06b6d4;
+	--c-info-light: rgba(6, 182, 212, 0.1);
+}
+
+html[data-theme='forest'] {
+	/* Forest theme - Green nature */
+	--c-background: #fefffe;
+	--c-text: #14532d;
+	--c-text-secondary: #166534;
+	--c-text-muted: #22c55e;
+	--c-surface: #ffffff;
+	--c-surface-2: #f7fee7;
+	--c-surface-3: #ecfccb;
+	--c-border: #bbf7d0;
+	--c-border-strong: #86efac;
+	--c-hover: rgba(34, 197, 94, 0.04);
+	--c-active: rgba(34, 197, 94, 0.08);
+	--c-focus: rgba(34, 197, 94, 0.5);
+	--c-primary: #059669;
+	--c-primary-hover: #047857;
+	--c-primary-light: #f0fdf4;
+	--c-on-primary: #ffffff;
+	--c-primary-ring: rgba(5, 150, 105, 0.2);
+	--c-success: #059669;
+	--c-success-light: #f0fdf4;
+	--c-warning: #d97706;
+	--c-warning-light: #fffbeb;
+	--c-danger: #dc2626;
+	--c-danger-light: #fef2f2;
+	--c-info: #0891b2;
+	--c-info-light: #f0f9ff;
+}
+
+html[data-theme='umbro'] {
+	/* Umbro theme - Dark frosted glass inspired by music project */
+	--c-background: #0f0f23;
+	--c-text: #ffffff;
+	--c-text-secondary: #cbd5e1;
+	--c-text-muted: #a0aec0;
+	--c-surface: #1a1b3e;
+	--c-surface-2: rgba(26, 27, 62, 0.8);
+	--c-surface-3: #2d3748;
+	--c-border: #2d3748;
+	--c-border-strong: #4a5568;
+	--c-hover: rgba(255,255,255,0.08);
+	--c-active: rgba(255,255,255,0.12);
+	--c-focus: rgba(168, 85, 247, 0.5);
+	--c-primary: #a855f7;
+	--c-primary-hover: #9333ea;
+	--c-primary-light: rgba(168, 85, 247, 0.1);
+	--c-on-primary: #ffffff;
+	--c-primary-ring: rgba(168, 85, 247, 0.3);
+	--c-success: #10b981;
+	--c-success-light: rgba(16, 185, 129, 0.1);
+	--c-warning: #f59e0b;
+	--c-warning-light: rgba(245, 158, 11, 0.1);
+	--c-danger: #ef4444;
+	--c-danger-light: rgba(239, 68, 68, 0.1);
+	--c-info: #06b6d4;
+	--c-info-light: rgba(6, 182, 212, 0.1);
+}
+
+html[data-theme='ocean'] {
+	/* Ocean theme - Blue depths */
+	--c-background: #082f49;
+	--c-text: #f8fafc;
+	--c-text-secondary: #e2e8f0;
+	--c-text-muted: #94a3b8;
+	--c-surface: #0c4a6e;
+	--c-surface-2: #075985;
+	--c-surface-3: #0369a1;
+	--c-border: #0369a1;
+	--c-border-strong: #0284c7;
+	--c-hover: rgba(255,255,255,0.05);
+	--c-active: rgba(255,255,255,0.1);
+	--c-focus: rgba(14, 165, 233, 0.5);
+	--c-primary: #0ea5e9;
+	--c-primary-hover: #0284c7;
+	--c-primary-light: rgba(14, 165, 233, 0.1);
+	--c-on-primary: #ffffff;
+	--c-primary-ring: rgba(14, 165, 233, 0.3);
+	--c-success: #22c55e;
+	--c-success-light: rgba(34, 197, 94, 0.1);
+	--c-warning: #f59e0b;
+	--c-warning-light: rgba(245, 158, 11, 0.1);
+	--c-danger: #ef4444;
+	--c-danger-light: rgba(239, 68, 68, 0.1);
+	--c-info: #06b6d4;
+	--c-info-light: rgba(6, 182, 212, 0.1);
+}
+
+html, body {
+	height: 100%;
+}
+
+body {
+	background: var(--c-background);
+	color: var(--c-text);
+	font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* Focus visible styles */
+*:focus-visible {
+	outline: 2px solid var(--c-focus);
+	outline-offset: 2px;
+}
+
+/* Selection styles */
+::selection {
+	background-color: var(--c-primary);
+	color: var(--c-on-primary);
+}
+
+/* Scrollbar styling for webkit browsers */
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+::-webkit-scrollbar-track {
+	background: var(--c-surface-2);
+}
+
+::-webkit-scrollbar-thumb {
+	background: var(--c-border-strong);
+	border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: var(--c-text-muted);
+}
+
