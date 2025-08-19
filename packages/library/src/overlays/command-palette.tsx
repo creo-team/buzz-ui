@@ -124,7 +124,7 @@ export function CommandPalette({
 					<div className="border-b border-[var(--c-border)] p-4">
 						<div className="relative">
 							<svg
-								className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--c-text-secondary)]"
+								className="absolute left-5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--c-text-secondary)]"
 								fill="none"
 								viewBox="0 0 24 24"
 								stroke="currentColor"

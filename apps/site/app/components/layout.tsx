@@ -48,7 +48,7 @@ export default function ComponentsLayout({
 	return (
 		<div className="flex min-h-screen overflow-x-hidden">
 			{/* Sidebar */}
-			<aside className="w-64 flex-shrink-0 border-r border-[var(--c-border)] bg-[var(--c-surface)]">
+			<aside className="hidden w-64 flex-shrink-0 border-r border-[var(--c-border)] bg-[var(--c-surface)] md:block">
 				<div className="sticky top-[6.5rem] p-4">
 					<SidebarNavWrapper
 						items={componentItems}
@@ -63,7 +63,7 @@ export default function ComponentsLayout({
 			</aside>
 
 			{/* Main content */}
-			<main className="flex-1 px-8 py-12">
+			<main className="min-w-0 flex-1 px-8 py-12">
 				<div className="max-w-5xl mx-auto">
 					{children}
 				</div>

@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { getDocgenForSlug } from '../../../../lib/docgen'
 
 function readApi() {
 	try {
@@ -17,9 +18,14 @@ function findDocsFor(slug: string, api: Record<string, any>) {
 	return entries.filter(([file]) => file.toLowerCase().includes(name))
 }
 
-export default function ApiPage({ params }: { params: { slug: string } }) {
-	const api = readApi()
-	const matches = findDocsFor(params.slug, api)
+export default async function ApiPage({ params }: { params: { slug: string } }) {
+	let api = readApi()
+	let matches = findDocsFor(params.slug, api)
+	if (matches.length === 0) {
+		api = await getDocgenForSlug(params.slug)
+		const entries = Object.entries(api)
+		matches = entries
+	}
 	return (
 		<div className="mx-auto max-w-6xl px-4 py-12">
 			<h1 className="text-2xl font-semibold">{params.slug} API</h1>

@@ -177,7 +177,7 @@ export function SidebarNav({
 				
 				{showSearch && (
 					<div className={`relative ${getPaddingClass()}`}>
-						<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--c-text-muted)] pointer-events-none" />
+						<Search className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--c-text-muted)] pointer-events-none" />
 						<input
 							type="text"
 							placeholder="Filter components..."

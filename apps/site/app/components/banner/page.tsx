@@ -9,7 +9,7 @@ export default function BannerDocs() {
 	const [showActionBanner, setShowActionBanner] = useState(true)
 
 	return (
-		<div className="mx-auto max-w-6xl px-4 py-12 overflow-x-hidden">
+		<div className="mx-auto max-w-6xl px-4 py-12">
 			<h1 className="text-3xl font-bold text-[var(--c-text)]">Banner</h1>
 			<p className="mt-4 text-lg text-[var(--c-text-secondary)]">
 				Display important messages and announcements at the top or bottom of your interface.

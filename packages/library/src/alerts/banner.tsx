@@ -122,8 +122,7 @@ export function Banner({
 	return (
 		<div 
 			className={[
-				'relative backdrop-blur-sm shadow-lg border-b',
-				fixed || sticky ? 'w-screen max-w-[100vw]' : 'w-full',
+				'relative backdrop-blur-sm shadow-lg border-b w-full',
 				styles[variant],
 				positionClasses,
 				animated && variant === BannerVariant.Development ? '' : '',

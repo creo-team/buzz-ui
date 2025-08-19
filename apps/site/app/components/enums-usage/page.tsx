@@ -6,7 +6,6 @@ import {
 	Badge,
 	BadgeVariant,
 	Banner,
-	BannerVariant,
 	Button,
 	ButtonVariant,
 	ButtonSize,
@@ -79,7 +78,7 @@ export default function EnumsUsagePage() {
 					<Alert variant={AlertVariant.Success} header="Success">
 						Operation completed successfully!
 					</Alert>
-					<Banner variant={BannerVariant.Development} animated>
+					<Banner variant="development" animated>
 						Development mode enabled
 					</Banner>
 				</div>

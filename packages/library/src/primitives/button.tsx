@@ -25,6 +25,9 @@ export enum ButtonSize {
 	Large = 'lg'
 }
 
+type ButtonVariantInput = ButtonVariant | `${ButtonVariant}`
+type ButtonSizeInput = ButtonSize | `${ButtonSize}`
+
 /**
  * Button props
  *
@@ -33,9 +36,9 @@ export enum ButtonSize {
  */
 export interface ButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
     /** Visual variant */
-    variant?: ButtonVariant
+    variant?: ButtonVariantInput
     /** Size preset */
-    size?: ButtonSize
+    size?: ButtonSizeInput
     /** Loading state with spinner */
     loading?: boolean
     /** Selected state for toggle buttons */
@@ -114,15 +117,17 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
 	})
 
 	// Choose the appropriate variant based on selected state
-	const activeVariant = selected ? selectedVariants[variant] : variants[variant]
+	const resolvedVariant = variant as ButtonVariant
+	const resolvedSize = size as ButtonSize
+	const activeVariant = selected ? selectedVariants[resolvedVariant] : variants[resolvedVariant]
 	
 	let variantClasses: string
-	if (iconOnly || variant === ButtonVariant.Icon) {
-		variantClasses = `${base} ${iconSizes[size]} ${activeVariant} ${className}`
-	} else if (variant === ButtonVariant.Text) {
+	if (iconOnly || resolvedVariant === ButtonVariant.Icon) {
+		variantClasses = `${base} ${iconSizes[resolvedSize]} ${activeVariant} ${className}`
+	} else if (resolvedVariant === ButtonVariant.Text) {
 		variantClasses = `${base.replace('rounded-lg ', '')} ${activeVariant} ${className}`
 	} else {
-		variantClasses = `${base} ${sizes[size]} ${activeVariant} ${className}`
+		variantClasses = `${base} ${sizes[resolvedSize]} ${activeVariant} ${className}`
 	}
 
 	// Add hotkey hint to title if provided
