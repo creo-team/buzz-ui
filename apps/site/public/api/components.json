@@ -58689,335 +58689,6 @@
       }
     }
   ],
-  "navigation/sidebar-nav-client.tsx": [
-    {
-      "tags": {},
-      "filePath": "/Users/coltenkrauter/Repositories/buzz-ui/packages/library/src/navigation/sidebar-nav-client.tsx",
-      "description": "",
-      "displayName": "SidebarNavClient",
-      "methods": [],
-      "props": {
-        "items": {
-          "defaultValue": null,
-          "description": "",
-          "name": "items",
-          "parent": {
-            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-client.tsx",
-            "name": "SidebarNavClientProps"
-          },
-          "declarations": [
-            {
-              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-client.tsx",
-              "name": "SidebarNavClientProps"
-            }
-          ],
-          "required": true,
-          "type": {
-            "name": "SidebarItem[]"
-          }
-        },
-        "scrollable": {
-          "defaultValue": null,
-          "description": "",
-          "name": "scrollable",
-          "parent": {
-            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-client.tsx",
-            "name": "SidebarNavClientProps"
-          },
-          "declarations": [
-            {
-              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-client.tsx",
-              "name": "SidebarNavClientProps"
-            }
-          ],
-          "required": false,
-          "type": {
-            "name": "boolean | undefined"
-          }
-        }
-      },
-      "_nativeProps": {
-        "title": {
-          "defaultValue": null,
-          "description": "",
-          "name": "title",
-          "parent": {
-            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-client.tsx",
-            "name": "SidebarNavClientProps"
-          },
-          "declarations": [
-            {
-              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-client.tsx",
-              "name": "SidebarNavClientProps"
-            }
-          ],
-          "required": false,
-          "type": {
-            "name": "string | undefined"
-          }
-        },
-        "className": {
-          "defaultValue": null,
-          "description": "",
-          "name": "className",
-          "parent": {
-            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-client.tsx",
-            "name": "SidebarNavClientProps"
-          },
-          "declarations": [
-            {
-              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-client.tsx",
-              "name": "SidebarNavClientProps"
-            }
-          ],
-          "required": false,
-          "type": {
-            "name": "string | undefined"
-          }
-        }
-      }
-    }
-  ],
-  "navigation/sidebar-nav-enhanced.tsx": [
-    {
-      "tags": {},
-      "filePath": "/Users/coltenkrauter/Repositories/buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-      "description": "",
-      "displayName": "SidebarNavEnhanced",
-      "methods": [],
-      "props": {
-        "items": {
-          "defaultValue": null,
-          "description": "",
-          "name": "items",
-          "parent": {
-            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-            "name": "SidebarNavEnhancedProps"
-          },
-          "declarations": [
-            {
-              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-              "name": "SidebarNavEnhancedProps"
-            }
-          ],
-          "required": true,
-          "type": {
-            "name": "SidebarNavItem[]"
-          }
-        },
-        "sortAlphabetically": {
-          "defaultValue": {
-            "value": "false"
-          },
-          "description": "",
-          "name": "sortAlphabetically",
-          "parent": {
-            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-            "name": "SidebarNavEnhancedProps"
-          },
-          "declarations": [
-            {
-              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-              "name": "SidebarNavEnhancedProps"
-            }
-          ],
-          "required": false,
-          "type": {
-            "name": "boolean | undefined"
-          }
-        },
-        "showSearch": {
-          "defaultValue": {
-            "value": "true"
-          },
-          "description": "",
-          "name": "showSearch",
-          "parent": {
-            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-            "name": "SidebarNavEnhancedProps"
-          },
-          "declarations": [
-            {
-              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-              "name": "SidebarNavEnhancedProps"
-            }
-          ],
-          "required": false,
-          "type": {
-            "name": "boolean | undefined"
-          }
-        },
-        "groupBy": {
-          "defaultValue": null,
-          "description": "",
-          "name": "groupBy",
-          "parent": {
-            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-            "name": "SidebarNavEnhancedProps"
-          },
-          "declarations": [
-            {
-              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-              "name": "SidebarNavEnhancedProps"
-            }
-          ],
-          "required": false,
-          "type": {
-            "name": "((item: SidebarNavItem) => string) | undefined"
-          }
-        },
-        "variant": {
-          "defaultValue": {
-            "value": "default"
-          },
-          "description": "",
-          "name": "variant",
-          "parent": {
-            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-            "name": "SidebarNavEnhancedProps"
-          },
-          "declarations": [
-            {
-              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-              "name": "SidebarNavEnhancedProps"
-            }
-          ],
-          "required": false,
-          "type": {
-            "name": "\"default\" | \"compact\" | \"spacious\" | undefined"
-          }
-        },
-        "stickyHeader": {
-          "defaultValue": {
-            "value": "true"
-          },
-          "description": "",
-          "name": "stickyHeader",
-          "parent": {
-            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-            "name": "SidebarNavEnhancedProps"
-          },
-          "declarations": [
-            {
-              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-              "name": "SidebarNavEnhancedProps"
-            }
-          ],
-          "required": false,
-          "type": {
-            "name": "boolean | undefined"
-          }
-        },
-        "currentPath": {
-          "defaultValue": {
-            "value": ""
-          },
-          "description": "",
-          "name": "currentPath",
-          "parent": {
-            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-            "name": "SidebarNavEnhancedProps"
-          },
-          "declarations": [
-            {
-              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-              "name": "SidebarNavEnhancedProps"
-            }
-          ],
-          "required": false,
-          "type": {
-            "name": "string | undefined"
-          }
-        },
-        "linkComponent": {
-          "defaultValue": {
-            "value": "({ href, className, children }) => (\n\t<a href={href} className={className}>\n\t\t{children}\n\t</a>\n)"
-          },
-          "description": "",
-          "name": "linkComponent",
-          "parent": {
-            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-            "name": "SidebarNavEnhancedProps"
-          },
-          "declarations": [
-            {
-              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-              "name": "SidebarNavEnhancedProps"
-            }
-          ],
-          "required": false,
-          "type": {
-            "name": "ComponentType<{ href: string; className: string; children: ReactNode; }> | undefined"
-          }
-        },
-        "scrollable": {
-          "defaultValue": {
-            "value": "false"
-          },
-          "description": "",
-          "name": "scrollable",
-          "parent": {
-            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-            "name": "SidebarNavEnhancedProps"
-          },
-          "declarations": [
-            {
-              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-              "name": "SidebarNavEnhancedProps"
-            }
-          ],
-          "required": false,
-          "type": {
-            "name": "boolean | undefined"
-          }
-        }
-      },
-      "_nativeProps": {
-        "title": {
-          "defaultValue": {
-            "value": "Navigation"
-          },
-          "description": "",
-          "name": "title",
-          "parent": {
-            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-            "name": "SidebarNavEnhancedProps"
-          },
-          "declarations": [
-            {
-              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-              "name": "SidebarNavEnhancedProps"
-            }
-          ],
-          "required": false,
-          "type": {
-            "name": "string | undefined"
-          }
-        },
-        "className": {
-          "defaultValue": {
-            "value": ""
-          },
-          "description": "",
-          "name": "className",
-          "parent": {
-            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-            "name": "SidebarNavEnhancedProps"
-          },
-          "declarations": [
-            {
-              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav-enhanced.tsx",
-              "name": "SidebarNavEnhancedProps"
-            }
-          ],
-          "required": false,
-          "type": {
-            "name": "string | undefined"
-          }
-        }
-      }
-    }
-  ],
   "navigation/sidebar-nav.tsx": [
     {
       "tags": {},
@@ -59042,11 +58713,116 @@
           ],
           "required": true,
           "type": {
-            "name": "SidebarItem[]"
+            "name": "SidebarNavItem[]"
+          }
+        },
+        "sortAlphabetically": {
+          "defaultValue": {
+            "value": "false"
+          },
+          "description": "",
+          "name": "sortAlphabetically",
+          "parent": {
+            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav.tsx",
+            "name": "SidebarNavProps"
+          },
+          "declarations": [
+            {
+              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav.tsx",
+              "name": "SidebarNavProps"
+            }
+          ],
+          "required": false,
+          "type": {
+            "name": "boolean | undefined"
+          }
+        },
+        "showSearch": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "description": "",
+          "name": "showSearch",
+          "parent": {
+            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav.tsx",
+            "name": "SidebarNavProps"
+          },
+          "declarations": [
+            {
+              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav.tsx",
+              "name": "SidebarNavProps"
+            }
+          ],
+          "required": false,
+          "type": {
+            "name": "boolean | undefined"
+          }
+        },
+        "groupBy": {
+          "defaultValue": null,
+          "description": "",
+          "name": "groupBy",
+          "parent": {
+            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav.tsx",
+            "name": "SidebarNavProps"
+          },
+          "declarations": [
+            {
+              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav.tsx",
+              "name": "SidebarNavProps"
+            }
+          ],
+          "required": false,
+          "type": {
+            "name": "((item: SidebarNavItem) => string) | undefined"
+          }
+        },
+        "variant": {
+          "defaultValue": {
+            "value": "default"
+          },
+          "description": "",
+          "name": "variant",
+          "parent": {
+            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav.tsx",
+            "name": "SidebarNavProps"
+          },
+          "declarations": [
+            {
+              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav.tsx",
+              "name": "SidebarNavProps"
+            }
+          ],
+          "required": false,
+          "type": {
+            "name": "\"default\" | \"compact\" | \"spacious\" | undefined"
+          }
+        },
+        "stickyHeader": {
+          "defaultValue": {
+            "value": "true"
+          },
+          "description": "",
+          "name": "stickyHeader",
+          "parent": {
+            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav.tsx",
+            "name": "SidebarNavProps"
+          },
+          "declarations": [
+            {
+              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav.tsx",
+              "name": "SidebarNavProps"
+            }
+          ],
+          "required": false,
+          "type": {
+            "name": "boolean | undefined"
           }
         },
         "currentPath": {
-          "defaultValue": null,
+          "defaultValue": {
+            "value": ""
+          },
           "description": "",
           "name": "currentPath",
           "parent": {
@@ -59062,6 +58838,27 @@
           "required": false,
           "type": {
             "name": "string | undefined"
+          }
+        },
+        "linkComponent": {
+          "defaultValue": {
+            "value": "({ href, className, children }) => (\n\t<a href={href} className={className}>\n\t\t{children}\n\t</a>\n)"
+          },
+          "description": "",
+          "name": "linkComponent",
+          "parent": {
+            "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav.tsx",
+            "name": "SidebarNavProps"
+          },
+          "declarations": [
+            {
+              "fileName": "buzz-ui/packages/library/src/navigation/sidebar-nav.tsx",
+              "name": "SidebarNavProps"
+            }
+          ],
+          "required": false,
+          "type": {
+            "name": "ComponentType<{ href: string; className: string; children: ReactNode; }> | undefined"
           }
         },
         "scrollable": {

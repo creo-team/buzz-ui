@@ -31,7 +31,7 @@ export * from './disclosure/accordion'
 export * from './overlays/sheet'
 export * from './navigation/menu'
 export * from './navigation/pagination'
-export * from './navigation/sidebar-nav-enhanced'
+export * from './navigation/sidebar-nav'
 export * from './utils/copy'
 export * from './feedback/circular-progress'
 

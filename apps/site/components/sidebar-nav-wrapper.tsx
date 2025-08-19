@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { SidebarNavEnhanced, type SidebarNavEnhancedProps } from '@creo-team/buzz-ui/client'
+import { SidebarNav, type SidebarNavProps } from '@creo-team/buzz-ui/client'
 
 // Wrapper component for Next.js Link
 const NextLink: React.FC<{ href: string; className: string; children: React.ReactNode }> = ({ href, className, children }) => (
@@ -11,11 +11,11 @@ const NextLink: React.FC<{ href: string; className: string; children: React.Reac
 	</Link>
 )
 
-export function SidebarNavWrapper(props: Omit<SidebarNavEnhancedProps, 'linkComponent' | 'currentPath'>) {
+export function SidebarNavWrapper(props: Omit<SidebarNavProps, 'linkComponent' | 'currentPath'>) {
 	const pathname = usePathname()
 	
 	return (
-		<SidebarNavEnhanced
+		<SidebarNav
 			{...props}
 			linkComponent={NextLink}
 			currentPath={pathname}

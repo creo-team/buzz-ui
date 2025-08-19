@@ -1,7 +1,7 @@
 "use client"
 
 import { Card } from '@creo-team/buzz-ui/server'
-import { SidebarNavEnhanced } from '@creo-team/buzz-ui/client'
+import { SidebarNav } from '@creo-team/buzz-ui/client'
 import { SidebarNavWrapper } from '../../../components/sidebar-nav-wrapper'
 import { CodeBlock } from '../../../components/code-block'
 import { Home, Users, Settings, FileText, BarChart, Bell, Calendar, Mail, Shield, Heart } from 'lucide-react'
@@ -66,7 +66,7 @@ export default function SidebarNavDocs() {
 						<p className="text-[var(--c-text-secondary)] mb-4">
 							Basic sidebar with icons and badges.
 						</p>
-						<CodeBlock code={`import { SidebarNavEnhanced } from '@creo-team/buzz-ui/client'
+						<CodeBlock code={`import { SidebarNav } from '@creo-team/buzz-ui/client'
 import { Home, Users, Settings } from 'lucide-react'
 
 const items = [
@@ -75,7 +75,7 @@ const items = [
   { key: 'settings', label: 'Settings', href: '/settings', icon: <Settings className="h-4 w-4" />, badge: 'New' },
 ]
 
-<SidebarNavEnhanced
+<SidebarNav
   items={items}
   title="Navigation"
 />`} />
@@ -100,7 +100,7 @@ const items = [
 						<p className="text-[var(--c-text-secondary)] mb-4">
 							Enable search filtering and alphabetical sorting for easier navigation.
 						</p>
-						<CodeBlock code={`<SidebarNavEnhanced
+						<CodeBlock code={`<SidebarNav
   items={items}
   title="Navigation"
   sortAlphabetically={true}
@@ -134,7 +134,7 @@ const items = [
   return 'Settings'
 }
 
-<SidebarNavEnhanced
+<SidebarNav
   items={items}
   title="Grouped Navigation"
   groupBy={groupByCategory}
@@ -150,7 +150,7 @@ const items = [
 				<div className="grid grid-cols-3 gap-6">
 					<div className="border border-[var(--c-border)] rounded-lg p-4">
 						<h3 className="font-medium mb-3">Compact</h3>
-						<SidebarNavEnhanced
+						<SidebarNav
 							items={exampleItems.slice(0, 5)}
 							variant="compact"
 							sortAlphabetically={true}
@@ -158,7 +158,7 @@ const items = [
 					</div>
 					<div className="border border-[var(--c-border)] rounded-lg p-4">
 						<h3 className="font-medium mb-3">Default</h3>
-						<SidebarNavEnhanced
+						<SidebarNav
 							items={exampleItems.slice(0, 5)}
 							variant="default"
 							sortAlphabetically={true}
@@ -166,7 +166,7 @@ const items = [
 					</div>
 					<div className="border border-[var(--c-border)] rounded-lg p-4">
 						<h3 className="font-medium mb-3">Spacious</h3>
-						<SidebarNavEnhanced
+						<SidebarNav
 							items={groupingExample.slice(0, 5)}
 							variant="spacious"
 							sortAlphabetically={true}
