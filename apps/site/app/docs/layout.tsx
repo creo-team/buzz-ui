@@ -63,7 +63,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
 				<div className="flex gap-8">
 					{/* Docs Sidebar - Full height, no separate scroll */}
 					<aside className="w-64 shrink-0">
-						<div className="sticky top-20 py-8">
+						<div className="sticky top-20 max-h-[calc(100vh-5rem)] overflow-y-auto py-8">
 							<nav className="space-y-8">
 								{docsNavigation.map((section) => (
 									<div key={section.title}>

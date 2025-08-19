@@ -23,7 +23,7 @@ export function SidebarNav({
 	scrollable = false
 }: SidebarNavProps) {
 	return (
-		<nav className={`sticky top-20 hidden h-[calc(100vh-5rem)] w-64 shrink-0 ${scrollable ? 'overflow-y-auto' : 'overflow-visible'} md:block ${className}`}>
+		<nav className={`hidden w-64 shrink-0 ${scrollable ? 'overflow-y-auto max-h-[calc(100vh-5rem)]' : ''} md:block ${className}`}>
 			<div className="pb-8">
 				<h3 className="mb-4 text-sm font-semibold text-[var(--c-text)] px-3">{title}</h3>
 				<ul className="space-y-1 text-sm">

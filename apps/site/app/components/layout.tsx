@@ -49,21 +49,21 @@ export default function ComponentsLayout({
 		<div className="flex min-h-screen">
 			{/* Sidebar */}
 			<aside className="w-64 flex-shrink-0 border-r border-[var(--c-border)] bg-[var(--c-surface)]">
-				<div className="sticky top-0 h-screen p-4">
+				<div className="sticky top-16 p-4">
 					<SidebarNavWrapper
 						items={componentItems}
 						title="Components"
 						sortAlphabetically={true}
 						showSearch={true}
 						variant="default"
-						stickyHeader={true}
+						stickyHeader={false}
 						scrollable={false}
 					/>
 				</div>
 			</aside>
 
 			{/* Main content */}
-			<main className="flex-1 px-8 py-12 overflow-auto">
+			<main className="flex-1 px-8 py-12">
 				<div className="max-w-5xl mx-auto">
 					{children}
 				</div>

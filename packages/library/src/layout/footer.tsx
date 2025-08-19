@@ -43,7 +43,7 @@ export function Footer({
 
 	if (variant === 'minimal') {
 		return (
-			<footer className={`border-t border-[var(--c-border)] ${className}`}>
+			<footer className={`relative z-[1] border-t border-[var(--c-border)] ${className}`}>
 				<div className="mx-auto max-w-7xl px-6 py-6">
 					<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
 						{logo && <div className="text-[var(--c-text)]">{logo}</div>}
@@ -56,7 +56,7 @@ export function Footer({
 
 	if (variant === 'simple') {
 		return (
-			<footer className={`border-t border-[var(--c-border)] bg-[var(--c-surface-2)] ${className}`}>
+			<footer className={`relative z-[1] border-t border-[var(--c-border)] bg-[var(--c-surface-2)] ${className}`}>
 				<div className="mx-auto max-w-7xl px-6 py-8">
 					<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
 						<ul className="flex flex-wrap gap-6 text-sm text-[var(--c-text-secondary)]">
@@ -80,7 +80,7 @@ export function Footer({
 
 	if (variant === 'modern') {
 		return (
-			<footer className={`bg-gradient-to-b from-[var(--c-surface)] to-[var(--c-surface-2)] border-t border-[var(--c-border)] ${className}`}>
+			<footer className={`relative z-[1] bg-gradient-to-b from-[var(--c-surface)] to-[var(--c-surface-2)] border-t border-[var(--c-border)] ${className}`}>
 				<div className="mx-auto max-w-7xl px-6 py-12">
 					<div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
 						{logo && (
@@ -151,7 +151,7 @@ export function Footer({
 
 	if (variant === 'glass') {
 		return (
-			<footer className={`relative overflow-hidden ${className}`}>
+			<footer className={`relative z-[1] overflow-hidden ${className}`}>
 				<div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-white/10 dark:via-black/10 dark:to-black/20 pointer-events-none" />
 				<div className="backdrop-blur-xl backdrop-saturate-150 border-t border-white/10 dark:border-white/5">
 					<div className="mx-auto max-w-7xl px-6 py-16">
@@ -220,7 +220,7 @@ export function Footer({
 
 	if (variant === 'epic') {
 		return (
-			<footer className={`relative ${className}`}>
+			<footer className={`relative z-[1] ${className}`}>
 				{/* Background Pattern */}
 				<div className="absolute inset-0 overflow-hidden pointer-events-none">
 					<div className="absolute -top-24 -right-24 w-96 h-96 bg-[var(--c-primary)]/5 rounded-full blur-3xl" />
@@ -324,7 +324,7 @@ export function Footer({
 
 	// Sections variant (default)
 	return (
-		<footer className={`bg-[var(--c-surface-2)] border-t border-[var(--c-border)] ${className}`}>
+		<footer className={`relative z-[1] bg-[var(--c-surface-2)] border-t border-[var(--c-border)] ${className}`}>
 			<div className="mx-auto max-w-7xl px-6 py-12">
 				<div className="grid grid-cols-2 gap-8 md:grid-cols-4 lg:grid-cols-5">
 					{logo && (

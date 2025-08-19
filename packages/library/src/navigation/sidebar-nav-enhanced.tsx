@@ -162,7 +162,7 @@ export function SidebarNavEnhanced({
 	const navContent = (
 		<nav className="space-y-1">
 			{(title || showSearch) && (
-				<div className={`mb-4 ${stickyHeader ? 'sticky top-0 bg-[var(--c-background)] z-10' : ''}`}>
+				<div className={`mb-4 ${stickyHeader ? 'sticky top-0 bg-[var(--c-background)] z-[5]' : ''}`}>
 					{title && (
 						<h3 className={`font-semibold text-[var(--c-text)] ${getPaddingClass()} mb-2`}>
 							{title}
@@ -224,7 +224,7 @@ export function SidebarNavEnhanced({
 	)
 	
 	return scrollable ? (
-		<div className={`overflow-y-auto ${className}`}>
+		<div className={`overflow-y-auto max-h-[calc(100vh-5rem)] ${className}`}>
 			{navContent}
 		</div>
 	) : (

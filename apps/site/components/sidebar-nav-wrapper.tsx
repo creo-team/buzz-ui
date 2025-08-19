@@ -19,7 +19,6 @@ export function SidebarNavWrapper(props: Omit<SidebarNavEnhancedProps, 'linkComp
 			{...props}
 			linkComponent={NextLink}
 			currentPath={pathname}
-			scrollable={props.scrollable}
 		/>
 	)
 }
