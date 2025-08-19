@@ -1,28 +1,9 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-// Dev-only dynamic docgen for a given slug. In production, returns empty.
+// Dynamic docgen for a given slug - generates documentation on-demand
 export async function getDocgenForSlug(slug: string): Promise<Record<string, any>> {
-	try {
-		// Try pre-generated file first for speed; if present and has matches, use it
-		const pregen = readGeneratedApi()
-		const matches = filterMatchesForSlug(slug, pregen)
-		if (matches && Object.keys(matches).length > 0) return matches
-	} catch {}
-
 	return await generateOnDemandForSlug(slug)
-}
-
-function readGeneratedApi(): Record<string, any> {
-	const p = path.join(process.cwd(), 'public/api/components.json')
-	const raw = fs.readFileSync(p, 'utf8')
-	return JSON.parse(raw) as Record<string, any>
-}
-
-function filterMatchesForSlug(slug: string, api: Record<string, any>): Record<string, any> {
-	const normalized = slug.replace(/-/g, '').toLowerCase()
-	const entries = Object.entries(api).filter(([file]) => file.toLowerCase().includes(normalized))
-	return Object.fromEntries(entries)
 }
 
 async function generateOnDemandForSlug(slug: string): Promise<Record<string, any>> {

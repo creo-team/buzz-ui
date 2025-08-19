@@ -1,36 +1,14 @@
-import fs from 'node:fs'
-import path from 'node:path'
 import { getDocgenForSlug } from '../../../../lib/docgen'
 
-function readApi() {
-	try {
-		const p = path.join(process.cwd(), 'public/api/components.json')
-		const raw = fs.readFileSync(p, 'utf8')
-		return JSON.parse(raw) as Record<string, any>
-	} catch {
-		return {}
-	}
-}
-
-function findDocsFor(slug: string, api: Record<string, any>) {
-	const name = slug.replace(/-/g, '')
-	const entries = Object.entries(api)
-	return entries.filter(([file]) => file.toLowerCase().includes(name))
-}
-
 export default async function ApiPage({ params }: { params: { slug: string } }) {
-	let api = readApi()
-	let matches = findDocsFor(params.slug, api)
-	if (matches.length === 0) {
-		api = await getDocgenForSlug(params.slug)
-		const entries = Object.entries(api)
-		matches = entries
-	}
+	const api = await getDocgenForSlug(params.slug)
+	const entries = Object.entries(api)
+	
 	return (
 		<div className="mx-auto max-w-6xl px-4 py-12">
 			<h1 className="text-2xl font-semibold">{params.slug} API</h1>
-			{matches.length === 0 && <p className="mt-2 text-sm text-white/70">No API data found.</p>}
-			{matches.map(([file, docs]: any) => (
+			{entries.length === 0 && <p className="mt-2 text-sm text-white/70">No API data found.</p>}
+			{entries.map(([file, docs]: any) => (
 				<div key={file} className="mt-6">
 					<h2 className="text-lg font-semibold">{file}</h2>
 					{docs.map((d: any) => (
