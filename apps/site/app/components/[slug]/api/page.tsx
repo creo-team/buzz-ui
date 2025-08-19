@@ -1,4 +1,5 @@
 import { getDocgenForSlug } from '../../../../lib/docgen'
+import { ApiTable } from '../../../../components/api-table'
 
 export default async function ApiPage({ params }: { params: { slug: string } }) {
 	let api
@@ -33,25 +34,39 @@ export default async function ApiPage({ params }: { params: { slug: string } }) 
 					{docs.map((d: any) => (
 						<div key={d.displayName} className="mt-4">
 							<h3 className="text-base font-semibold">{d.displayName}</h3>
-							<table className="mt-2 w-full text-left text-sm">
-								<thead><tr className="text-white/60"><th className="py-2 pr-4">Prop</th><th className="py-2 pr-4">Type</th><th className="py-2 pr-4">Required</th><th className="py-2">Description</th></tr></thead>
-								<tbody>
-									{Object.entries(d.props ?? {}).map(([propName, p]: any) => (
-										<tr key={propName}><td className="py-2 pr-4">{propName}</td><td className="py-2 pr-4"><code>{p.type?.name}</code></td><td className="py-2 pr-4">{p.required ? 'yes' : 'no'}</td><td className="py-2">{p.description}</td></tr>
-									))}
-								</tbody>
-							</table>
+							
+							{/* Custom props table */}
+							{d.props && Object.keys(d.props).length > 0 && (
+								<ApiTable
+									title="Props"
+									className="mt-4"
+									rows={Object.entries(d.props).map(([propName, p]: any) => ({
+										prop: propName,
+										type: p.type?.name || 'any',
+										required: p.required || false,
+										default: p.defaultValue?.value || undefined,
+										description: p.description || ''
+									}))}
+								/>
+							)}
+							
+							{/* Native props table */}
 							{d._nativeProps && Object.keys(d._nativeProps).length > 0 && (
 								<details className="mt-4">
-									<summary className="cursor-pointer text-sm text-white/70 hover:text-white">Show native HTML props</summary>
-									<table className="mt-2 w-full text-left text-sm">
-										<thead><tr className="text-white/60"><th className="py-2 pr-4">Prop</th><th className="py-2 pr-4">Type</th><th className="py-2 pr-4">Required</th><th className="py-2">Description</th></tr></thead>
-										<tbody>
-											{Object.entries(d._nativeProps).map(([propName, p]: any) => (
-												<tr key={propName}><td className="py-2 pr-4">{propName}</td><td className="py-2 pr-4"><code>{p.type?.name}</code></td><td className="py-2 pr-4">{p.required ? 'yes' : 'no'}</td><td className="py-2">{p.description}</td></tr>
-											))}
-										</tbody>
-									</table>
+									<summary className="cursor-pointer text-sm text-[var(--c-text-secondary)] hover:text-[var(--c-text)]">
+										Show native HTML props
+									</summary>
+									<ApiTable
+										title="Native HTML Props"
+										className="mt-2"
+										rows={Object.entries(d._nativeProps).map(([propName, p]: any) => ({
+											prop: propName,
+											type: p.type?.name || 'any',
+											required: p.required || false,
+											default: p.defaultValue?.value || undefined,
+											description: p.description || ''
+										}))}
+									/>
 								</details>
 							)}
 						</div>
