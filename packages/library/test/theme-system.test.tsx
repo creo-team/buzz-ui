@@ -166,7 +166,7 @@ describe('Buzz UI Design Tokens', () => {
 		expectedCSSVariables.forEach(variable => {
 			// Should follow buzz-ui naming convention with --c- prefix for colors
 			if (variable.startsWith('--c-')) {
-				expect(variable).toMatch(/^--c-[a-z-]+$/)
+				expect(variable).toMatch(/^--c-[a-z0-9-]+$/)
 			}
 			// Should follow standard naming for layout tokens
 			if (variable.startsWith('--radius-') || variable.startsWith('--shadow-')) {

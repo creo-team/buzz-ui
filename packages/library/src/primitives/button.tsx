@@ -65,7 +65,7 @@ const iconSizes: Record<ButtonSize, string> = {
 const variants: Record<ButtonVariant, string> = {
 	[ButtonVariant.Bold]: 'bg-[var(--c-primary)] hover:bg-[var(--c-primary-hover)] text-white shadow-md hover:shadow-lg focus:ring-[var(--c-primary-ring)]',
 	[ButtonVariant.Outline]: 'border border-[var(--c-border-strong)] text-[var(--c-text)] bg-transparent hover:bg-[var(--c-hover)]/30 hover:border-[var(--c-primary)] hover:text-[var(--c-primary)] focus:ring-[var(--c-primary-ring)]',
-	[ButtonVariant.Subtle]: 'bg-transparent text-[var(--c-text)] border border-transparent hover:bg-[var(--c-hover)]/40 focus:ring-[var(--c-primary-ring)]',
+	[ButtonVariant.Subtle]: 'bg-[var(--c-surface-2)] text-[var(--c-text)] border border-[var(--c-border)] hover:bg-[var(--c-hover)] focus:ring-[var(--c-primary-ring)]',
 	[ButtonVariant.Glass]: 'bg-white/8 dark:bg-black/20 backdrop-blur-xl backdrop-saturate-150 border border-white/10 dark:border-white/5 text-[var(--c-text)] hover:bg-white/12 dark:hover:bg-black/30 shadow-sm',
 	[ButtonVariant.Ghost]: 'bg-transparent hover:bg-[var(--c-hover)]/20 text-[var(--c-text-secondary)] hover:text-[var(--c-text)] border-0',
 	[ButtonVariant.Icon]: 'bg-transparent hover:bg-[var(--c-hover)]/40 text-[var(--c-text-secondary)] hover:text-[var(--c-text)] border-0',

@@ -3,8 +3,6 @@ import path from 'node:path'
 
 // Dev-only dynamic docgen for a given slug. In production, returns empty.
 export async function getDocgenForSlug(slug: string): Promise<Record<string, any>> {
-	if (process.env.NODE_ENV === 'production') return {}
-
 	try {
 		// Try pre-generated file first for speed; if present and has matches, use it
 		const pregen = readGeneratedApi()

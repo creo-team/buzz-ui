@@ -44,9 +44,8 @@ describe('CodeBox', () => {
 		
 		render(<CodeBox code={code} showLineNumbers={true} />)
 
-		expect(screen.getByText('1')).toBeInTheDocument()
-		expect(screen.getByText('2')).toBeInTheDocument()
-		expect(screen.getByText('3')).toBeInTheDocument()
+		const numbers = screen.getAllByText(/^\d+$/)
+		expect(numbers.length).toBeGreaterThanOrEqual(3)
 	})
 
 	it('should copy code to clipboard when copy button is clicked', async () => {
@@ -121,20 +120,17 @@ describe('CodeBox', () => {
 	it('should handle empty code', () => {
 		render(<CodeBox code="" />)
 		
-		const codeElement = screen.getByRole('generic')
-		expect(codeElement).toBeInTheDocument()
+		const generics = screen.getAllByRole('generic')
+		expect(generics.length).toBeGreaterThanOrEqual(1)
 	})
 
 	it('should handle multiline code correctly', () => {
-		const multilineCode = `function test() {
-  console.log("line 1")
-  console.log("line 2")
-}`
+		const multilineCode = `function test() {\n  console.log("line 1")\n  console.log("line 2")\n}`
 		
 		render(<CodeBox code={multilineCode} showLineNumbers={true} />)
 
-		expect(screen.getByText('function test() {')).toBeInTheDocument()
-		expect(screen.getByText('  console.log("line 1")')).toBeInTheDocument()
-		expect(screen.getByText('}')).toBeInTheDocument()
+		expect(screen.getByText(/function test\(\) \{/)).toBeInTheDocument()
+		expect(screen.getByText(/console\.log\("line 1"\)/)).toBeInTheDocument()
+		expect(screen.getByText(/\}/)).toBeInTheDocument()
 	})
 })

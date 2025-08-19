@@ -33,6 +33,7 @@ export function Infotip({
 				type="button"
 				className={`inline-flex h-5 w-5 items-center justify-center rounded-full border border-[var(--c-border-strong)] text-[var(--c-text-muted)] transition-colors hover:border-[var(--c-primary)] hover:text-[var(--c-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--c-primary-ring)] ${className}`}
 				aria-label={title ? `Information: ${title}` : 'More information'}
+				title={typeof description === 'string' ? description : undefined}
 			>
 				<svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
 					<circle cx="12" cy="12" r="10" />

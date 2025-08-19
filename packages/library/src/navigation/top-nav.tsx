@@ -14,15 +14,19 @@ export interface TopNavProps {
 	items?: TopNavItem[]
 	right?: React.ReactNode
 	before?: React.ReactNode
+	offsetTop?: number | string
 }
 
-export function TopNav({ brand, items = [], right, before }: TopNavProps) {
+export function TopNav({ brand, items = [], right, before, offsetTop }: TopNavProps) {
 	const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
 
 	return (
 		<>
 			{before}
-			<header className={`fixed left-0 right-0 z-50 w-full bg-[var(--c-surface)]/20 backdrop-blur-lg border-b border-[var(--c-border)]/30 ${before ? 'top-[40px]' : 'top-0'}`}>
+			<header
+				className={`fixed left-0 right-0 z-50 w-full bg-[var(--c-surface)]/20 backdrop-blur-lg border-b border-[var(--c-border)]/30 top-0`}
+				style={{ top: typeof offsetTop !== 'undefined' ? offsetTop as any : (before ? 40 : 0) }}
+			>
 				<div className="mx-auto max-w-7xl px-4">
 					<div className="flex h-16 items-center justify-between">
 						{/* Brand */}

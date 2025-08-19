@@ -11,6 +11,17 @@ export enum BannerVariant {
 	Gradient = 'gradient'
 }
 
+// Allow both enum values and their string literals
+export type BannerVariantInput =
+	| BannerVariant
+	| 'info'
+	| 'success'
+	| 'warning'
+	| 'danger'
+	| 'development'
+	| 'glass'
+	| 'gradient'
+
 const styles: Record<BannerVariant, string> = {
 	[BannerVariant.Danger]: 'bg-gradient-to-r from-red-600/95 to-red-700/95 text-white border-red-500/30',
 	[BannerVariant.Info]: 'bg-gradient-to-r from-blue-600/95 to-blue-700/95 text-white border-blue-500/30',
@@ -71,7 +82,7 @@ const defaultIcons: Record<BannerVariant, React.ReactNode> = {
 
 export interface BannerProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {
 	children: React.ReactNode
-	variant?: BannerVariant
+	variant?: BannerVariantInput
 	icon?: React.ReactNode
 	dismissible?: boolean
 	onDismiss?: () => void
@@ -100,7 +111,8 @@ export function Banner({
 	...props
 }: BannerProps) {
 	const [isVisible, setIsVisible] = React.useState(true)
-	const displayIcon = icon !== undefined ? icon : defaultIcons[variant]
+	const resolvedVariant = variant as BannerVariant
+	const displayIcon = icon !== undefined ? icon : defaultIcons[resolvedVariant]
 
 	if (!isVisible) return null
 
@@ -123,16 +135,16 @@ export function Banner({
 		<div 
 			className={[
 				'relative backdrop-blur-sm shadow-lg border-b w-full',
-				styles[variant],
+				styles[resolvedVariant],
 				positionClasses,
-				animated && variant === BannerVariant.Development ? '' : '',
+				animated && resolvedVariant === BannerVariant.Development ? '' : '',
 				className
 			].filter(Boolean).join(' ')} 
-			role={variant === BannerVariant.Danger ? 'alert' : 'status'}
+			role={resolvedVariant === BannerVariant.Danger ? 'alert' : 'status'}
 			{...props}
 		>
 			{/* Overlay effects for certain variants */}
-			{(variant === BannerVariant.Development || variant === BannerVariant.Gradient) && (
+			{(resolvedVariant === BannerVariant.Development || resolvedVariant === BannerVariant.Gradient) && (
 				<>
 					<div className="absolute inset-0 bg-gradient-to-r from-black/5 via-transparent to-black/5" />
 					<div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.1),transparent_70%)]" />
@@ -140,7 +152,7 @@ export function Banner({
 			)}
 			
 			{/* Glass effect overlay */}
-			{variant === BannerVariant.Glass && (
+			{resolvedVariant === BannerVariant.Glass && (
 				<div className="absolute inset-0 bg-gradient-to-r from-white/5 via-transparent to-white/5" />
 			)}
 
@@ -149,10 +161,10 @@ export function Banner({
 					{displayIcon && (
 						<div className="flex-shrink-0">
 							<div className="relative">
-								<span className={iconColors[variant]}>
+								<span className={iconColors[resolvedVariant]}>
 									{displayIcon}
 								</span>
-								{animated && variant === BannerVariant.Development && (
+								{animated && resolvedVariant === BannerVariant.Development && (
 									<div className="absolute -inset-1 bg-amber-200/20 rounded-full animate-ping" />
 								)}
 							</div>

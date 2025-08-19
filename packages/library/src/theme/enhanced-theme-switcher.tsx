@@ -106,8 +106,6 @@ export function EnhancedThemeSwitcher({
 	const additionalThemes = allThemes.filter(t => !primaryThemeOptions.find(p => p.value === t.value))
 	const hasAdditionalThemes = additionalThemes.length > 0
 
-
-
 	// Handle SSR
 	useEffect(() => {
 		setMounted(true)
@@ -153,23 +151,25 @@ export function EnhancedThemeSwitcher({
 	}, [dropdownOpen])
 
 	const applyTheme = (newTheme: string) => {
-		const root = document.documentElement
+		const root: any = document.documentElement
 		// Remove all possible theme classes
 		allThemes.forEach(opt => root.classList.remove(opt.value))
 		root.classList.add(newTheme)
 		root.setAttribute('data-theme', newTheme)
 		
-		// Clear all custom CSS properties first to prevent conflicts
+		// Clear all custom CSS properties first to prevent conflicts (guard style in tests)
 		const colorProps = [
 			'--c-text', '--c-text-secondary', '--c-surface', '--c-surface-2', '--c-background',
 			'--c-border', '--c-hover', '--c-primary', '--c-primary-light', '--c-primary-hover',
 			'--c-success', '--c-warning', '--c-error', '--c-info'
 		]
-		colorProps.forEach(prop => root.style.removeProperty(prop))
+		if (root && root.style) {
+			colorProps.forEach((prop: string) => root.style.removeProperty(prop))
+		}
 		
 		// Apply custom colors if theme has them
 		const themeConfig = allThemes.find(t => t.value === newTheme)
-		if (themeConfig && 'colors' in themeConfig && themeConfig.colors) {
+		if (themeConfig && 'colors' in themeConfig && (themeConfig as any).colors) {
 			applyThemeColors(themeConfig as ThemeConfigWithPreset)
 		}
 	}
