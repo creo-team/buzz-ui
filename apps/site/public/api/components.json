@@ -9,7 +9,7 @@
       "props": {
         "variant": {
           "defaultValue": {
-            "value": "info"
+            "value": "AlertVariant.Info"
           },
           "description": "",
           "name": "variant",
@@ -25,7 +25,7 @@
           ],
           "required": false,
           "type": {
-            "name": "AlertVariant | undefined"
+            "name": "AlertVariantInput | undefined"
           }
         },
         "header": {
@@ -5080,7 +5080,7 @@
         },
         "variant": {
           "defaultValue": {
-            "value": "info"
+            "value": "BannerVariant.Info"
           },
           "description": "",
           "name": "variant",
@@ -10275,7 +10275,7 @@
       "props": {
         "variant": {
           "defaultValue": {
-            "value": "default"
+            "value": "BadgeVariant.Default"
           },
           "description": "",
           "name": "variant",
@@ -10291,7 +10291,7 @@
           ],
           "required": false,
           "type": {
-            "name": "BadgeVariant | undefined"
+            "name": "BadgeVariantInput | undefined"
           }
         },
         "suppressContentEditableWarning": {
@@ -15365,7 +15365,7 @@
         },
         "variant": {
           "defaultValue": {
-            "value": "default"
+            "value": "CardVariant.Default"
           },
           "description": "",
           "name": "variant",
@@ -15381,7 +15381,7 @@
           ],
           "required": false,
           "type": {
-            "name": "\"default\" | \"elevated\" | \"outlined\" | undefined"
+            "name": "CardVariant | \"default\" | \"elevated\" | \"outlined\" | undefined"
           }
         },
         "suppressContentEditableWarning": {
@@ -20398,7 +20398,7 @@
       "props": {
         "variant": {
           "defaultValue": {
-            "value": "default"
+            "value": "ChipVariant.Default"
           },
           "description": "",
           "name": "variant",
@@ -20414,7 +20414,7 @@
           ],
           "required": false,
           "type": {
-            "name": "\"default\" | \"info\" | \"success\" | \"warning\" | \"danger\" | \"outline\" | undefined"
+            "name": "ChipVariant | \"default\" | \"info\" | \"success\" | \"warning\" | \"danger\" | \"outline\" | undefined"
           }
         },
         "suppressContentEditableWarning": {
@@ -25820,7 +25820,7 @@
         },
         "variant": {
           "defaultValue": {
-            "value": "primary"
+            "value": "CircularProgressVariant.Primary"
           },
           "description": "Color variant",
           "name": "variant",
@@ -25836,7 +25836,7 @@
           ],
           "required": false,
           "type": {
-            "name": "\"primary\" | \"success\" | \"warning\" | \"danger\" | \"info\" | undefined"
+            "name": "CircularProgressVariant | \"primary\" | \"success\" | \"warning\" | \"danger\" | \"info\" | undefined"
           }
         },
         "showLabel": {
@@ -25938,7 +25938,7 @@
       "props": {
         "size": {
           "defaultValue": {
-            "value": "md"
+            "value": "ProgressSize.Medium"
           },
           "description": "Size variant",
           "name": "size",
@@ -25954,12 +25954,12 @@
           ],
           "required": false,
           "type": {
-            "name": "\"xs\" | \"sm\" | \"md\" | \"lg\" | \"xl\" | undefined"
+            "name": "ProgressSize | \"xs\" | \"sm\" | \"md\" | \"lg\" | \"xl\" | undefined"
           }
         },
         "variant": {
           "defaultValue": {
-            "value": "primary"
+            "value": "ProgressVariant.Primary"
           },
           "description": "Color variant",
           "name": "variant",
@@ -25975,7 +25975,7 @@
           ],
           "required": false,
           "type": {
-            "name": "\"primary\" | \"success\" | \"warning\" | \"danger\" | \"info\" | \"glass\" | undefined"
+            "name": "ProgressVariant | \"primary\" | \"success\" | \"warning\" | \"danger\" | \"info\" | \"glass\" | undefined"
           }
         },
         "showLabel": {
@@ -26083,7 +26083,7 @@
         },
         "shape": {
           "defaultValue": {
-            "value": "rounded"
+            "value": "ProgressShape.Rounded"
           },
           "description": "Shape variant",
           "name": "shape",
@@ -26099,7 +26099,7 @@
           ],
           "required": false,
           "type": {
-            "name": "\"rounded\" | \"square\" | \"pill\" | undefined"
+            "name": "ProgressShape | \"rounded\" | \"square\" | \"pill\" | undefined"
           }
         }
       },
@@ -53295,7 +53295,7 @@
       "props": {
         "variant": {
           "defaultValue": {
-            "value": "simple"
+            "value": "FooterVariant.Simple"
           },
           "description": "",
           "name": "variant",
@@ -53311,7 +53311,7 @@
           ],
           "required": false,
           "type": {
-            "name": "\"simple\" | \"sections\" | \"modern\" | \"minimal\" | \"glass\" | \"epic\" | undefined"
+            "name": "FooterVariant | \"simple\" | \"sections\" | \"modern\" | \"minimal\" | \"glass\" | \"epic\" | undefined"
           }
         },
         "sections": {
@@ -58779,7 +58779,7 @@
         },
         "variant": {
           "defaultValue": {
-            "value": "default"
+            "value": "SidebarNavVariant.Default"
           },
           "description": "",
           "name": "variant",
@@ -58795,7 +58795,7 @@
           ],
           "required": false,
           "type": {
-            "name": "\"default\" | \"compact\" | \"spacious\" | undefined"
+            "name": "SidebarNavVariant | \"default\" | \"compact\" | \"spacious\" | undefined"
           }
         },
         "stickyHeader": {
@@ -58958,7 +58958,7 @@
         },
         "variant": {
           "defaultValue": {
-            "value": "default"
+            "value": "TabsVariant.Default"
           },
           "description": "",
           "name": "variant",
@@ -58974,12 +58974,12 @@
           ],
           "required": false,
           "type": {
-            "name": "\"default\" | \"pills\" | \"underline\" | \"buttons\" | \"glass\" | undefined"
+            "name": "TabsVariant | \"default\" | \"pills\" | \"underline\" | \"buttons\" | \"glass\" | undefined"
           }
         },
         "size": {
           "defaultValue": {
-            "value": "md"
+            "value": "TabsSize.Medium"
           },
           "description": "",
           "name": "size",
@@ -58995,7 +58995,7 @@
           ],
           "required": false,
           "type": {
-            "name": "\"sm\" | \"md\" | \"lg\" | undefined"
+            "name": "TabsSize | \"sm\" | \"md\" | \"lg\" | undefined"
           }
         },
         "fullWidth": {
@@ -59237,6 +59237,25 @@
           "required": false,
           "type": {
             "name": "ReactNode"
+          }
+        },
+        "offsetTop": {
+          "defaultValue": null,
+          "description": "Optional top offset for the fixed header, useful when stacking with a fixed banner",
+          "name": "offsetTop",
+          "parent": {
+            "fileName": "buzz-ui/packages/library/src/navigation/top-nav.tsx",
+            "name": "TopNavProps"
+          },
+          "declarations": [
+            {
+              "fileName": "buzz-ui/packages/library/src/navigation/top-nav.tsx",
+              "name": "TopNavProps"
+            }
+          ],
+          "required": false,
+          "type": {
+            "name": "string | number | undefined"
           }
         }
       },
@@ -60420,6 +60439,24 @@
     {
       "tags": {},
       "filePath": "/Users/coltenkrauter/Repositories/buzz-ui/packages/library/src/primitives/button.tsx",
+      "description": "Visual styles for the button - inspired by Umbro design patterns",
+      "displayName": "ButtonVariant",
+      "methods": [],
+      "props": {},
+      "_nativeProps": {}
+    },
+    {
+      "tags": {},
+      "filePath": "/Users/coltenkrauter/Repositories/buzz-ui/packages/library/src/primitives/button.tsx",
+      "description": "Size presets for padding and font size",
+      "displayName": "ButtonSize",
+      "methods": [],
+      "props": {},
+      "_nativeProps": {}
+    },
+    {
+      "tags": {},
+      "filePath": "/Users/coltenkrauter/Repositories/buzz-ui/packages/library/src/primitives/button.tsx",
       "description": "",
       "displayName": "Button",
       "methods": [],
@@ -61491,7 +61528,7 @@
           "name": "inputMode",
           "required": false,
           "type": {
-            "name": "\"text\" | \"none\" | \"search\" | \"tel\" | \"url\" | \"email\" | \"numeric\" | \"decimal\" | undefined"
+            "name": "\"none\" | \"text\" | \"search\" | \"tel\" | \"url\" | \"email\" | \"numeric\" | \"decimal\" | undefined"
           }
         },
         "is": {
@@ -61532,7 +61569,7 @@
         },
         "variant": {
           "defaultValue": {
-            "value": "bold"
+            "value": "ButtonVariant.Bold"
           },
           "description": "Visual variant",
           "name": "variant",
@@ -61553,7 +61590,7 @@
         },
         "size": {
           "defaultValue": {
-            "value": "md"
+            "value": "ButtonSize.Medium"
           },
           "description": "Size preset",
           "name": "size",
@@ -62655,7 +62692,7 @@
           "name": "aria-relevant",
           "required": false,
           "type": {
-            "name": "\"text\" | \"all\" | \"additions\" | \"additions removals\" | \"additions text\" | \"removals\" | \"removals additions\" | \"removals text\" | \"text additions\" | \"text removals\" | undefined"
+            "name": "\"all\" | \"text\" | \"additions\" | \"additions removals\" | \"additions text\" | \"removals\" | \"removals additions\" | \"removals text\" | \"text additions\" | \"text removals\" | undefined"
           }
         },
         "aria-required": {

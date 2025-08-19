@@ -2,6 +2,14 @@
 
 import * as React from 'react'
 
+export enum CircularProgressVariant {
+	Primary = 'primary',
+	Success = 'success',
+	Warning = 'warning',
+	Danger = 'danger',
+	Info = 'info'
+}
+
 export interface CircularProgressProps {
 	/** percentage 0-100 */
 	value?: number
@@ -10,7 +18,7 @@ export interface CircularProgressProps {
 	/** Stroke width */
 	strokeWidth?: number
 	/** Color variant */
-	variant?: 'primary' | 'success' | 'warning' | 'danger' | 'info'
+	variant?: CircularProgressVariant | `${CircularProgressVariant}`
 	/** Show percentage label */
 	showLabel?: boolean
 	/** Indeterminate state (loading) */
@@ -19,11 +27,11 @@ export interface CircularProgressProps {
 }
 
 const variantColors = {
-	primary: 'var(--c-primary)',
-	success: 'var(--c-success)',
-	warning: 'var(--c-warning)',
-	danger: 'var(--c-danger)',
-	info: '#3b82f6'
+	[CircularProgressVariant.Primary]: 'var(--c-primary)',
+	[CircularProgressVariant.Success]: 'var(--c-success)',
+	[CircularProgressVariant.Warning]: 'var(--c-warning)',
+	[CircularProgressVariant.Danger]: 'var(--c-danger)',
+	[CircularProgressVariant.Info]: '#3b82f6'
 }
 
 /**
@@ -33,7 +41,7 @@ export function CircularProgress({
 	value = 0, 
 	size = 48,
 	strokeWidth = 4,
-	variant = 'primary',
+	variant = CircularProgressVariant.Primary,
 	showLabel = false,
 	indeterminate = false,
 	className = ''
@@ -66,7 +74,7 @@ export function CircularProgress({
 					cy={size / 2}
 					r={radius}
 					fill="none"
-					stroke={variantColors[variant]}
+					stroke={variantColors[variant as CircularProgressVariant]}
 					strokeWidth={strokeWidth}
 					strokeDasharray={circumference}
 					strokeDashoffset={indeterminate ? circumference * 0.75 : strokeDashoffset}

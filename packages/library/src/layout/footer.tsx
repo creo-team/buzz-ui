@@ -1,6 +1,15 @@
 "use client"
 import * as React from 'react'
 
+export enum FooterVariant {
+	Simple = 'simple',
+	Sections = 'sections',
+	Modern = 'modern',
+	Minimal = 'minimal',
+	Glass = 'glass',
+	Epic = 'epic'
+}
+
 export interface FooterLink {
 	key: string
 	label: React.ReactNode
@@ -15,7 +24,7 @@ export interface FooterSection {
 }
 
 export interface FooterProps {
-	variant?: 'simple' | 'sections' | 'modern' | 'minimal' | 'glass' | 'epic'
+	variant?: FooterVariant | `${FooterVariant}`
 	sections?: FooterSection[]
 	links?: FooterLink[]
 	copyright?: React.ReactNode
@@ -30,7 +39,7 @@ export interface FooterProps {
 }
 
 export function Footer({ 
-	variant = 'simple', 
+	variant = FooterVariant.Simple, 
 	sections = [], 
 	links = [], 
 	copyright, 
@@ -41,7 +50,7 @@ export function Footer({
 }: FooterProps) {
 	const [email, setEmail] = React.useState('')
 
-	if (variant === 'minimal') {
+	if (variant === FooterVariant.Minimal) {
 		return (
 			<footer className={`relative z-[1] border-t border-[var(--c-border)] ${className}`}>
 				<div className="mx-auto max-w-7xl px-6 py-6">
@@ -54,7 +63,7 @@ export function Footer({
 		)
 	}
 
-	if (variant === 'simple') {
+	if (variant === FooterVariant.Simple) {
 		return (
 			<footer className={`relative z-[1] border-t border-[var(--c-border)] bg-[var(--c-surface-2)] ${className}`}>
 				<div className="mx-auto max-w-7xl px-6 py-8">
@@ -78,7 +87,7 @@ export function Footer({
 		)
 	}
 
-	if (variant === 'modern') {
+	if (variant === FooterVariant.Modern) {
 		return (
 			<footer className={`relative z-[1] bg-gradient-to-b from-[var(--c-surface)] to-[var(--c-surface-2)] border-t border-[var(--c-border)] ${className}`}>
 				<div className="mx-auto max-w-7xl px-6 py-12">
@@ -149,7 +158,7 @@ export function Footer({
 		)
 	}
 
-	if (variant === 'glass') {
+	if (variant === FooterVariant.Glass) {
 		return (
 			<footer className={`relative z-[1] overflow-hidden ${className}`}>
 				<div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-white/10 dark:via-black/10 dark:to-black/20 pointer-events-none" />
@@ -218,7 +227,7 @@ export function Footer({
 		)
 	}
 
-	if (variant === 'epic') {
+	if (variant === FooterVariant.Epic) {
 		return (
 			<footer className={`relative z-[1] ${className}`}>
 				{/* Background Pattern */}

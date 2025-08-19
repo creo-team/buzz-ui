@@ -1,9 +1,15 @@
 import * as React from 'react'
 
+export enum CardVariant {
+	Default = 'default',
+	Elevated = 'elevated',
+	Outlined = 'outlined'
+}
+
 export interface CardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'title'> {
 	header?: React.ReactNode
 	actions?: React.ReactNode
-	variant?: 'default' | 'elevated' | 'outlined'
+	variant?: CardVariant | `${CardVariant}`
 }
 
 /**
@@ -13,22 +19,22 @@ export interface CardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 't
 export function Card({ 
 	header, 
 	actions, 
-	variant = 'default',
+	variant = CardVariant.Default,
 	className = '', 
 	children, 
 	...props 
 }: CardProps) {
 	const variantClasses = {
-		default: 'bg-[var(--c-surface)] border border-[var(--c-border)]',
-		elevated: 'bg-[var(--c-surface)] border border-[var(--c-border)] shadow-[var(--shadow-md)]',
-		outlined: 'bg-[var(--c-surface-2)] border border-[var(--c-border-strong)]'
+		[CardVariant.Default]: 'bg-[var(--c-surface)] border border-[var(--c-border)]',
+		[CardVariant.Elevated]: 'bg-[var(--c-surface)] border border-[var(--c-border)] shadow-[var(--shadow-md)]',
+		[CardVariant.Outlined]: 'bg-[var(--c-surface-2)] border border-[var(--c-border-strong)]'
 	}
 
 	return (
 		<div 
 			className={[
 				'rounded-[var(--radius-xl)] p-6 transition-shadow',
-				variantClasses[variant],
+				variantClasses[variant as CardVariant],
 				className
 			].join(' ')} 
 			{...props}

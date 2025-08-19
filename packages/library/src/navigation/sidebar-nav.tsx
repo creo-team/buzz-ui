@@ -3,6 +3,12 @@
 import React, { useState, useMemo } from 'react'
 import { Search } from 'lucide-react'
 
+export enum SidebarNavVariant {
+	Default = 'default',
+	Compact = 'compact',
+	Spacious = 'spacious'
+}
+
 export interface SidebarNavItem {
 	key: string
 	label: string
@@ -19,7 +25,7 @@ export interface SidebarNavProps {
 	sortAlphabetically?: boolean
 	showSearch?: boolean
 	groupBy?: (item: SidebarNavItem) => string
-	variant?: 'default' | 'compact' | 'spacious'
+	variant?: SidebarNavVariant | `${SidebarNavVariant}`
 	stickyHeader?: boolean
 	currentPath?: string
 	linkComponent?: React.ComponentType<{ href: string; className: string; children: React.ReactNode }>
@@ -40,7 +46,7 @@ export function SidebarNav({
 	sortAlphabetically = false,
 	showSearch = true,
 	groupBy,
-	variant = 'default',
+	variant = SidebarNavVariant.Default,
 	stickyHeader = true,
 	currentPath = '',
 	linkComponent: LinkComponent = DefaultLink,
@@ -94,16 +100,16 @@ export function SidebarNav({
 
 	const getPaddingClass = () => {
 		switch (variant) {
-			case 'compact': return 'px-2 py-1.5'
-			case 'spacious': return 'px-4 py-3'
+			case SidebarNavVariant.Compact: return 'px-2 py-1.5'
+			case SidebarNavVariant.Spacious: return 'px-4 py-3'
 			default: return 'px-3 py-2'
 		}
 	}
 
 	const getTextClass = () => {
 		switch (variant) {
-			case 'compact': return 'text-xs'
-			case 'spacious': return 'text-base'
+			case SidebarNavVariant.Compact: return 'text-xs'
+			case SidebarNavVariant.Spacious: return 'text-base'
 			default: return 'text-sm'
 		}
 	}
@@ -139,7 +145,7 @@ export function SidebarNav({
 							</span>
 						)}
 					</div>
-					{item.description && variant === 'spacious' && (
+					{item.description && variant === SidebarNavVariant.Spacious && (
 						<div className="text-xs text-[var(--c-text-muted)] mt-0.5 truncate">
 							{item.description}
 						</div>

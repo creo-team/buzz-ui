@@ -3,6 +3,11 @@ import * as React from 'react'
 import { motion, AnimatePresence, type Variants } from 'framer-motion'
 import { type DropdownAnimationVariants, AnimationPresets } from '../types/animations'
 
+export enum DropdownItemVariant {
+	Default = 'default',
+	Destructive = 'destructive'
+}
+
 export interface DropdownItem {
 	key: string
 	label: React.ReactNode
@@ -10,7 +15,7 @@ export interface DropdownItem {
 	onClick?: () => void
 	href?: string
 	disabled?: boolean
-	variant?: 'default' | 'destructive'
+	variant?: DropdownItemVariant | `${DropdownItemVariant}`
 }
 
 export interface DropdownProps {
@@ -160,7 +165,7 @@ export function Dropdown({
 							'flex w-full items-center gap-3 px-3 py-2 text-left text-sm transition-colors',
 							item.disabled
 								? 'cursor-not-allowed text-[var(--c-text-secondary)]/50'
-								: item.variant === 'destructive'
+								: item.variant === DropdownItemVariant.Destructive
 								? 'text-[var(--c-error,#ef4444)] hover:bg-[var(--c-error-light,#fee2e2)] hover:text-[var(--c-error-hover,#dc2626)] dark:text-[var(--c-error,#ef4444)] dark:hover:bg-[var(--c-error-light,#fee2e2)]'
 								: 'text-[var(--c-text)] hover:bg-[var(--c-dropdown-hover,var(--c-hover))]',
 						].join(' ')

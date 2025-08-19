@@ -1,5 +1,5 @@
 import './globals.css'
-import { TopNav, getServerTheme } from '@creo-team/buzz-ui/server'
+import { TopNav, getServerTheme, Banner } from '@creo-team/buzz-ui/server'
 import { ThemeSwitcher } from '@creo-team/buzz-ui/client'
 import { Toaster } from 'react-hot-toast'
 import dynamic from 'next/dynamic'
@@ -7,7 +7,7 @@ import { DevBanner } from '../components/dev-banner'
 import { ToastProvider } from '@creo-team/buzz-ui/client'
 import { Logo } from '../components/logo'
 import { BuzzTextLogo } from '../components/buzz-text-logo'
-import { SiteFooterEnhanced } from '../components/site-footer-enhanced'
+import { SiteFooter } from '../components/site-footer'
 const MobileMenu = dynamic(() => import('../components/mobile-menu'), { ssr: false })
  
 
@@ -28,47 +28,34 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 					<DevBanner />
 					<ToastProvider>
 						<div className="pt-10">
-							<div className="fixed inset-x-0 top-10 z-50 w-full transition-all duration-300 bg-[var(--c-surface)]/80 backdrop-blur-lg border-b border-[var(--c-border)]">
-								<div className="mx-auto max-w-7xl px-4">
-									<div className="flex h-16 items-center justify-between">
-										<div className="flex-shrink-0">
-											<a href="/" className="flex items-center gap-2 group no-underline">
-												<div className="transition-transform duration-200 group-hover:scale-105">
-													<Logo width={32} className="drop-shadow-sm" />
-												</div>
-												<div className="transition-transform duration-200 group-hover:scale-105">
-													<BuzzTextLogo width={65} className="drop-shadow-sm" />
-												</div>
-											</a>
+							<TopNav
+								brand={
+									<a href="/" className="flex items-center gap-2 group no-underline">
+										<div className="transition-transform duration-200 group-hover:scale-105">
+											<Logo width={32} className="drop-shadow-sm" />
 										</div>
-										<nav className="hidden md:flex items-center gap-1">
-											<a href="/" className="no-underline rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 text-[var(--c-text-secondary)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)]">
-												Home
-											</a>
-											<a href="/docs" className="no-underline rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 text-[var(--c-text-secondary)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)]">
-												Docs
-											</a>
-											<a href="/components" className="no-underline rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 text-[var(--c-text-secondary)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)]">
-												Components
-											</a>
-										</nav>
-										<div className="flex items-center gap-3">
-											<ThemeSwitcher initialTheme={initialTheme} />
-											<a href="https://github.com/creo-team/buzz-ui" className="no-underline">
-												<button className="rounded-[var(--radius-md)] border border-[var(--c-border)] bg-[var(--c-surface-2)] px-3 py-2 text-sm text-[var(--c-text)] hover:bg-[var(--c-hover)] transition-colors">
-													GitHub
-												</button>
-											</a>
-											<MobileMenu items={[
-												{ key: 'home', label: 'Home', href: '/' }, 
-												{ key: 'docs', label: 'Docs', href: '/docs' }, 
-												{ key: 'components', label: 'Components', href: '/components' }
-											]} />
+										<div className="transition-transform duration-200 group-hover:scale-105">
+											<BuzzTextLogo width={65} className="drop-shadow-sm" />
 										</div>
+									</a>
+								}
+								right={
+									<div className="flex items-center gap-3">
+										<ThemeSwitcher initialTheme={initialTheme} />
+										<a href="https://github.com/creo-team/buzz-ui" className="no-underline">
+											<button className="rounded-[var(--radius-md)] border border-[var(--c-border)] bg-[var(--c-surface-2)] px-3 py-2 text-sm text-[var(--c-text)] hover:bg-[var(--c-hover)] transition-colors">
+												GitHub
+											</button>
+										</a>
 									</div>
-								</div>
-							</div>
-							<div className="h-16" />
+								}
+								items={[
+									{ key: 'home', label: 'Home', href: '/' },
+									{ key: 'docs', label: 'Docs', href: '/docs' },
+									{ key: 'components', label: 'Components', href: '/components' }
+								]}
+								offsetTop={40}
+							/>
 						</div>
 						<main className="flex-1">
 							{children}
@@ -88,7 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 								},
 							}}
 						/>
-						<SiteFooterEnhanced />
+						<SiteFooter />
 					</ToastProvider>
 				</div>
 			</body>

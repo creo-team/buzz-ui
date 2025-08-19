@@ -1,6 +1,6 @@
 "use client"
 import * as React from 'react'
-import { Button } from '../primitives/button'
+import { Button, ButtonVariant } from '../primitives/button'
 import { Modal } from '../overlays/modal'
 import { Drawer } from '../overlays/drawer'
 import { CommandPalette, type CommandItem } from '../overlays/command-palette'
@@ -98,21 +98,21 @@ export function HotkeyDemo() {
 					<Button 
 						hotkey="ctrl+1"
 						onClick={() => setMessage('Button 1 clicked!')}
-						variant="bold"
+						variant={ButtonVariant.Bold}
 					>
 						Action 1 (Ctrl+1)
 					</Button>
 					<Button 
 						hotkey="ctrl+2"
 						onClick={() => setMessage('Button 2 clicked!')}
-						variant="outline"
+						variant={ButtonVariant.Outline}
 					>
 						Action 2 (Ctrl+2)
 					</Button>
 					<Button 
 						hotkey="ctrl+3"
 						onClick={() => setMessage('Button 3 clicked!')}
-						variant="subtle"
+						variant={ButtonVariant.Subtle}
 					>
 						Action 3 (Ctrl+3)
 					</Button>
@@ -141,7 +141,7 @@ export function HotkeyDemo() {
 				]}
 				actions={
 					<>
-						<Button variant="outline" onClick={() => setModalOpen(false)}>
+						<Button variant={ButtonVariant.Outline} onClick={() => setModalOpen(false)}>
 							Cancel
 						</Button>
 						<Button 

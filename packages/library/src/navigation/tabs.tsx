@@ -1,6 +1,20 @@
 "use client"
 import * as React from 'react'
 
+export enum TabsVariant {
+	Default = 'default',
+	Pills = 'pills',
+	Underline = 'underline',
+	Buttons = 'buttons',
+	Glass = 'glass'
+}
+
+export enum TabsSize {
+	Small = 'sm',
+	Medium = 'md',
+	Large = 'lg'
+}
+
 export interface TabItem { 
 	key: string
 	label: React.ReactNode
@@ -13,67 +27,67 @@ export interface TabsProps {
 	items: TabItem[]
 	value: string
 	onChange: (key: string) => void
-	variant?: 'default' | 'pills' | 'underline' | 'buttons' | 'glass'
-	size?: 'sm' | 'md' | 'lg'
+	variant?: TabsVariant | `${TabsVariant}`
+	size?: TabsSize | `${TabsSize}`
 	fullWidth?: boolean
 	className?: string
 }
 
 const sizeClasses = {
-	sm: 'text-xs px-3 py-1.5',
-	md: 'text-sm px-4 py-2',
-	lg: 'text-base px-5 py-2.5'
+	[TabsSize.Small]: 'text-xs px-3 py-1.5',
+	[TabsSize.Medium]: 'text-sm px-4 py-2',
+	[TabsSize.Large]: 'text-base px-5 py-2.5'
 }
 
 export function Tabs({ 
 	items, 
 	value, 
 	onChange,
-	variant = 'default',
-	size = 'md',
+	variant = TabsVariant.Default,
+	size = TabsSize.Medium,
 	fullWidth = false,
 	className = ''
 }: TabsProps) {
 	const containerClasses = {
-		default: 'inline-flex gap-0.5 rounded-xl border border-[var(--c-border)] bg-[var(--c-surface)]/50 p-0.5',
-		pills: 'inline-flex gap-2',
-		underline: 'flex border-b border-[var(--c-border)]',
-		buttons: 'inline-flex gap-1',
-		glass: 'inline-flex gap-1 rounded-xl bg-white/8 dark:bg-black/20 backdrop-blur-xl backdrop-saturate-150 border border-white/10 dark:border-white/5 p-1'
+		[TabsVariant.Default]: 'inline-flex gap-0.5 rounded-xl border border-[var(--c-border)] bg-[var(--c-surface)]/50 p-0.5',
+		[TabsVariant.Pills]: 'inline-flex gap-2',
+		[TabsVariant.Underline]: 'flex border-b border-[var(--c-border)]',
+		[TabsVariant.Buttons]: 'inline-flex gap-1',
+		[TabsVariant.Glass]: 'inline-flex gap-1 rounded-xl bg-white/8 dark:bg-black/20 backdrop-blur-xl backdrop-saturate-150 border border-white/10 dark:border-white/5 p-1'
 	}
 	
 	const getItemClasses = (item: TabItem) => {
 		const isActive = value === item.key
 		const baseClasses = `
 			relative flex items-center gap-2 font-medium transition-all duration-200
-			${sizeClasses[size]}
+			${sizeClasses[size as TabsSize]}
 			${item.disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
 			${fullWidth ? 'flex-1 justify-center' : ''}
 		`
 		
-		switch (variant) {
-			case 'pills':
+		switch (variant as TabsVariant) {
+			case TabsVariant.Pills:
 				return `${baseClasses} rounded-xl ${
 					isActive 
 						? 'bg-[var(--c-primary)] text-white shadow-md' 
 						: 'text-[var(--c-text-secondary)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)]/40'
 				}`
 			
-			case 'underline':
+			case TabsVariant.Underline:
 				return `${baseClasses} rounded-none border-b-2 ${
 					isActive
 						? 'border-[var(--c-primary)] text-[var(--c-primary)]'
 						: 'border-transparent text-[var(--c-text-secondary)] hover:text-[var(--c-text)] hover:border-[var(--c-border-strong)]'
 				}`
 			
-			case 'buttons':
+			case TabsVariant.Buttons:
 				return `${baseClasses} rounded-xl border ${
 					isActive
 						? 'bg-[var(--c-primary)] text-white border-[var(--c-primary)] shadow-sm'
 						: 'border-[var(--c-border)] text-[var(--c-text-secondary)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)]/30 hover:border-[var(--c-border-strong)]'
 				}`
 			
-			case 'glass':
+			case TabsVariant.Glass:
 				return `${baseClasses} rounded-lg ${
 					isActive
 						? 'bg-white/15 dark:bg-white/10 text-[var(--c-text)] shadow-sm'
@@ -89,7 +103,7 @@ export function Tabs({
 		}
 	}
 	
-	const containerClass = fullWidth ? 'flex w-full' : containerClasses[variant]
+	const containerClass = fullWidth ? 'flex w-full' : containerClasses[variant as TabsVariant]
 	
 	return (
 		<div className={`${containerClass} ${className}`} role="tablist">
@@ -114,7 +128,7 @@ export function Tabs({
 							{item.badge}
 						</span>
 					)}
-					{variant === 'underline' && value === item.key && (
+					{variant === TabsVariant.Underline && value === item.key && (
 						<span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--c-primary)]" />
 					)}
 				</button>

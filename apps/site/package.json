@@ -4,7 +4,7 @@
 	"version": "0.1.0",
 	"type": "module",
 	"scripts": {
-		"prebuild": "node ./scripts/generate-api.js",
+		"prebuild": "node ./scripts/generate-api.js && node ./scripts/generate-deployment-metadata.js",
 		"build": "next build",
 		"dev": "next dev",
 		"lint": "next lint",

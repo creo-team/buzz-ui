@@ -13,9 +13,13 @@ export interface TopNavProps {
 	brand?: React.ReactNode
 	items?: TopNavItem[]
 	right?: React.ReactNode
+	/**
+	 * Optional top offset for the fixed header, useful when stacking with a fixed banner
+	 */
+	offsetTop?: number | string
 }
 
-export function TopNav({ brand, items = [], right }: TopNavProps) {
+export function TopNav({ brand, items = [], right, offsetTop }: TopNavProps) {
 	const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
 	const [scrolled, setScrolled] = React.useState(false)
 
@@ -42,7 +46,7 @@ export function TopNav({ brand, items = [], right }: TopNavProps) {
 	}, [mobileMenuOpen])
 
 	const headerClasses = [
-		"fixed inset-x-0 top-0 z-50 w-full transition-all duration-300",
+		"fixed inset-x-0 z-50 w-full transition-all duration-300",
 		scrolled 
 			? "bg-[var(--c-surface)]/80 backdrop-blur-lg border-b border-[var(--c-border)]" 
 			: "bg-[var(--c-surface)]/60 backdrop-blur-sm"
@@ -50,7 +54,7 @@ export function TopNav({ brand, items = [], right }: TopNavProps) {
 
 	return (
 		<>
-			<header className={headerClasses}>
+			<header className={headerClasses} style={{ top: typeof offsetTop === 'number' ? offsetTop : (offsetTop || 0) }}>
 				<div className="mx-auto max-w-7xl px-4">
 					<div className="flex h-16 items-center justify-between">
 						{/* Brand */}

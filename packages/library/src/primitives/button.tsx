@@ -5,9 +5,25 @@ import { useHotkey, type HotkeyConfig, formatHotkey } from '../hooks/use-hotkey'
 import { type ButtonAnimationVariants, AnimationPresets } from '../types/animations'
 
 /** Visual styles for the button - inspired by Umbro design patterns */
-export type ButtonVariant = 'bold' | 'outline' | 'subtle' | 'text' | 'nav' | 'success' | 'danger' | 'glass' | 'ghost' | 'icon'
+export enum ButtonVariant {
+	Bold = 'bold',
+	Outline = 'outline',
+	Subtle = 'subtle',
+	Text = 'text',
+	Nav = 'nav',
+	Success = 'success',
+	Danger = 'danger',
+	Glass = 'glass',
+	Ghost = 'ghost',
+	Icon = 'icon'
+}
+
 /** Size presets for padding and font size */
-export type ButtonSize = 'sm' | 'md' | 'lg'
+export enum ButtonSize {
+	Small = 'sm',
+	Medium = 'md',
+	Large = 'lg'
+}
 
 /**
  * Button props
@@ -34,43 +50,43 @@ export interface ButtonProps extends Omit<HTMLMotionProps<"button">, "children">
 
 const base = 'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer'
 const sizes: Record<ButtonSize, string> = {
-	lg: 'px-6 py-3 text-base rounded-2xl',
-	md: 'px-4 py-2 text-sm rounded-xl',
-	sm: 'px-3 py-1.5 text-xs rounded-lg',
+	[ButtonSize.Large]: 'px-6 py-3 text-base rounded-2xl',
+	[ButtonSize.Medium]: 'px-4 py-2 text-sm rounded-xl',
+	[ButtonSize.Small]: 'px-3 py-1.5 text-xs rounded-lg',
 }
 const iconSizes: Record<ButtonSize, string> = {
-	lg: 'h-12 w-12 text-base rounded-full',
-	md: 'h-10 w-10 text-sm rounded-full',
-	sm: 'h-8 w-8 text-xs rounded-full',
+	[ButtonSize.Large]: 'h-12 w-12 text-base rounded-full',
+	[ButtonSize.Medium]: 'h-10 w-10 text-sm rounded-full',
+	[ButtonSize.Small]: 'h-8 w-8 text-xs rounded-full',
 }
 const variants: Record<ButtonVariant, string> = {
-	bold: 'bg-[var(--c-primary)] hover:bg-[var(--c-primary-hover)] text-white shadow-md hover:shadow-lg focus:ring-[var(--c-primary-ring)]',
-	outline: 'border border-[var(--c-border-strong)] text-[var(--c-text)] bg-transparent hover:bg-[var(--c-hover)]/30 hover:border-[var(--c-primary)] hover:text-[var(--c-primary)] focus:ring-[var(--c-primary-ring)]',
-	subtle: 'bg-transparent text-[var(--c-text)] border border-transparent hover:bg-[var(--c-hover)]/40 focus:ring-[var(--c-primary-ring)]',
-	glass: 'bg-white/8 dark:bg-black/20 backdrop-blur-xl backdrop-saturate-150 border border-white/10 dark:border-white/5 text-[var(--c-text)] hover:bg-white/12 dark:hover:bg-black/30 shadow-sm',
-	ghost: 'bg-transparent hover:bg-[var(--c-hover)]/20 text-[var(--c-text-secondary)] hover:text-[var(--c-text)] border-0',
-	icon: 'bg-transparent hover:bg-[var(--c-hover)]/40 text-[var(--c-text-secondary)] hover:text-[var(--c-text)] border-0',
-	text: 'bg-transparent text-[var(--c-primary)] hover:text-[var(--c-primary-hover)] focus:ring-0 p-0 rounded-none',
-	nav: 'border-0 bg-transparent text-[var(--c-text-secondary)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)]/20 focus:ring-0',
-	success: 'bg-[var(--c-success)] text-white hover:brightness-110 shadow-sm hover:shadow-md focus:ring-green-400/50',
-	danger: 'bg-[var(--c-danger)] text-white hover:brightness-110 shadow-sm hover:shadow-md focus:ring-red-400/50',
+	[ButtonVariant.Bold]: 'bg-[var(--c-primary)] hover:bg-[var(--c-primary-hover)] text-white shadow-md hover:shadow-lg focus:ring-[var(--c-primary-ring)]',
+	[ButtonVariant.Outline]: 'border border-[var(--c-border-strong)] text-[var(--c-text)] bg-transparent hover:bg-[var(--c-hover)]/30 hover:border-[var(--c-primary)] hover:text-[var(--c-primary)] focus:ring-[var(--c-primary-ring)]',
+	[ButtonVariant.Subtle]: 'bg-transparent text-[var(--c-text)] border border-transparent hover:bg-[var(--c-hover)]/40 focus:ring-[var(--c-primary-ring)]',
+	[ButtonVariant.Glass]: 'bg-white/8 dark:bg-black/20 backdrop-blur-xl backdrop-saturate-150 border border-white/10 dark:border-white/5 text-[var(--c-text)] hover:bg-white/12 dark:hover:bg-black/30 shadow-sm',
+	[ButtonVariant.Ghost]: 'bg-transparent hover:bg-[var(--c-hover)]/20 text-[var(--c-text-secondary)] hover:text-[var(--c-text)] border-0',
+	[ButtonVariant.Icon]: 'bg-transparent hover:bg-[var(--c-hover)]/40 text-[var(--c-text-secondary)] hover:text-[var(--c-text)] border-0',
+	[ButtonVariant.Text]: 'bg-transparent text-[var(--c-primary)] hover:text-[var(--c-primary-hover)] focus:ring-0 p-0 rounded-none',
+	[ButtonVariant.Nav]: 'border-0 bg-transparent text-[var(--c-text-secondary)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)]/20 focus:ring-0',
+	[ButtonVariant.Success]: 'bg-[var(--c-success)] text-white hover:brightness-110 shadow-sm hover:shadow-md focus:ring-green-400/50',
+	[ButtonVariant.Danger]: 'bg-[var(--c-danger)] text-white hover:brightness-110 shadow-sm hover:shadow-md focus:ring-red-400/50',
 }
 
 const selectedVariants: Record<ButtonVariant, string> = {
-	bold: 'bg-[var(--c-primary)] text-white shadow-lg ring-2 ring-[var(--c-primary-ring)]',
-	outline: 'border-[var(--c-primary)] text-[var(--c-primary)] bg-[var(--c-primary)]/10',
-	subtle: 'bg-[var(--c-hover)]/60 text-[var(--c-text)]',
-	glass: 'bg-white/15 dark:bg-black/40 backdrop-blur-xl border-white/20 dark:border-white/10 text-[var(--c-text)] shadow-md',
-	ghost: 'bg-[var(--c-hover)]/40 text-[var(--c-text)]',
-	icon: 'bg-[var(--c-hover)]/60 text-[var(--c-text)]',
-	text: 'text-[var(--c-primary)] font-semibold',
-	nav: 'text-[var(--c-primary)] bg-[var(--c-primary)]/10',
-	success: 'bg-[var(--c-success)] brightness-110 shadow-md ring-2 ring-green-400/50',
-	danger: 'bg-[var(--c-danger)] brightness-110 shadow-md ring-2 ring-red-400/50',
+	[ButtonVariant.Bold]: 'bg-[var(--c-primary)] text-white shadow-lg ring-2 ring-[var(--c-primary-ring)]',
+	[ButtonVariant.Outline]: 'border-[var(--c-primary)] text-[var(--c-primary)] bg-[var(--c-primary)]/10',
+	[ButtonVariant.Subtle]: 'bg-[var(--c-hover)]/60 text-[var(--c-text)]',
+	[ButtonVariant.Glass]: 'bg-white/15 dark:bg-black/40 backdrop-blur-xl border-white/20 dark:border-white/10 text-[var(--c-text)] shadow-md',
+	[ButtonVariant.Ghost]: 'bg-[var(--c-hover)]/40 text-[var(--c-text)]',
+	[ButtonVariant.Icon]: 'bg-[var(--c-hover)]/60 text-[var(--c-text)]',
+	[ButtonVariant.Text]: 'text-[var(--c-primary)] font-semibold',
+	[ButtonVariant.Nav]: 'text-[var(--c-primary)] bg-[var(--c-primary)]/10',
+	[ButtonVariant.Success]: 'bg-[var(--c-success)] brightness-110 shadow-md ring-2 ring-green-400/50',
+	[ButtonVariant.Danger]: 'bg-[var(--c-danger)] brightness-110 shadow-md ring-2 ring-red-400/50',
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-	{ className = '', variant = 'bold', size = 'md', loading = false, selected = false, hotkey, iconOnly = false, children, disabled, onClick, ...props },
+	{ className = '', variant = ButtonVariant.Bold, size = ButtonSize.Medium, loading = false, selected = false, hotkey, iconOnly = false, children, disabled, onClick, ...props },
 	ref
 ) {
 	// Minimal animation - only on tap for feedback
@@ -101,9 +117,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
 	const activeVariant = selected ? selectedVariants[variant] : variants[variant]
 	
 	let variantClasses: string
-	if (iconOnly || variant === 'icon') {
+	if (iconOnly || variant === ButtonVariant.Icon) {
 		variantClasses = `${base} ${iconSizes[size]} ${activeVariant} ${className}`
-	} else if (variant === 'text') {
+	} else if (variant === ButtonVariant.Text) {
 		variantClasses = `${base.replace('rounded-lg ', '')} ${activeVariant} ${className}`
 	} else {
 		variantClasses = `${base} ${sizes[size]} ${activeVariant} ${className}`

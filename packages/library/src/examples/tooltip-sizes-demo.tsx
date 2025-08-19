@@ -1,7 +1,7 @@
 "use client"
 
 import { Tooltip, TooltipSize, TooltipDirection } from '../overlays/tooltip'
-import { Button } from '../primitives/button'
+import { Button, ButtonVariant } from '../primitives/button'
 
 const shortContent = "Short tooltip"
 const mediumContent = "This is a medium length tooltip with more descriptive content that explains something important"
@@ -23,13 +23,13 @@ export function TooltipSizesDemo() {
 					<h3 className="text-lg font-semibold mb-4">Compact Size (max 320px)</h3>
 					<div className="flex gap-4">
 						<Tooltip content={shortContent} size={TooltipSize.Compact}>
-							<Button variant="outline">Short Content</Button>
+							<Button variant={ButtonVariant.Outline}>Short Content</Button>
 						</Tooltip>
 						<Tooltip content={mediumContent} size={TooltipSize.Compact}>
-							<Button variant="outline">Medium Content</Button>
+							<Button variant={ButtonVariant.Outline}>Medium Content</Button>
 						</Tooltip>
 						<Tooltip content={longContent} size={TooltipSize.Compact}>
-							<Button variant="outline">Long Content</Button>
+							<Button variant={ButtonVariant.Outline}>Long Content</Button>
 						</Tooltip>
 					</div>
 				</div>
@@ -39,13 +39,13 @@ export function TooltipSizesDemo() {
 					<h3 className="text-lg font-semibold mb-4">Comfortable Size (max 576px)</h3>
 					<div className="flex gap-4">
 						<Tooltip content={shortContent} size={TooltipSize.Comfortable}>
-							<Button variant="outline">Short Content</Button>
+							<Button variant={ButtonVariant.Outline}>Short Content</Button>
 						</Tooltip>
 						<Tooltip content={mediumContent} size={TooltipSize.Comfortable}>
-							<Button variant="outline">Medium Content</Button>
+							<Button variant={ButtonVariant.Outline}>Medium Content</Button>
 						</Tooltip>
 						<Tooltip content={longContent} size={TooltipSize.Comfortable}>
-							<Button variant="outline">Long Content</Button>
+							<Button variant={ButtonVariant.Outline}>Long Content</Button>
 						</Tooltip>
 					</div>
 				</div>
@@ -55,13 +55,13 @@ export function TooltipSizesDemo() {
 					<h3 className="text-lg font-semibold mb-4">Spacious Size (max 896px)</h3>
 					<div className="flex gap-4">
 						<Tooltip content={shortContent} size={TooltipSize.Spacious}>
-							<Button variant="outline">Short Content</Button>
+							<Button variant={ButtonVariant.Outline}>Short Content</Button>
 						</Tooltip>
 						<Tooltip content={mediumContent} size={TooltipSize.Spacious}>
-							<Button variant="outline">Medium Content</Button>
+							<Button variant={ButtonVariant.Outline}>Medium Content</Button>
 						</Tooltip>
 						<Tooltip content={longContent} size={TooltipSize.Spacious}>
-							<Button variant="outline">Long Content</Button>
+							<Button variant={ButtonVariant.Outline}>Long Content</Button>
 						</Tooltip>
 					</div>
 				</div>
@@ -78,14 +78,14 @@ export function TooltipSizesDemo() {
 							size={TooltipSize.Comfortable}
 							direction={TooltipDirection.Left}
 						>
-							<Button variant="outline">Left Edge</Button>
+							<Button variant={ButtonVariant.Outline}>Left Edge</Button>
 						</Tooltip>
 						<Tooltip 
 							content="This tooltip is near the right edge and will automatically adjust its position if it would overflow" 
 							size={TooltipSize.Comfortable}
 							direction={TooltipDirection.Right}
 						>
-							<Button variant="outline">Right Edge</Button>
+							<Button variant={ButtonVariant.Outline}>Right Edge</Button>
 						</Tooltip>
 					</div>
 				</div>
@@ -109,7 +109,7 @@ export function TooltipSizesDemo() {
 						}
 						size={TooltipSize.Spacious}
 					>
-						<Button variant="outline">Hover for Rich Content</Button>
+						<Button variant={ButtonVariant.Outline}>Hover for Rich Content</Button>
 					</Tooltip>
 				</div>
 			</div>

@@ -1,12 +1,35 @@
 import * as React from 'react'
 
+export enum ProgressVariant {
+	Primary = 'primary',
+	Success = 'success',
+	Warning = 'warning',
+	Danger = 'danger',
+	Info = 'info',
+	Glass = 'glass'
+}
+
+export enum ProgressSize {
+	ExtraSmall = 'xs',
+	Small = 'sm',
+	Medium = 'md',
+	Large = 'lg',
+	ExtraLarge = 'xl'
+}
+
+export enum ProgressShape {
+	Rounded = 'rounded',
+	Square = 'square',
+	Pill = 'pill'
+}
+
 export interface ProgressProps {
 	/** percentage 0-100 */
 	value?: number
 	/** Size variant */
-	size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+	size?: ProgressSize | `${ProgressSize}`
 	/** Color variant */
-	variant?: 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'glass'
+	variant?: ProgressVariant | `${ProgressVariant}`
 	/** Show percentage label */
 	showLabel?: boolean
 	/** Animation style */
@@ -18,31 +41,31 @@ export interface ProgressProps {
 	/** Custom label text */
 	label?: string
 	/** Shape variant */
-	shape?: 'rounded' | 'square' | 'pill'
+	shape?: ProgressShape | `${ProgressShape}`
 	className?: string
 }
 
 const sizeClasses = {
-	xs: 'h-0.5',
-	sm: 'h-1',
-	md: 'h-2',
-	lg: 'h-3',
-	xl: 'h-4'
+	[ProgressSize.ExtraSmall]: 'h-0.5',
+	[ProgressSize.Small]: 'h-1',
+	[ProgressSize.Medium]: 'h-2',
+	[ProgressSize.Large]: 'h-3',
+	[ProgressSize.ExtraLarge]: 'h-4'
 }
 
 const variantClasses = {
-	primary: 'bg-[var(--c-primary)]',
-	success: 'bg-[var(--c-success)]',
-	warning: 'bg-[var(--c-warning)]',
-	danger: 'bg-[var(--c-danger)]',
-	info: 'bg-blue-500',
-	glass: 'bg-white/20 dark:bg-white/10 backdrop-blur-sm border border-white/20'
+	[ProgressVariant.Primary]: 'bg-[var(--c-primary)]',
+	[ProgressVariant.Success]: 'bg-[var(--c-success)]',
+	[ProgressVariant.Warning]: 'bg-[var(--c-warning)]',
+	[ProgressVariant.Danger]: 'bg-[var(--c-danger)]',
+	[ProgressVariant.Info]: 'bg-blue-500',
+	[ProgressVariant.Glass]: 'bg-white/20 dark:bg-white/10 backdrop-blur-sm border border-white/20'
 }
 
 const shapeClasses = {
-	rounded: 'rounded-lg',
-	square: 'rounded-none',
-	pill: 'rounded-full'
+	[ProgressShape.Rounded]: 'rounded-lg',
+	[ProgressShape.Square]: 'rounded-none',
+	[ProgressShape.Pill]: 'rounded-full'
 }
 
 /**
@@ -51,14 +74,14 @@ const shapeClasses = {
  */
 export function Progress({ 
 	value = 0, 
-	size = 'md', 
-	variant = 'primary',
+	size = ProgressSize.Medium, 
+	variant = ProgressVariant.Primary,
 	showLabel = false,
 	animated = false,
 	striped = false,
 	indeterminate = false,
 	label,
-	shape = 'rounded',
+	shape = ProgressShape.Rounded,
 	className = ''
 }: ProgressProps) {
 	const clamped = Math.max(0, Math.min(100, value))
@@ -85,9 +108,9 @@ export function Progress({
 					)}
 				</div>
 			)}
-			<div className={`w-full bg-[var(--c-surface-3)] border border-[var(--c-border)] overflow-hidden ${sizeClasses[size]} ${shapeClasses[shape]}`}>
+			<div className={`w-full bg-[var(--c-surface-3)] border border-[var(--c-border)] overflow-hidden ${sizeClasses[size as ProgressSize]} ${shapeClasses[shape as ProgressShape]}`}>
 				<div 
-					className={`${sizeClasses[size]} transition-all duration-300 ease-out ${variantClasses[variant]} ${animationClasses} ${shapeClasses[shape]}`}
+					className={`${sizeClasses[size as ProgressSize]} transition-all duration-300 ease-out ${variantClasses[variant as ProgressVariant]} ${animationClasses} ${shapeClasses[shape as ProgressShape]}`}
 					style={{
 						width: indeterminate ? '30%' : `${clamped}%`,
 						...stripedStyles
