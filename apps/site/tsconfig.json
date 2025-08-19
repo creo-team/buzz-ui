@@ -23,6 +23,15 @@
       ],
       "@buzz-ui/library": [
         "../../packages/library/src"
+      ],
+      "@creo-team/buzz-ui": [
+        "../../packages/library/src"
+      ],
+      "@creo-team/buzz-ui/server": [
+        "../../packages/library/src/server"
+      ],
+      "@creo-team/buzz-ui/client": [
+        "../../packages/library/src/client"
       ]
     },
     "plugins": [
