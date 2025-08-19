@@ -4,6 +4,7 @@ import { Card, Progress } from '@creo-team/buzz-ui/server'
 import { CircularProgress } from '@creo-team/buzz-ui/client'
 import { CodeBlock } from '../../../components/code-block'
 import { ApiTable } from '../../../components/api-table'
+import Link from 'next/link'
 
 export default function ProgressDocs() {
 	const [dynamicValue, setDynamicValue] = useState(0)
@@ -326,8 +327,14 @@ useEffect(() => {
 						type: "string",
 						description: "Additional CSS classes"
 					}
-				]}
-			/>
-		</div>
-	)
+				                                ]}
+                        />
+
+                        <div className="mt-8">
+                                <p className="text-sm text-[var(--c-text-secondary)]">
+                                        Full API: <Link className="text-[var(--c-link)] hover:underline" href="/components/progress/api">/components/progress/api</Link>
+                                </p>
+                        </div>
+                </div>
+        )
 }

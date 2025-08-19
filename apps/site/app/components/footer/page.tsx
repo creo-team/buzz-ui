@@ -3,6 +3,7 @@ import { Footer } from '@creo-team/buzz-ui/server'
 import { Card } from '@creo-team/buzz-ui/server'
 import { CodeBlock } from '../../../components/code-block'
 import { ApiTable } from '../../../components/api-table'
+import Link from 'next/link'
 
 const socialLinks = [
 	{
@@ -323,6 +324,12 @@ interface FooterSection {
 				<p className="text-sm text-[var(--c-text-secondary)]">
 					<strong>Accessibility Note:</strong> The footer component uses semantic HTML with proper ARIA labels. 
 					All interactive elements are keyboard accessible and social links include appropriate aria-label attributes.
+				</p>
+			</div>
+
+			<div className="mt-8">
+				<p className="text-sm text-[var(--c-text-secondary)]">
+					Full API: <Link className="text-[var(--c-link)] hover:underline" href="/components/footer/api">/components/footer/api</Link>
 				</p>
 			</div>
 		</div>
