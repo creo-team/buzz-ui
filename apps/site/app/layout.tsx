@@ -1,5 +1,5 @@
 import './globals.css'
-import { Footer, TopNav, getServerTheme } from '@creo-team/buzz-ui/server'
+import { TopNav, getServerTheme } from '@creo-team/buzz-ui/server'
 import { ThemeSwitcher } from '@creo-team/buzz-ui/client'
 import { Toaster } from 'react-hot-toast'
 import dynamic from 'next/dynamic'
@@ -7,6 +7,7 @@ import { DevBanner } from '../components/dev-banner'
 import { ToastProvider } from '@creo-team/buzz-ui/client'
 import { Logo } from '../components/logo'
 import { BuzzTextLogo } from '../components/buzz-text-logo'
+import { SiteFooterEnhanced } from '../components/site-footer-enhanced'
 const MobileMenu = dynamic(() => import('../components/mobile-menu'), { ssr: false })
  
 
@@ -23,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 				/>
 			</head>
 			<body>
-				<div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--c-background)', color: 'var(--c-text)' }}>
+				<div className="min-h-screen flex flex-col overflow-x-hidden" style={{ backgroundColor: 'var(--c-background)', color: 'var(--c-text)' }}>
 					<DevBanner />
 					<ToastProvider>
 						<div className="pt-10">
@@ -87,15 +88,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 								},
 							}}
 						/>
-						<Footer
-							links={[
-								{ key: 'github', label: 'GitHub', href: 'https://github.com/creo-team/buzz-ui' },
-								{ key: 'npm', label: 'npm', href: 'https://www.npmjs.com/package/@creo-team/buzz-ui' },
-								{ key: 'privacy', label: 'Privacy', href: '/privacy' },
-								{ key: 'terms', label: 'Terms', href: '/terms' },
-							]}
-							copyright={<span>© {new Date().getFullYear()} Creo Team</span>}
-						/>
+						<SiteFooterEnhanced />
 					</ToastProvider>
 				</div>
 			</body>

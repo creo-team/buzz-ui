@@ -46,7 +46,7 @@ export default function ComponentsLayout({
 	children: React.ReactNode
 }) {
 	return (
-		<div className="flex min-h-screen">
+		<div className="flex min-h-screen overflow-x-hidden">
 			{/* Sidebar */}
 			<aside className="w-64 flex-shrink-0 border-r border-[var(--c-border)] bg-[var(--c-surface)]">
 				<div className="sticky top-[6.5rem] p-4">
