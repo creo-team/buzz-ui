@@ -6,9 +6,10 @@ interface SidebarNavClientProps {
 	items: SidebarItem[]
 	title?: string
 	className?: string
+	scrollable?: boolean
 }
 
-export function SidebarNavClient({ items, title, className }: SidebarNavClientProps) {
+export function SidebarNavClient({ items, title, className, scrollable }: SidebarNavClientProps) {
 	const pathname = usePathname()
 	
 	return (
@@ -17,6 +18,7 @@ export function SidebarNavClient({ items, title, className }: SidebarNavClientPr
 			currentPath={pathname}
 			title={title}
 			className={className}
+			scrollable={scrollable}
 		/>
 	)
 }

@@ -38,24 +38,24 @@ export function CodeBox({
 	return (
 		<div className={`relative group ${className}`}>
 			{label && (
-				<div className="flex items-center justify-between px-4 py-2 bg-[var(--c-surface-2)] border border-[var(--c-border)] border-b-0 rounded-t-[var(--radius-md)] text-xs font-medium text-[var(--c-text-secondary)]">
+				<div className="flex items-center justify-between px-4 py-2 bg-[var(--c-code-block-bg,var(--c-surface-3))] border border-[var(--c-code-block-border,var(--c-border))] border-b-0 rounded-t-[var(--c-radius-md,0.375rem)] text-xs font-medium text-[var(--c-code-block-text,var(--c-text-secondary))]">
 					<span>{label}</span>
 					{language && (
-						<span className="text-[var(--c-text-muted)]">{language}</span>
+						<span className="text-[var(--c-code-block-line-number,var(--c-text-muted))]">{language}</span>
 					)}
 				</div>
 			)}
 			
 			<div className="relative">
-				<pre className={`overflow-x-auto bg-[var(--c-surface-3)] border border-[var(--c-border)] p-4 text-sm font-mono text-[var(--c-text)] ${
-					label ? 'rounded-b-[var(--radius-md)]' : 'rounded-[var(--radius-md)]'
+				<pre className={`overflow-x-auto bg-[var(--c-code-block-bg,var(--c-surface-3))] border border-[var(--c-code-block-border,var(--c-border))] p-4 text-sm font-mono text-[var(--c-code-block-text,var(--c-text))] ${
+					label ? 'rounded-b-[var(--c-radius-md,0.375rem)]' : 'rounded-[var(--c-radius-md,0.375rem)]'
 				}`}>
 					<code className="block">
 						{showLineNumbers ? (
 							<div className="table w-full">
 								{lines.map((line, index) => (
 									<div key={index} className="table-row">
-										<span className="table-cell pr-4 text-[var(--c-text-muted)] select-none text-right w-8">
+										<span className="table-cell pr-4 text-[var(--c-code-block-line-number,var(--c-text-muted))] select-none text-right w-8">
 											{index + 1}
 										</span>
 										<span className="table-cell">
@@ -73,7 +73,7 @@ export function CodeBox({
 				{copyable && (
 					<button
 						onClick={handleCopy}
-						className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 bg-[var(--c-surface)] border border-[var(--c-border)] rounded-[var(--radius-sm)] hover:bg-[var(--c-hover)] text-[var(--c-text-secondary)] hover:text-[var(--c-text)]"
+						className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 bg-[var(--c-surface)] border border-[var(--c-border)] rounded-[var(--c-radius-sm,0.25rem)] hover:bg-[var(--c-hover)] text-[var(--c-text-secondary)] hover:text-[var(--c-text)]"
 						title={copied ? 'Copied!' : 'Copy code'}
 					>
 						{copied ? (

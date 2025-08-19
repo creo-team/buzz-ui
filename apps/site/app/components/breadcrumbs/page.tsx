@@ -7,8 +7,8 @@ export default function BreadcrumbsDocs() {
 	return (
 		<div className="mx-auto max-w-6xl px-4 py-12">
 			<h1 className="text-2xl font-semibold">Breadcrumbs</h1>
-			<p className="mt-2 text-sm text-white/70">Hierarchical navigation indicating the current page’s location within a site.</p>
-			<Card>
+			<p className="mt-2 text-sm text-white/70">Hierarchical navigation indicating the current page's location within a site.</p>
+			<Card className="mt-4">
 				<Breadcrumbs items={[{ key: 'home', label: 'Home', href: '/' }, { key: 'docs', label: 'Docs', href: '/docs' }, { key: 'breadcrumbs', label: 'Breadcrumbs' }]} />
 				<div className="mt-4">
 					<CodeBlock code={`import { Breadcrumbs } from '@creo-team/buzz-ui/server'
@@ -28,7 +28,7 @@ export default function BreadcrumbsDocs() {
 					}
 				]}
 			/>
-			<p className="mt-6 text-sm text-white/70">Full API: <Link className="text-[var(--c-link)]" href="/components/breadcrumbs/api">/components/breadcrumbs/api</Link></p>
+			<p className="mt-6 text-sm text-[var(--c-text-secondary)]">Full API: <Link className="text-[var(--c-link)]" href="/components/breadcrumbs/api">/components/breadcrumbs/api</Link></p>
 		</div>
 	)
 }

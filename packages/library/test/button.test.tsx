@@ -11,7 +11,8 @@ describe('Button', () => {
 	it('applies subtle variant class', () => {
 		render(<Button variant="subtle">Subtle</Button>)
 		const btn = screen.getByText('Subtle')
-		expect(btn.className).toContain('bg-[var(--c-surface-2)]')
+		// Check that the button has the correct variant styling
+		expect(btn).toHaveClass('bg-[var(--c-surface-2)]')
 	})
 })
 

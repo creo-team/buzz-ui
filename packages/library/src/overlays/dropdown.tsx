@@ -1,5 +1,7 @@
 "use client"
 import * as React from 'react'
+import { motion, AnimatePresence, type Variants } from 'framer-motion'
+import { type DropdownAnimationVariants, AnimationPresets } from '../types/animations'
 
 export interface DropdownItem {
 	key: string
@@ -18,6 +20,8 @@ export interface DropdownProps {
 	side?: 'top' | 'right' | 'bottom' | 'left'
 	sideOffset?: number
 	className?: string
+	/** Custom animation variants for dropdown entrance/exit */
+	animationVariants?: DropdownAnimationVariants
 }
 
 export function Dropdown({
@@ -27,10 +31,28 @@ export function Dropdown({
 	side = 'bottom',
 	sideOffset = 4,
 	className = '',
+	animationVariants
 }: DropdownProps) {
 	const [isOpen, setIsOpen] = React.useState(false)
 	const dropdownRef = React.useRef<HTMLDivElement>(null)
 	const triggerRef = React.useRef<HTMLElement>(null)
+
+	// Use provided animation variants or elegant default with direction awareness
+	const defaultVariants = {
+		...AnimationPresets.dropdown.subtle,
+		hidden: {
+			...AnimationPresets.dropdown.subtle.hidden,
+			y: side === 'top' ? 10 : side === 'bottom' ? -10 : AnimationPresets.dropdown.subtle.hidden!.y,
+			x: side === 'left' ? 10 : side === 'right' ? -10 : 0
+		},
+		exit: {
+			...AnimationPresets.dropdown.subtle.exit,
+			y: side === 'top' ? 5 : side === 'bottom' ? -5 : 0,
+			x: side === 'left' ? 5 : side === 'right' ? -5 : 0
+		}
+	}
+
+	const variants = animationVariants || defaultVariants
 
 	React.useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -61,21 +83,35 @@ export function Dropdown({
 		}
 	}, [isOpen])
 
-	const getPositionClasses = () => {
-		const alignClasses = {
-			start: 'left-0',
-			center: 'left-1/2 -translate-x-1/2',
-			end: 'right-0',
+	const getPositionStyle = (): React.CSSProperties => {
+		const style: React.CSSProperties = { position: 'absolute', zIndex: 50 }
+		
+		// Handle alignment
+		if (align === 'start') {
+			style.left = 0
+		} else if (align === 'center') {
+			style.left = '50%'
+			style.transform = 'translateX(-50%)'
+		} else if (align === 'end') {
+			style.right = 0
 		}
-
-		const sideClasses = {
-			top: `bottom-full mb-${sideOffset}`,
-			right: `left-full ml-${sideOffset}`,
-			bottom: `top-full mt-${sideOffset}`,
-			left: `right-full mr-${sideOffset}`,
+		
+		// Handle side and offset
+		if (side === 'top') {
+			style.bottom = '100%'
+			style.marginBottom = `${sideOffset}px`
+		} else if (side === 'right') {
+			style.left = '100%'
+			style.marginLeft = `${sideOffset}px`
+		} else if (side === 'bottom') {
+			style.top = '100%'
+			style.marginTop = `${sideOffset}px`
+		} else if (side === 'left') {
+			style.right = '100%'
+			style.marginRight = `${sideOffset}px`
 		}
-
-		return `${alignClasses[align]} ${sideClasses[side]}`
+		
+		return style
 	}
 
 	const handleItemClick = (item: DropdownItem) => {
@@ -94,16 +130,21 @@ export function Dropdown({
 				'aria-haspopup': true,
 			})}
 
-			{isOpen && (
-				<div
-					ref={dropdownRef}
-					className={`
-						absolute z-50 min-w-[12rem] rounded-lg border border-[var(--c-border)] 
-						bg-[var(--c-surface)] py-1 shadow-lg backdrop-blur-sm
-						${getPositionClasses()}
-						${className}
-					`}
-				>
+			<AnimatePresence>
+				{isOpen && (
+					<motion.div
+						ref={dropdownRef}
+						className={`
+							min-w-[12rem] rounded-lg border border-[var(--c-dropdown-border,var(--c-border))] 
+							bg-[var(--c-dropdown-bg,var(--c-surface))] py-1 shadow-lg backdrop-blur-sm
+							${className}
+						`}
+						style={getPositionStyle()}
+						variants={variants}
+						initial="hidden"
+						animate="visible"
+						exit="exit"
+					>
 					{items.map((item, index) => {
 						if (item === 'separator') {
 							return (
@@ -120,8 +161,8 @@ export function Dropdown({
 							item.disabled
 								? 'cursor-not-allowed text-[var(--c-text-secondary)]/50'
 								: item.variant === 'destructive'
-								? 'text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/50'
-								: 'text-[var(--c-text)] hover:bg-[var(--c-hover)]',
+								? 'text-[var(--c-error,#ef4444)] hover:bg-[var(--c-error-light,#fee2e2)] hover:text-[var(--c-error-hover,#dc2626)] dark:text-[var(--c-error,#ef4444)] dark:hover:bg-[var(--c-error-light,#fee2e2)]'
+								: 'text-[var(--c-text)] hover:bg-[var(--c-dropdown-hover,var(--c-hover))]',
 						].join(' ')
 
 						return (
@@ -139,10 +180,11 @@ export function Dropdown({
 								)}
 								{item.label}
 							</ItemComponent>
-						)
-					})}
-				</div>
-			)}
+													)
+						})}
+					</motion.div>
+				)}
+			</AnimatePresence>
 		</div>
 	)
 }

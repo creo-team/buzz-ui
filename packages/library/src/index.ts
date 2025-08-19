@@ -1,3 +1,6 @@
+// Export types
+export * from './types/animations'
+
 export * from './primitives/button'
 export * from './overlays/infotip'
 export * from './forms/input'
@@ -9,6 +12,7 @@ export * from './cards/card'
 export * from './navigation/top-nav'
 export * from './navigation/sidebar-nav'
 export * from './navigation/sidebar-nav-client'
+export * from './navigation/sidebar-nav-enhanced'
 export * from './theme/theme-utils'
 export * from './theme/theme-types'
 export * from './layout/footer'
@@ -23,4 +27,5 @@ export * from './feedback/progress'
 export * from './hooks/use-hotkey'
 export * from './hooks/use-modal-query'
 export * from './examples/hotkey-demo'
+export * from './examples/tooltip-sizes-demo'
 

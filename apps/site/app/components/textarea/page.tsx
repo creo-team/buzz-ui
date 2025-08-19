@@ -7,7 +7,7 @@ export default function TextareaDocs() {
 		<div className="mx-auto max-w-6xl px-4 py-12">
 			<h1 className="text-2xl font-semibold">Textarea</h1>
 			<p className="mt-2 text-sm text-white/70">A multi-line text input.</p>
-			<Card>
+			<Card className="mt-4">
 				<div className="grid gap-3">
 					<Textarea label="Message" placeholder="Write your message..." rows={4} />
 				</div>

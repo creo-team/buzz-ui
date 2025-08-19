@@ -1,5 +1,5 @@
-import { Button, Card, Infotip, TextInput, Checkbox } from '@creo-team/buzz-ui/server'
-import { SimpleCodeBlock } from '../components/simple-code-block'
+"use client"
+import { Button, Card, Infotip, TextInput, Checkbox, CodeBox } from '@creo-team/buzz-ui/server'
 import { DevStatusCard } from '../components/dev-status-card'
 
 export default function Page() {
@@ -30,7 +30,12 @@ export default function Page() {
 								</a>
 							</div>
 							<div className="mt-8 max-w-md mx-auto">
-								<SimpleCodeBlock code={`npm install @creo-team/buzz-ui`} />
+								<CodeBox 
+									code="npm install @creo-team/buzz-ui" 
+									language="bash" 
+									label=""
+									copyable={true}
+								/>
 							</div>
 							
 							{/* Development Status Card */}
@@ -49,6 +54,13 @@ export default function Page() {
 							<p className="mt-4 text-lg text-[var(--c-text-secondary)]">
 								Modern design principles meet practical development needs
 							</p>
+							<div className="mt-4">
+								<a href="/logo-demo" className="inline-flex items-center gap-2 text-sm text-[var(--c-primary)] hover:text-[var(--c-primary-hover)] transition-colors no-underline">
+									<span>🔥</span>
+									<span>View our brand identity</span>
+									<span>→</span>
+								</a>
+							</div>
 						</div>
 						<div className="grid gap-8 md:grid-cols-3">
 							<Card variant="elevated" header="🎨 Design-First">

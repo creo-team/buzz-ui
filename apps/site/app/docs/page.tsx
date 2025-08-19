@@ -113,7 +113,20 @@ export default function App({ children }) {
 			<section>
 				<h2 className="text-2xl font-semibold text-[var(--c-text)] mb-6">📚 Explore</h2>
 				
-				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+					<div className="bg-[var(--c-surface)] border border-[var(--c-border)] rounded-[var(--radius-lg)] p-6">
+						<h3 className="text-lg font-semibold text-[var(--c-text)] mb-3">🔥 Brand Identity</h3>
+						<p className="text-[var(--c-text-secondary)] mb-4">
+							See the Buzz UI logo system and brand elements.
+						</p>
+						<Link 
+							href="/logo-demo"
+							className="inline-flex items-center text-[var(--c-primary)] hover:text-[var(--c-primary-hover)] font-medium"
+						>
+							View Logo Demo →
+						</Link>
+					</div>
+
 					<div className="bg-[var(--c-surface)] border border-[var(--c-border)] rounded-[var(--radius-lg)] p-6">
 						<h3 className="text-lg font-semibold text-[var(--c-text)] mb-3">🧩 Components</h3>
 						<p className="text-[var(--c-text-secondary)] mb-4">
@@ -217,6 +230,32 @@ export default function Example() {
 							</p>
 						</div>
 					</div>
+				</div>
+			</section>
+
+			{/* Toast Provider Setup */}
+			<section>
+				<h2 className="text-2xl font-semibold text-[var(--c-text)] mb-6">🔔 Toast Provider Setup</h2>
+				<div className="bg-[var(--c-surface)] border border-[var(--c-border)] rounded-[var(--radius-lg)] p-6">
+					<h3 className="text-lg font-semibold text-[var(--c-text)] mb-3">Setting Up Toast Notifications</h3>
+					<p className="text-[var(--c-text-secondary)] mb-4">
+						To enable toast notifications across your application, wrap your app with the <code>ToastProvider</code>.
+					</p>
+					<CodeBlock 
+						code={`import { ToastProvider } from '@creo-team/buzz-ui/client'
+
+function App() {
+  return (
+    <ToastProvider>
+      <YourAppComponents />
+    </ToastProvider>
+  )
+}`}
+						label="Toast Provider Setup"
+					/>
+					<p className="text-[var(--c-text-secondary)]">
+						This setup ensures that all toast notifications are managed and displayed correctly.
+					</p>
 				</div>
 			</section>
 		</div>

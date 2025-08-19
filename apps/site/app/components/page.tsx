@@ -4,6 +4,14 @@ import { Breadcrumbs, Button } from '@creo-team/buzz-ui/server'
 export default function ComponentsPage() {
 	const featuredComponents = [
 		{ 
+			key: 'logo', 
+			label: 'Logo Demo', 
+			href: '/logo-demo', 
+			description: 'Brand identity with flame and text logos',
+			icon: '🔥',
+			size: 'medium'
+		},
+		{ 
 			key: 'button', 
 			label: 'Button', 
 			href: '/components/button', 
@@ -71,7 +79,7 @@ export default function ComponentsPage() {
 		{ key: 'tabs', label: 'Tabs', href: '/components/tabs' },
 		{ key: 'textarea', label: 'Textarea', href: '/components/textarea' },
 		{ key: 'toast', label: 'Toast', href: '/components/toast' },
-		{ key: 'tooltip-advanced', label: 'Tooltip Pro', href: '/components/tooltip-advanced' },
+
 		{ key: 'top-nav', label: 'Top Nav', href: '/components/top-nav' },
 	]
 

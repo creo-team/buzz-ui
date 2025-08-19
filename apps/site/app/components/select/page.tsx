@@ -7,7 +7,7 @@ export default function SelectDocs() {
 		<div className="mx-auto max-w-6xl px-4 py-12">
 			<h1 className="text-2xl font-semibold">Select</h1>
 			<p className="mt-2 text-sm text-white/70">A native select styled to match the system.</p>
-			<Card>
+			<Card className="mt-4">
 				<Select label="Favorite" defaultValue="">
 					<option value="" disabled>Select one</option>
 					<option value="buzz">Buzz</option>
