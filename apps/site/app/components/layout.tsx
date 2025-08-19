@@ -49,7 +49,7 @@ export default function ComponentsLayout({
 		<div className="flex min-h-screen">
 			{/* Sidebar */}
 			<aside className="w-64 flex-shrink-0 border-r border-[var(--c-border)] bg-[var(--c-surface)]">
-				<div className="sticky top-16 p-4">
+				<div className="sticky top-[5rem] p-4">
 					<SidebarNavWrapper
 						items={componentItems}
 						title="Components"
