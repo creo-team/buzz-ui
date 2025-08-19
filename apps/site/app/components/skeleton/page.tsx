@@ -1,6 +1,7 @@
 import { Card, Skeleton } from '@creo-team/buzz-ui/server'
 import { CodeBlock } from '../../../components/code-block'
 import { ApiTable } from '../../../components/api-table'
+import Link from 'next/link'
 
 export default function SkeletonDocs() {
 	return (
@@ -28,6 +29,12 @@ export default function SkeletonDocs() {
 					}
 				]}
 			/>
+
+			<div className="mt-8">
+				<p className="text-sm text-[var(--c-text-secondary)]">
+					Full API: <Link className="text-[var(--c-link)] hover:underline" href="/components/skeleton/api">/components/skeleton/api</Link>
+				</p>
+			</div>
 		</div>
 	)
 }

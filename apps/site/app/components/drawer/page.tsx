@@ -4,6 +4,7 @@ import { Breadcrumbs } from '@creo-team/buzz-ui/server'
 import { Button, Drawer } from '@creo-team/buzz-ui/client'
 import { CodeBlock } from '@/components/code-block'
 import { ApiTable } from '@/components/api-table'
+import Link from 'next/link'
 
 export default function DrawerPage() {
 	const [rightOpen, setRightOpen] = useState(false)
@@ -129,6 +130,12 @@ export default function Example() {
 						}
 					]}
 				/>
+
+				<div className="mt-8">
+					<p className="text-sm text-[var(--c-text-secondary)]">
+						Full API: <Link className="text-[var(--c-link)] hover:underline" href="/components/drawer/api">/components/drawer/api</Link>
+					</p>
+				</div>
 			</div>
 
 			{/* Drawers */}

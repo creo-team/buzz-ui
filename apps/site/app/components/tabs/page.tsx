@@ -5,6 +5,7 @@ import { Button } from '@creo-team/buzz-ui/client'
 import { CodeBlock } from '../../../components/code-block'
 import { ApiTable } from '../../../components/api-table'
 import { Home, Users, Settings, FileText, BarChart, Bell } from 'lucide-react'
+import Link from 'next/link'
 
 export default function TabsDocs() {
 	const [basicTab, setBasicTab] = useState('overview')
@@ -381,6 +382,12 @@ const [view, setView] = useState('grid')
 					<strong>Accessibility Note:</strong> Tabs are fully accessible with proper ARIA attributes,
 					keyboard navigation support, and focus management. The active tab is clearly indicated
 					visually and programmatically.
+				</p>
+			</div>
+
+			<div className="mt-8">
+				<p className="text-sm text-[var(--c-text-secondary)]">
+					Full API: <Link className="text-[var(--c-link)] hover:underline" href="/components/tabs/api">/components/tabs/api</Link>
 				</p>
 			</div>
 		</div>

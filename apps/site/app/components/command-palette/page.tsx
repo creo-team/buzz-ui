@@ -4,6 +4,7 @@ import { Breadcrumbs } from '@creo-team/buzz-ui/server'
 import { Button, CommandPalette } from '@creo-team/buzz-ui/client'
 import { CodeBlock } from '@/components/code-block'
 import { ApiTable } from '@/components/api-table'
+import Link from 'next/link'
 
 export default function CommandPalettePage() {
 	const [open, setOpen] = useState(false)
