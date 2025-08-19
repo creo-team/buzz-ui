@@ -3,12 +3,13 @@ import path from 'node:path'
 
 // Dynamic docgen for a given slug - generates documentation on-demand
 export async function getDocgenForSlug(slug: string): Promise<Record<string, any>> {
-	// During build time (Vercel), return empty results to avoid build failures
-	if (process.env.NODE_ENV === 'production' && process.env.VERCEL === '1') {
+	// Try to generate docs, but gracefully fall back if file system access fails
+	try {
+		return await generateOnDemandForSlug(slug)
+	} catch (error) {
+		console.warn('Docgen failed for slug:', slug, error)
 		return {}
 	}
-	
-	return await generateOnDemandForSlug(slug)
 }
 
 async function generateOnDemandForSlug(slug: string): Promise<Record<string, any>> {

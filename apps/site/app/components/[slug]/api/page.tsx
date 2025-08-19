@@ -18,13 +18,15 @@ export default async function ApiPage({ params }: { params: { slug: string } }) 
 			{entries.length === 0 && (
 				<div className="mt-8 text-center">
 					<p className="text-lg text-[var(--c-text-secondary)]">
-						{process.env.NODE_ENV === 'production' && process.env.VERCEL === '1' 
-							? 'API documentation will be generated at runtime.'
-							: 'No API data found.'
-						}
+						Unable to generate API documentation
 					</p>
 					<p className="mt-2 text-sm text-[var(--c-text-muted)]">
-						This component's API documentation is generated dynamically from the source code.
+						This component's API documentation is generated dynamically from the source code. 
+						If you're seeing this message, the documentation generation may have failed due to 
+						environment constraints or missing source files.
+					</p>
+					<p className="mt-4 text-xs text-[var(--c-text-muted)]">
+						Environment: {process.env.NODE_ENV} | Vercel: {process.env.VERCEL || 'false'}
 					</p>
 				</div>
 			)}
