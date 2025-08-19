@@ -3,41 +3,62 @@ import path from 'node:path'
 
 // Dynamic docgen for a given slug - generates documentation on-demand
 export async function getDocgenForSlug(slug: string): Promise<Record<string, any>> {
+	// During build time (Vercel), return empty results to avoid build failures
+	if (process.env.NODE_ENV === 'production' && process.env.VERCEL === '1') {
+		return {}
+	}
+	
 	return await generateOnDemandForSlug(slug)
 }
 
 async function generateOnDemandForSlug(slug: string): Promise<Record<string, any>> {
-	// Resolve paths relative to the site package
-	const repoRoot = path.resolve(process.cwd(), '..', '..')
-	const librarySrc = path.join(repoRoot, 'packages', 'library', 'src')
-	const tsconfig = path.join(repoRoot, 'packages', 'library', 'tsconfig.json')
+	try {
+		// Resolve paths relative to the site package
+		const repoRoot = path.resolve(process.cwd(), '..', '..')
+		const librarySrc = path.join(repoRoot, 'packages', 'library', 'src')
+		const tsconfig = path.join(repoRoot, 'packages', 'library', 'tsconfig.json')
 
-	// Lazy import to avoid bundling in the client
-	const { withCustomConfig } = await import('react-docgen-typescript')
-	const parser = withCustomConfig(tsconfig, { savePropValueAsString: true, skipChildrenPropWithoutDoc: false })
+		// Check if the library source directory exists (won't exist during Vercel build)
+		if (!fs.existsSync(librarySrc)) {
+			return {}
+		}
 
-	const files = listTsx(librarySrc)
-	const normalized = slug.replace(/-/g, '').toLowerCase()
-	const candidates = files.filter(f => f.replace(librarySrc + '/', '').toLowerCase().includes(normalized))
+		// Lazy import to avoid bundling in the client
+		const { withCustomConfig } = await import('react-docgen-typescript')
+		const parser = withCustomConfig(tsconfig, { savePropValueAsString: true, skipChildrenPropWithoutDoc: false })
 
-	const results: Record<string, any> = {}
-	for (const file of candidates) {
-		try {
-			const docs = parser.parse(file)
-			if (docs.length > 0) {
-				results[file.replace(librarySrc + '/', '')] = pruneProps(docs)
-			}
-		} catch {}
+		const files = listTsx(librarySrc)
+		const normalized = slug.replace(/-/g, '').toLowerCase()
+		const candidates = files.filter(f => f.replace(librarySrc + '/', '').toLowerCase().includes(normalized))
+
+		const results: Record<string, any> = {}
+		for (const file of candidates) {
+			try {
+				const docs = parser.parse(file)
+				if (docs.length > 0) {
+					results[file.replace(librarySrc + '/', '')] = pruneProps(docs)
+				}
+			} catch {}
+		}
+		return results
+	} catch (error) {
+		// If anything fails (like during build), return empty results
+		console.warn('Docgen failed:', error)
+		return {}
 	}
-	return results
 }
 
 function listTsx(dir: string, acc: string[] = []): string[] {
-	for (const name of fs.readdirSync(dir)) {
-		const p = path.join(dir, name)
-		const stat = fs.statSync(p)
-		if (stat.isDirectory()) listTsx(p, acc)
-		else if (stat.isFile() && p.endsWith('.tsx')) acc.push(p)
+	try {
+		for (const name of fs.readdirSync(dir)) {
+			const p = path.join(dir, name)
+			const stat = fs.statSync(p)
+			if (stat.isDirectory()) listTsx(p, acc)
+			else if (stat.isFile() && p.endsWith('.tsx')) acc.push(p)
+		}
+	} catch (error) {
+		// If directory access fails, return empty array
+		console.warn('Failed to list TSX files:', error)
 	}
 	return acc
 }
