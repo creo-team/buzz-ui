@@ -3,21 +3,19 @@ run-name: Node Publish [${{ github.ref_name }}] triggered by [${{ github.event_n
 
 on:
   release:
-    types: [published]
+    types: published
   push:
     branches: '*'
   workflow_dispatch:
 
 jobs:
   publish:
-    uses: krauters/shared-workflows/.github/workflows/node-publish.yaml@main
+    uses: krauters/shared-workflows/.github/workflows/node-publish.yaml@b34c0968945cbd3d091d1d621effedb43029c3dd
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
     with:
       node_install: true
       dry_run: ${{ github.event_name != 'release' }}
-      node_version: '22'
       scope: '@creo-team'
       registry_url: 'https://registry.npmjs.org'
-    env:
-      npm_config_workspace: @creo-team/buzz-ui
+      workspace: '@creo-team/buzz-ui'
