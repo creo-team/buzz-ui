@@ -1,6 +1,5 @@
 "use client"
 
-import { useSearchParams, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
 /**
@@ -27,29 +26,36 @@ import { useState, useEffect } from 'react'
  * ```
  */
 export function useModalQuery(modalKey: string) {
-	const searchParams = useSearchParams()
-	const router = useRouter()
 	const [isClient, setIsClient] = useState(false)
+	const [search, setSearch] = useState('')
 
-	// Prevent SSR issues by only accessing query params on client
 	useEffect(() => {
 		setIsClient(true)
+		setSearch(window.location.search)
+
+		const onPopState = () => setSearch(window.location.search)
+		window.addEventListener('popstate', onPopState)
+		return () => window.removeEventListener('popstate', onPopState)
 	}, [])
 
-	const isOpen = isClient && searchParams.get('modal') === modalKey
+	const isOpen = isClient && new URLSearchParams(search).get('modal') === modalKey
 
 	const open = () => {
 		if (!isClient) return
-		const params = new URLSearchParams(searchParams.toString())
+		const params = new URLSearchParams(window.location.search)
 		params.set('modal', modalKey)
-		router.push(`?${params.toString()}`)
+		const nextUrl = `?${params.toString()}`
+		window.history.pushState({}, '', nextUrl)
+		setSearch(nextUrl)
 	}
 
 	const close = () => {
 		if (!isClient) return
-		const params = new URLSearchParams(searchParams.toString())
+		const params = new URLSearchParams(window.location.search)
 		params.delete('modal')
-		router.push(`?${params.toString()}`)
+		const nextUrl = `?${params.toString()}`
+		window.history.pushState({}, '', nextUrl)
+		setSearch(nextUrl)
 	}
 
 	return { isOpen, open, close }
@@ -84,28 +90,36 @@ export function useModalQuery(modalKey: string) {
  * ```
  */
 export function useModals(modalKeys: string[] = []) {
-	const searchParams = useSearchParams()
-	const router = useRouter()
 	const [isClient, setIsClient] = useState(false)
+	const [search, setSearch] = useState('')
 
 	useEffect(() => {
 		setIsClient(true)
+		setSearch(window.location.search)
+
+		const onPopState = () => setSearch(window.location.search)
+		window.addEventListener('popstate', onPopState)
+		return () => window.removeEventListener('popstate', onPopState)
 	}, [])
 
-	const currentModal = isClient ? searchParams.get('modal') : null
+	const currentModal = isClient ? new URLSearchParams(search).get('modal') : null
 
 	const open = (modalKey: string) => {
 		if (!isClient) return
-		const params = new URLSearchParams(searchParams.toString())
+		const params = new URLSearchParams(window.location.search)
 		params.set('modal', modalKey)
-		router.push(`?${params.toString()}`)
+		const nextUrl = `?${params.toString()}`
+		window.history.pushState({}, '', nextUrl)
+		setSearch(nextUrl)
 	}
 
 	const close = () => {
 		if (!isClient) return
-		const params = new URLSearchParams(searchParams.toString())
+		const params = new URLSearchParams(window.location.search)
 		params.delete('modal')
-		router.push(`?${params.toString()}`)
+		const nextUrl = `?${params.toString()}`
+		window.history.pushState({}, '', nextUrl)
+		setSearch(nextUrl)
 	}
 
 	const isOpen = (modalKey: string) => currentModal === modalKey
