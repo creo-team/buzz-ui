@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { getDocgenForSlug } from '../../../../lib/docgen'
 
 function readApi() {
 	try {
@@ -17,12 +18,18 @@ function findDocsFor(slug: string, api: Record<string, any>) {
 	return entries.filter(([file]) => file.toLowerCase().includes(name))
 }
 
-export default function ApiPage({ params }: { params: { slug: string } }) {
-	const api = readApi()
-	const matches = findDocsFor(params.slug, api)
+export default async function ApiPage({ params }: { params: Promise<{ slug: string }> }) {
+	const { slug } = await params
+	let api = readApi()
+	let matches = findDocsFor(slug, api)
+	if (matches.length === 0) {
+		api = await getDocgenForSlug(slug)
+		const entries = Object.entries(api)
+		matches = entries
+	}
 	return (
 		<div className="mx-auto max-w-6xl px-4 py-12">
-			<h1 className="text-2xl font-semibold">{params.slug} API</h1>
+			<h1 className="text-2xl font-semibold">{slug} API</h1>
 			{matches.length === 0 && <p className="mt-2 text-sm text-white/70">No API data found.</p>}
 			{matches.map(([file, docs]: any) => (
 				<div key={file} className="mt-6">

@@ -1,6 +1,7 @@
-import { Card, Skeleton } from '@creo-team/buzz-ui/server'
+import { Card, Skeleton } from '@creo-team/buzz-ui/client'
 import { CodeBlock } from '../../../components/code-block'
 import { ApiTable } from '../../../components/api-table'
+import Link from 'next/link'
 
 export default function SkeletonDocs() {
 	return (
@@ -12,7 +13,7 @@ export default function SkeletonDocs() {
 					<Skeleton className="h-24 w-full" />
 				</div>
 				<div className="mt-4">
-					<CodeBlock code={`import { Skeleton } from '@creo-team/buzz-ui/server'
+					<CodeBlock code={`import { Skeleton } from '@creo-team/buzz-ui/client'
 
 <Skeleton className="h-6 w-1/2" />`} />
 				</div>
@@ -28,6 +29,12 @@ export default function SkeletonDocs() {
 					}
 				]}
 			/>
+
+			<div className="mt-8">
+				<p className="text-sm text-[var(--c-text-secondary)]">
+					Full API: <Link className="text-[var(--c-link)] hover:underline" href="/components/skeleton/api">/components/skeleton/api</Link>
+				</p>
+			</div>
 		</div>
 	)
 }

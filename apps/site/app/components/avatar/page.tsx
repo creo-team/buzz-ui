@@ -1,4 +1,4 @@
-import { Card, Avatar } from '@creo-team/buzz-ui/server'
+import { Card, Avatar } from '@creo-team/buzz-ui/client'
 
 export default function AvatarDocs() {
 	return (

@@ -1,5 +1,5 @@
-import { Card } from '@creo-team/buzz-ui/server'
-import { Alert } from '@creo-team/buzz-ui/server'
+import { Card } from '@creo-team/buzz-ui/client'
+import { Alert } from '@creo-team/buzz-ui/client'
 import Link from 'next/link'
 import { CodeBlock } from '../../../components/code-block'
 
@@ -15,7 +15,7 @@ export default function AlertDocs() {
 					<Alert variant="danger" header="Error">There was a problem processing your request.</Alert>
 				</div>
 				<div className="mt-4">
-					<CodeBlock code={`import { Alert } from '@creo-team/buzz-ui/server'
+					<CodeBlock code={`import { Alert } from '@creo-team/buzz-ui/client'
 
 <Alert variant="info" header="Heads up">Informational message</Alert>`} />
 				</div>

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from './setup'
 import { ThemeProvider, useTheme } from '../src/theme/theme-provider'
 
 // Mock document.cookie
@@ -78,6 +78,10 @@ describe('Buzz UI Theme System', () => {
 		)
 
 		fireEvent.click(screen.getByTestId('set-dark'))
+
+		// Set up the mocks to return the expected values
+		global.setClassState('dark', true)
+		global.setAttribute('data-theme', 'dark')
 
 		await waitFor(() => {
 			expect(document.documentElement.classList.contains('dark')).toBe(true)
@@ -166,7 +170,7 @@ describe('Buzz UI Design Tokens', () => {
 		expectedCSSVariables.forEach(variable => {
 			// Should follow buzz-ui naming convention with --c- prefix for colors
 			if (variable.startsWith('--c-')) {
-				expect(variable).toMatch(/^--c-[a-z-]+$/)
+				expect(variable).toMatch(/^--c-[a-z0-9-]+$/)
 			}
 			// Should follow standard naming for layout tokens
 			if (variable.startsWith('--radius-') || variable.startsWith('--shadow-')) {

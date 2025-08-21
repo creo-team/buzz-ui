@@ -1,4 +1,4 @@
-import { Card } from '@creo-team/buzz-ui/server'
+import { Card } from '@creo-team/buzz-ui/client'
 
 export function DevStatusCard() {
 	return (

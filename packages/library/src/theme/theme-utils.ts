@@ -4,11 +4,11 @@ import { Theme, THEME_COOKIE_NAME } from './theme-types'
  * Server-side utility to get the current theme from cookies
  * Use this in server components and layouts to pass initialTheme to theme switchers
  */
-export function getServerTheme(defaultTheme: Theme | string = "light"): string {
+export async function getServerTheme(defaultTheme: Theme | string = "light"): Promise<string> {
 	try {
 		// Dynamic import to avoid bundling next/headers in client
 		const { cookies } = require('next/headers')
-		const cookieStore = cookies()
+		const cookieStore = await cookies()
 		const themeCookie = cookieStore.get(THEME_COOKIE_NAME)
 		return themeCookie?.value || defaultTheme.toString()
 	} catch (error) {

@@ -47,35 +47,73 @@ This split prevents client-only code from executing on the server in Next.js.
 
 ## Components
 
-- Button
-- Tooltip
-- Infotip
-- TextInput
-- Checkbox
-- Card
-- TopNav
-- Footer
- - Breadcrumbs
- - Tabs
- - Alert
- - Badge
- - Select, RadioGroup, Textarea
- - Skeleton, Progress
- - Avatar, Chip, Table, Stepper
- - Accordion, Menu, Sheet, Pagination
+### Primitives
+- Button - Multiple variants with hotkey support
+
+### Forms
+- TextInput, Textarea, Select
+- Checkbox, RadioGroup
+
+### Overlays
+- Tooltip - Smart positioning, overflow prevention
+- Modal - Backdrop, animations, document title
+- Drawer - Slide-out panels
+- Dropdown - Context menus
+- CommandPalette - Command search interface
+- Toast - Beautiful notifications (react-hot-toast)
+
+### Layout
+- Card - Content containers
+- TopNav - Navigation header
+- Footer - Page footer
+- SidebarNav - Side navigation
+- SidebarNavEnhanced - Advanced sidebar with search, sorting, and grouping
+
+### Data Display
+- Table - Data tables
+- CodeBox - Syntax highlighted code
+- Alert, Banner - Notifications
+- Badge, Chip - Labels
+- Avatar - User avatars
+- Skeleton - Loading states
+- Progress - Progress indicators
+
+### Navigation
+- Breadcrumbs - Navigation trail
+- Tabs - Tab navigation
+- Pagination - Page navigation
+- Menu - Menu dropdowns
+
+### Miscellaneous
+- Accordion - Collapsible content
+- Sheet - Slide-over panels
+- Stepper - Step indicators
+- InfoTip - Information tooltips
+- ThemeSwitcher - Theme selection
 
 ## Theming
 
-Buzz UI uses CSS variables on the `html[data-theme]` node. Choose from built-in themes or define your own.
+Buzz UI uses a comprehensive CSS variable system for complete theme customization. Choose from 6 built-in themes or create your own.
 
 ```tsx
 // In your app root (client)
 import { ThemeProvider } from '@creo-team/buzz-ui/client'
+import { createThemeConfig, ThemePreset } from '@creo-team/buzz-ui'
+
+const themes = [
+	createThemeConfig(ThemePreset.Light),
+	createThemeConfig(ThemePreset.Dark),
+	// Add more themes as needed
+]
 
 export default function Root({ children }) {
-	return <ThemeProvider>{children}</ThemeProvider>
+	return <ThemeProvider themes={themes} defaultTheme="light">
+		{children}
+	</ThemeProvider>
 }
 ```
+
+**See [THEMING.md](./THEMING.md) for the complete theming guide with all CSS variables.**
 
 ## SSR with Next.js
 

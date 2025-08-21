@@ -1,9 +1,10 @@
 "use client"
 import { useState } from 'react'
-import { Breadcrumbs } from '@creo-team/buzz-ui/server'
-import { Button, ThemeSwitcher } from '@creo-team/buzz-ui/client'
+import { Breadcrumbs } from '@creo-team/buzz-ui/client'
+import { Button as BuzzButton, ThemeSwitcher } from '@creo-team/buzz-ui/client'
 import { CodeBlock } from '@/components/code-block'
 import { ApiTable } from '@/components/api-table'
+import Link from 'next/link'
 
 // Create a preview version that doesn't use fixed positioning
 function TopNavPreview({ brand, items, right }: {
@@ -140,14 +141,14 @@ export default function TopNavDocs() {
 							right={
 								<div className="flex items-center gap-2">
 									<ThemeSwitcher />
-									<Button variant="outline" size="sm">Sign In</Button>
+									<BuzzButton variant="outline" size="sm">Sign In</BuzzButton>
 								</div>
 							}
 						/>
 					</div>
 
 					<CodeBlock 
-						code={`import { TopNav } from '@creo-team/buzz-ui/server'
+						code={`import { TopNav } from '@creo-team/buzz-ui/client'
 import { Button, ThemeSwitcher } from '@creo-team/buzz-ui/client'
 
 export default function Example() {
@@ -196,12 +197,12 @@ export default function Example() {
 							]}
 							right={
 								<div className="flex items-center gap-2">
-									<Button variant="text" size="sm">
+									<BuzzButton variant="text" size="sm">
 										<svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM9 6l5-5v5H9z" />
 										</svg>
-									</Button>
-									<Button variant="outline" size="sm">Upgrade</Button>
+									</BuzzButton>
+									<BuzzButton variant="outline" size="sm">Upgrade</BuzzButton>
 									<div className="h-8 w-8 rounded-full bg-[var(--c-primary)] flex items-center justify-center">
 										<span className="text-white text-sm font-medium">JD</span>
 									</div>
@@ -248,7 +249,7 @@ export default function Example() {
 								{ key: 'about', label: 'About', active: true },
 								{ key: 'contact', label: 'Contact' },
 							]}
-							right={<Button size="sm">Get Started</Button>}
+							right={<BuzzButton size="sm">Get Started</BuzzButton>}
 						/>
 					</div>
 				</div>

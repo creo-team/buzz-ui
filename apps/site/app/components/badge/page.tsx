@@ -1,4 +1,4 @@
-import { Badge, Card } from '@creo-team/buzz-ui/server'
+import { Badge, Card } from '@creo-team/buzz-ui/client'
 import Link from 'next/link'
 import { CodeBlock } from '../../../components/code-block'
 
@@ -16,7 +16,7 @@ export default function BadgeDocs() {
 					<Badge variant="outline">Outline</Badge>
 				</div>
 				<div className="mt-4">
-					<CodeBlock code={`import { Badge } from '@creo-team/buzz-ui/server'
+					<CodeBlock code={`import { Badge } from '@creo-team/buzz-ui/client'
 
 <Badge>Default</Badge>
 <Badge variant="success">Success</Badge>`} />

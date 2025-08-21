@@ -1,33 +1,42 @@
 {
-	"name": "@buzz-ui/site",
+	"name": "@creo-team/buzz-ui-site",
 	"private": true,
 	"version": "0.1.0",
 	"type": "module",
 	"scripts": {
-		"prebuild": "node ./scripts/generate-api.js",
-		"build": "next build",
+		"prebuild": "node ./scripts/generate-deployment-metadata.js",
+		"build": "node ./scripts/build-with-fallback.js",
 		"dev": "next dev",
 		"lint": "next lint",
 		"start": "next start",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"upgrade:all": "npx npm-check-updates -u && npm i"
 	},
 	"dependencies": {
 		"@creo-team/buzz-ui": "file:../../packages/library",
 		"framer-motion": "^12.23.12",
-		"next": "^14.2.7",
-		"react": "^18.3.1",
-		"react-dom": "^18.3.1",
+		"lucide-react": "^0.540.0",
+		"next": "15.3.5",
 		"react-hot-toast": "^2.6.0",
 		"zod": "4.0.17"
 	},
+	"peerDependencies": {
+		"react": "^18.3.1",
+		"react-dom": "^18.3.1"
+	},
 	"devDependencies": {
-		"@types/node": "^22.17.1",
-		"@types/react": "^18.3.23",
-		"@types/react-dom": "^18.3.7",
+		"@babel/parser": "^7.28.3",
+		"@babel/traverse": "^7.28.3",
+		"@babel/types": "^7.28.2",
+		"@tailwindcss/postcss": "^4.1.12",
+		"@types/babel__traverse": "^7.28.0",
+		"@types/node": "^24.3.0",
+		"@types/react": "^18.3.12",
+		"@types/react-dom": "^18.3.1",
 		"autoprefixer": "^10.4.21",
 		"postcss": "^8.5.6",
-		"react-docgen-typescript": "^2.3.0",
-		"tailwindcss": "^3.4.17",
+		"react-docgen-typescript": "^2.4.0",
+		"tailwindcss": "^4.1.12",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.9.2"
 	}

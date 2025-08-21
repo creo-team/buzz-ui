@@ -13,44 +13,20 @@ export interface TopNavProps {
 	brand?: React.ReactNode
 	items?: TopNavItem[]
 	right?: React.ReactNode
+	before?: React.ReactNode
+	offsetTop?: number | string
 }
 
-export function TopNav({ brand, items = [], right }: TopNavProps) {
+export function TopNav({ brand, items = [], right, before, offsetTop }: TopNavProps) {
 	const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
-	const [scrolled, setScrolled] = React.useState(false)
-
-	React.useEffect(() => {
-		const handleScroll = () => {
-			setScrolled(window.scrollY > 10)
-		}
-		
-		window.addEventListener('scroll', handleScroll, { passive: true })
-		handleScroll()
-		
-		return () => window.removeEventListener('scroll', handleScroll)
-	}, [])
-
-	React.useEffect(() => {
-		const handleResize = () => {
-			if (window.innerWidth >= 768 && mobileMenuOpen) {
-				setMobileMenuOpen(false)
-			}
-		}
-		
-		window.addEventListener('resize', handleResize)
-		return () => window.removeEventListener('resize', handleResize)
-	}, [mobileMenuOpen])
-
-	const headerClasses = [
-		"fixed inset-x-0 top-0 z-50 w-full transition-all duration-300",
-		scrolled 
-			? "bg-[var(--c-surface)]/80 backdrop-blur-lg border-b border-[var(--c-border)]" 
-			: "bg-[var(--c-surface)]/60 backdrop-blur-sm"
-	].filter(Boolean).join(" ")
 
 	return (
 		<>
-			<header className={headerClasses}>
+			{before}
+			<header
+				className={`fixed left-0 right-0 z-50 w-full bg-[var(--c-surface)]/20 backdrop-blur-lg border-b border-[var(--c-border)]/30 top-0`}
+				style={{ top: typeof offsetTop !== 'undefined' ? offsetTop as any : (before ? 40 : 0) }}
+			>
 				<div className="mx-auto max-w-7xl px-4">
 					<div className="flex h-16 items-center justify-between">
 						{/* Brand */}
@@ -131,8 +107,6 @@ export function TopNav({ brand, items = [], right }: TopNavProps) {
 					</div>
 				)}
 			</header>
-			{/* Spacer to prevent content from hiding behind fixed header */}
-			<div className="h-16" />
 		</>
 	)
 }

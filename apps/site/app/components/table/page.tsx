@@ -1,4 +1,4 @@
-import { Card, Table } from '@creo-team/buzz-ui/server'
+import { Card, Table } from '@creo-team/buzz-ui/client'
 import { CodeBlock } from '../../../components/code-block'
 
 type Row = { id: number, name: string, role: string }
@@ -20,7 +20,7 @@ export default function TableDocs() {
 					rows={rows}
 				/>
 				<div className="mt-4">
-					<CodeBlock code={`import { Table } from '@creo-team/buzz-ui/server'
+					<CodeBlock code={`import { Table } from '@creo-team/buzz-ui/client'
 
 <Table columns={[{ key: 'name', header: 'Name' }]} rows={[{ id: 1, name: 'Buzz' }]} />`} />
 				</div>

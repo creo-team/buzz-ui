@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '../setup'
 import React from 'react'
 import { ThemeSwitcher } from '../../src/theme/theme-switcher'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
@@ -215,8 +215,8 @@ describe('ThemeSwitcher', () => {
 		it('supports Alt+T hotkey for theme cycling', async () => {
 			render(<ThemeSwitcher initialTheme="light" />)
 			
-			// Simulate Alt+T keypress
-			fireEvent.keyDown(document, { key: 't', altKey: true })
+			// Trigger the hotkey using our mocked system
+			global.triggerHotkey('alt+t')
 			
 			await waitFor(() => {
 				expect(document.documentElement.classList.add).toHaveBeenCalledWith('dark')

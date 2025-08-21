@@ -9,3 +9,5 @@ yarn-debug.log*
 yarn-error.log*
 .vscode/
 .idea/
+apps/site/deployment-metadata.json
+apps/site/public/api/components.json

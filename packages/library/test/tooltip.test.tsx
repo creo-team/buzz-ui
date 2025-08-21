@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from './setup'
 import React from 'react'
 import { Tooltip } from '../src/overlays/tooltip'
 

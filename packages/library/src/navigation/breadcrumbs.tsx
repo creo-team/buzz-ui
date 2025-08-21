@@ -8,12 +8,12 @@ export interface Crumb {
 
 export function Breadcrumbs({ items }: { items: Crumb[] }) {
 	return (
-		<nav className="text-sm text-white/70">
+		<nav className="text-sm text-[var(--c-text-secondary)]">
 			<ol className="flex flex-wrap items-center gap-2">
 				{items.map((item, idx) => (
 					<li key={item.key} className="inline-flex items-center gap-2">
-						{item.href ? <a className="hover:text-white" href={item.href}>{item.label}</a> : <span className="text-white">{item.label}</span>}
-						{idx < items.length - 1 && <span className="select-none text-white/40">/</span>}
+						{item.href ? <a className="hover:text-[var(--c-text)] transition-colors" href={item.href}>{item.label}</a> : <span className="text-[var(--c-text)]">{item.label}</span>}
+						{idx < items.length - 1 && <span className="select-none text-[var(--c-text-muted)]">/</span>}
 					</li>
 				))}
 			</ol>

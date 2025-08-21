@@ -31,7 +31,7 @@ const initialState: ThemeProviderState = {
 	themes: [],
 }
 
-const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
+const ThemeProviderContext = createContext<ThemeProviderState | undefined>(undefined)
 
 // Helper function to apply theme changes directly to the DOM
 function applyTheme(theme: Theme, availableThemes: string[] = ["light", "dark"]): Theme {

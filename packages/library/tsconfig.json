@@ -1,19 +1,22 @@
 {
 	"compilerOptions": {
+		"composite": true,
+		"declaration": true,
+		"declarationMap": true,
+		"emitDeclarationOnly": false,
+		"skipLibCheck": true,
 		"target": "ES2020",
 		"module": "ESNext",
 		"jsx": "react-jsx",
-		"declaration": true,
-		"declarationMap": true,
 		"sourceMap": true,
 		"moduleResolution": "Bundler",
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
 		"strict": true,
-		"skipLibCheck": true,
+		"noEmit": false,
 		"outDir": "dist",
-		"types": ["node", "react", "jest"]
+		"types": ["node", "react", "jest", "./src/types/next-navigation"]
 	},
-	"include": ["src"]
+	"include": ["src/**/*"]
 }
 

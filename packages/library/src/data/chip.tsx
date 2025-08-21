@@ -1,19 +1,29 @@
 import * as React from 'react'
 
-export interface ChipProps extends React.HTMLAttributes<HTMLSpanElement> {
-	variant?: 'default' | 'info' | 'success' | 'warning' | 'danger' | 'outline'
+export enum ChipVariant {
+	Default = 'default',
+	Info = 'info',
+	Success = 'success',
+	Warning = 'warning',
+	Danger = 'danger',
+	Outline = 'outline'
 }
 
-export function Chip({ variant = 'default', className = '', ...props }: ChipProps) {
-	const variants: Record<NonNullable<ChipProps['variant']>, string> = {
-		default: 'bg-[var(--c-surface-2)] text-[var(--c-text)]',
-		info: 'bg-blue-500/20 text-blue-300',
-		success: 'bg-emerald-500/20 text-emerald-300',
-		warning: 'bg-yellow-500/20 text-yellow-300',
-		danger: 'bg-red-500/20 text-red-300',
-		outline: 'border border-[var(--c-border)] text-[var(--c-text)]',
+export interface ChipProps extends React.HTMLAttributes<HTMLSpanElement> {
+	variant?: ChipVariant | `${ChipVariant}`
+}
+
+export function Chip({ variant = ChipVariant.Default, className = '', ...props }: ChipProps) {
+	const variants: Record<ChipVariant, string> = {
+		[ChipVariant.Default]: 'bg-[var(--c-surface-3)] text-[var(--c-text)] border border-[var(--c-border-strong)]',
+		[ChipVariant.Info]: 'bg-blue-500/15 text-blue-700 dark:text-blue-400 border border-blue-500/25',
+		[ChipVariant.Success]: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/25',
+		[ChipVariant.Warning]: 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/25',
+		[ChipVariant.Danger]: 'bg-red-500/15 text-red-700 dark:text-red-400 border border-red-500/25',
+		[ChipVariant.Outline]: 'border border-[var(--c-border-strong)] text-[var(--c-text)] bg-transparent',
 	}
-	return <span className={["inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs", variants[variant], className].join(' ')} {...props} />
+	const resolvedVariant = variant as ChipVariant
+	return <span className={["inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium", variants[resolvedVariant], className].join(' ')} {...props} />
 }
 
 

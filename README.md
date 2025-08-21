@@ -24,7 +24,7 @@ npm install
 npm run dev
 
 # build the library
-npm run -w @buzz-ui/library build
+npm run -w @creo-team/buzz-ui build
 ```
 
 ## Components (initial)

@@ -23,7 +23,10 @@
       ],
       "@buzz-ui/library": [
         "../../packages/library/src"
-      ]
+      ],
+      "@creo-team/buzz-ui": ["../../packages/library/dist/index.js"],
+      "@creo-team/buzz-ui/server": ["../../packages/library/dist/server.js"],
+      "@creo-team/buzz-ui/client": ["../../packages/library/dist/client.js"]
     },
     "plugins": [
       {
@@ -33,6 +36,7 @@
   },
   "include": [
     "next-env.d.ts",
+    "types/**/*.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"

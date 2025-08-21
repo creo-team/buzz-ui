@@ -1,7 +1,9 @@
-import { Button, Card, getServerTheme } from '@creo-team/buzz-ui/server'
-import { EnhancedThemeSwitcher, type EnhancedThemeConfig } from '@creo-team/buzz-ui/client'
+'use client'
 
-const allThemes: EnhancedThemeConfig[] = [
+import { Button, Card } from '@creo-team/buzz-ui/client'
+import { EnhancedThemeSwitcher } from '@creo-team/buzz-ui/client'
+
+const allThemes = [
 	{ value: "light", label: "Light", icon: "sun" },
 	{ value: "dark", label: "Dark", icon: "moon" },
 	{ value: "midnight", label: "Midnight", icon: "palette" },
@@ -11,7 +13,7 @@ const allThemes: EnhancedThemeConfig[] = [
 ]
 
 export default function ThemeTestPage() {
-	const initialTheme = getServerTheme('light')
+	const initialTheme = 'light' // Use default theme to avoid cookies() async issues
 	
 	return (
 		<div className="container mx-auto p-8 space-y-8">

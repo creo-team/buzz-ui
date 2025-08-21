@@ -2,8 +2,8 @@
 
 import React, { Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Button } from '@creo-team/buzz-ui/client'
-import { Card } from '@creo-team/buzz-ui/server'
+import { Button as BuzzButton } from '@creo-team/buzz-ui/client'
+import { Card } from '@creo-team/buzz-ui/client'
 import { Modal } from '@creo-team/buzz-ui/client'
 import { CodeBlock } from '../../../components/code-block'
 import { ApiTable } from '../../../components/api-table'
@@ -53,9 +53,9 @@ function ModalDocsContent() {
 				
 				<div className="bg-[var(--c-surface)] border border-[var(--c-border)] rounded-[var(--radius-lg)] p-6 mb-6">
 					<div className="flex gap-4 mb-4">
-						<Button onClick={() => setBasicOpen(true)} variant="bold">
+						<BuzzButton onClick={() => setBasicOpen(true)} variant="bold">
 							Open Basic Modal
-						</Button>
+						</BuzzButton>
 					</div>
 					
 					<CodeBlock 
@@ -89,9 +89,9 @@ export default function BasicExample() {
 							This is a basic modal example with a header and close functionality.
 						</p>
 						<div className="flex gap-2">
-							<Button onClick={() => setBasicOpen(false)} variant="bold">
+							<BuzzButton onClick={() => setBasicOpen(false)} variant="bold">
 								Close
-							</Button>
+							</BuzzButton>
 						</div>
 					</div>
 				</Modal>
@@ -111,9 +111,9 @@ export default function BasicExample() {
 				
 				<div className="bg-[var(--c-surface)] border border-[var(--c-border)] rounded-[var(--radius-lg)] p-6 mb-6">
 					<div className="flex gap-4 mb-4">
-						<Button onClick={openQueryModal} variant="bold">
+						<BuzzButton onClick={openQueryModal} variant="bold">
 							Open Settings Modal (Query Param)
-						</Button>
+						</BuzzButton>
 						<span className="text-sm text-[var(--c-text-secondary)] self-center">
 							Check the URL when opened!
 						</span>
@@ -183,9 +183,9 @@ export default function QueryParamModal() {
 							</p>
 						</div>
 						<div className="flex gap-2">
-							<Button onClick={closeQueryModal} variant="bold">
+							<BuzzButton onClick={closeQueryModal} variant="bold">
 								Close
-							</Button>
+							</BuzzButton>
 						</div>
 					</div>
 				</Modal>
@@ -197,9 +197,9 @@ export default function QueryParamModal() {
 				
 				<div className="bg-[var(--c-surface)] border border-[var(--c-border)] rounded-[var(--radius-lg)] p-6 mb-6">
 					<div className="flex gap-4 mb-4">
-						<Button onClick={() => setFormOpen(true)} variant="bold">
+						<BuzzButton onClick={() => setFormOpen(true)} variant="bold">
 							Open Form Modal
-						</Button>
+						</BuzzButton>
 					</div>
 					
 					<CodeBlock 
@@ -284,8 +284,8 @@ export default function FormModal() {
 						</div>
 						
 						<div className="flex gap-2 pt-4">
-							<Button type="submit" variant="bold">Create</Button>
-							<Button type="button" onClick={() => setFormOpen(false)}>Cancel</Button>
+							<BuzzButton type="submit" variant="bold">Create</BuzzButton>
+							<BuzzButton type="button" onClick={() => setFormOpen(false)}>Cancel</BuzzButton>
 						</div>
 					</form>
 				</Modal>
@@ -297,9 +297,9 @@ export default function FormModal() {
 				
 				<div className="bg-[var(--c-surface)] border border-[var(--c-border)] rounded-[var(--radius-lg)] p-6 mb-6">
 					<div className="flex gap-4 mb-4">
-						<Button onClick={() => setConfirmOpen(true)} variant="danger">
+						<BuzzButton onClick={() => setConfirmOpen(true)} variant="danger">
 							Delete Item
-						</Button>
+						</BuzzButton>
 					</div>
 					
 					<CodeBlock 
@@ -353,12 +353,12 @@ export default function ConfirmationModal() {
 						</p>
 						
 						<div className="flex gap-2 pt-4">
-							<Button onClick={() => setConfirmOpen(false)} variant="danger">
+							<BuzzButton onClick={() => setConfirmOpen(false)} variant="danger">
 								Delete
-							</Button>
-							<Button onClick={() => setConfirmOpen(false)}>
+							</BuzzButton>
+							<BuzzButton onClick={() => setConfirmOpen(false)}>
 								Cancel
-							</Button>
+							</BuzzButton>
 						</div>
 					</div>
 				</Modal>

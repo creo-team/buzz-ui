@@ -1,6 +1,6 @@
 "use client"
 import React from 'react'
-import { Card, Button } from '@creo-team/buzz-ui/server'
+import { Card, Button } from '@creo-team/buzz-ui/client'
 import { Sheet } from '@creo-team/buzz-ui/client'
 import { CodeBlock } from '../../../components/code-block'
 

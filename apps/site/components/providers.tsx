@@ -1,9 +1,9 @@
 "use client"
-import * as React from 'react'
-import { ThemeProvider, HotToastProvider, type ThemeConfig } from '@creo-team/buzz-ui/client'
+import React from 'react'
+import { ThemeProvider, HotToastProvider } from '@creo-team/buzz-ui/client'
 import { Sun, Moon, Palette } from 'lucide-react'
 
-const themes: ThemeConfig[] = [
+const themes = [
 	{ value: "light", label: "Light", icon: Sun },
 	{ value: "umbro", label: "Dark", icon: Moon },
 ]

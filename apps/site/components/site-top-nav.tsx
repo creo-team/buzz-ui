@@ -1,6 +1,6 @@
 "use client"
-import { TopNav } from '@creo-team/buzz-ui/server'
-import { Button, ThemeSwitcher } from '@creo-team/buzz-ui/client'
+import { TopNav } from '@creo-team/buzz-ui/client'
+import { Button as BuzzButton, ThemeSwitcher } from '@creo-team/buzz-ui/client'
 
 export function SiteTopNav() {
 	return (
@@ -14,7 +14,7 @@ export function SiteTopNav() {
 			right={
 				<div className="flex items-center gap-2">
 					<ThemeSwitcher />
-					<a href="https://github.com/creo-team/buzz-ui" className="no-underline"><Button variant="subtle" size="sm">GitHub</Button></a>
+					<a href="https://github.com/creo-team/buzz-ui" className="no-underline"><BuzzButton variant="subtle" size="sm">GitHub</BuzzButton></a>
 				</div>
 			}
 		/>

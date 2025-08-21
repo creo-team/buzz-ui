@@ -1,4 +1,4 @@
-import { Card, Select } from '@creo-team/buzz-ui/server'
+import { Card, Select } from '@creo-team/buzz-ui/client'
 import Link from 'next/link'
 import { CodeBlock } from '../../../components/code-block'
 
@@ -7,7 +7,7 @@ export default function SelectDocs() {
 		<div className="mx-auto max-w-6xl px-4 py-12">
 			<h1 className="text-2xl font-semibold">Select</h1>
 			<p className="mt-2 text-sm text-white/70">A native select styled to match the system.</p>
-			<Card>
+			<Card className="mt-4">
 				<Select label="Favorite" defaultValue="">
 					<option value="" disabled>Select one</option>
 					<option value="buzz">Buzz</option>
@@ -15,7 +15,7 @@ export default function SelectDocs() {
 					<option value="starcommand">Star Command</option>
 				</Select>
 				<div className="mt-4">
-					<CodeBlock code={`import { Select } from '@creo-team/buzz-ui/server'
+					<CodeBlock code={`import { Select } from '@creo-team/buzz-ui/client'
 
 <Select label="Favorite" defaultValue="">
   <option value="" disabled>Select one</option>

@@ -122,13 +122,13 @@ export function Drawer({
 	return (
 		<div
 			ref={overlayRef}
-			className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+			className="fixed inset-0 z-50 bg-[var(--c-modal-overlay,rgba(0,0,0,0.5))] backdrop-blur-sm"
 			onClick={handleOverlayClick}
 		>
 			<div
 				ref={contentRef}
-				className={`
-					fixed bg-[var(--c-surface)] border-[var(--c-border)] shadow-xl
+									className={`
+					fixed bg-[var(--c-surface-overlay,var(--c-surface))] border-[var(--c-border)] shadow-xl
 					transition-transform duration-300 ease-out
 					${sideClasses[side]}
 					${sizeClasses[size][side]}

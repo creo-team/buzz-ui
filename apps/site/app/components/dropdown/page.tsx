@@ -1,8 +1,9 @@
 "use client"
-import { Breadcrumbs } from '@creo-team/buzz-ui/server'
+import { Breadcrumbs } from '@creo-team/buzz-ui/client'
 import { Button, Dropdown } from '@creo-team/buzz-ui/client'
 import { CodeBlock } from '@/components/code-block'
 import { ApiTable } from '@/components/api-table'
+import Link from 'next/link'
 
 export default function DropdownPage() {
 	const basicItems = [
@@ -227,10 +228,16 @@ export default function Example() {
 							type: "'top' | 'right' | 'bottom' | 'left'",
 							default: "'bottom'",
 							description: "Side of trigger where dropdown appears"
-						}
-					]}
-				/>
-			</div>
-		</div>
-	)
+						                                                }
+                                        ]}
+                                />
+
+                                <div className="mt-8">
+                                        <p className="text-sm text-[var(--c-text-secondary)]">
+                                                Full API: <Link className="text-[var(--c-link)] hover:underline" href="/components/dropdown/api">/components/dropdown/api</Link>
+                                        </p>
+                                </div>
+                        </div>
+                </div>
+        )
 }

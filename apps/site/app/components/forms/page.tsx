@@ -1,7 +1,7 @@
 "use client"
 import React from 'react'
-import { Card, TextInput, Textarea, Select, RadioGroup, Checkbox } from '@creo-team/buzz-ui/server'
-import { Button } from '@creo-team/buzz-ui/client'
+import { Card, TextInput, Textarea, Select, RadioGroup, Checkbox } from '@creo-team/buzz-ui/client'
+import { Button as BuzzButton } from '@creo-team/buzz-ui/client'
 import { z } from 'zod'
 
 // Disable static generation for this page
@@ -48,8 +48,8 @@ export default function FormsValidationDocs() {
 			<form onSubmit={submit} className="mt-4 grid gap-4">
 				<Card>
 					<div className="grid gap-3">
-						<TextInput label="Email" placeholder="you@example.com" value={data.email} onChange={e => set('email', e.currentTarget.value)} className={errors.email ? 'border-red-500' : ''} />
-						<Select label="Role" value={data.role} onChange={e => set('role', e.currentTarget.value)} className={errors.role ? 'border-red-500' : ''}>
+						<TextInput label="Email" placeholder="you@example.com" value={data.email} onChange={(e: React.ChangeEvent<HTMLInputElement>) => set('email', e.currentTarget.value)} className={errors.email ? 'border-red-500' : ''} />
+						<Select label="Role" value={data.role} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => set('role', e.currentTarget.value)} className={errors.role ? 'border-red-500' : ''}>
 							<option value="" disabled>Select one</option>
 							<option value="dev">Developer</option>
 							<option value="designer">Designer</option>
@@ -60,15 +60,15 @@ export default function FormsValidationDocs() {
 							name="plan"
 							options={[{ value: 'free', label: 'Free' }, { value: 'pro', label: 'Pro' }, { value: 'enterprise', label: 'Enterprise' }]}
 							value={data.plan}
-							onChange={v => set('plan', v as FormData['plan'])}
+							onChange={(v: string) => set('plan', v as FormData['plan'])}
 						/>
-						<Textarea label="Message" rows={4} placeholder="Tell us more..." value={data.message} onChange={e => set('message', e.currentTarget.value)} className={errors.message ? 'border-red-500' : ''} />
-						<Checkbox label="I agree to the terms" checked={data.agree} onChange={e => set('agree', e.currentTarget.checked)} />
+						<Textarea label="Message" rows={4} placeholder="Tell us more..." value={data.message} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => set('message', e.currentTarget.value)} className={errors.message ? 'border-red-500' : ''} />
+						<Checkbox label="I agree to the terms" checked={data.agree} onChange={(e: React.ChangeEvent<HTMLInputElement>) => set('agree', e.currentTarget.checked)} />
 					</div>
 				</Card>
 				<div className="flex gap-2">
-					<Button type="submit">Submit</Button>
-					<Button variant="subtle" type="button" onClick={() => { setData({ email: '', role: '', plan: 'free', agree: false, message: '' }); setErrors({}) }}>Reset</Button>
+					<BuzzButton type="submit">Submit</BuzzButton>
+					<BuzzButton variant="subtle" type="button" onClick={() => { setData({ email: '', role: '', plan: 'free', agree: false, message: '' }); setErrors({}) }}>Reset</BuzzButton>
 				</div>
 				{Object.values(errors).length > 0 && (
 					<Card>

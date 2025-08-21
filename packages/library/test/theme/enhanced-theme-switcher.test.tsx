@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '../setup'
 import React from 'react'
 import { EnhancedThemeSwitcher } from '../../src/theme/enhanced-theme-switcher'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
@@ -401,7 +401,8 @@ describe('EnhancedThemeSwitcher', () => {
 				/>
 			)
 			
-			fireEvent.keyDown(document, { key: 't', altKey: true })
+			// Trigger the hotkey using our mocked system
+			global.triggerHotkey('alt+t')
 			
 			await waitFor(() => {
 				// Should cycle to next theme (dark)

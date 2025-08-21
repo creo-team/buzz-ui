@@ -1,7 +1,9 @@
 "use client"
 import * as React from 'react'
 import { createPortal } from 'react-dom'
+import { motion, AnimatePresence, type Variants } from 'framer-motion'
 import { useHotkey, type HotkeyConfig } from '../hooks/use-hotkey'
+import { type ModalAnimationVariants, AnimationPresets } from '../types/animations'
 
 export interface ModalProps {
 	isOpen: boolean
@@ -13,6 +15,8 @@ export interface ModalProps {
 	actions?: React.ReactNode
 	/** Additional hotkeys for modal actions */
 	hotkeys?: HotkeyConfig[]
+	/** Custom animation variants for modal entrance/exit */
+	animationVariants?: ModalAnimationVariants
 }
 
 /**
@@ -27,9 +31,15 @@ export function Modal({
 	documentTitle,
 	header,
 	actions,
-	hotkeys = []
+	hotkeys = [],
+	animationVariants
 }: ModalProps) {
 	const previousTitleRef = React.useRef<string | null>(null)
+
+	// Use provided animation variants or elegant default
+	const variants = animationVariants || AnimationPresets.modal.elegant
+	const backdropVariants = variants.backdrop
+	const panelVariants = variants.panel
 
 	// Set up additional hotkeys when modal is open
 	useHotkey([
@@ -67,38 +77,48 @@ export function Modal({
 		}
 	}, [isOpen, documentTitle])
 
-	if (!isOpen) return null
-
 	const modalContent = (
-		<div className="fixed inset-0 z-50" style={{ zIndex: 9999 }} aria-modal role="dialog">
-			<div
-				data-testid="modal-backdrop"
-				className="fixed inset-0 bg-black/60 backdrop-blur backdrop-saturate-150 transition-opacity cursor-pointer"
-				onClick={onClose}
-			/>
-			<div className="flex min-h-screen items-center justify-center px-4 py-4">
-				<div
-					data-testid="modal-panel"
-					className={`relative transform rounded-[var(--radius-xl)] bg-[var(--c-surface)] text-left shadow-[var(--shadow-xl)] transition-all w-full ${maxWidthClassName} border border-[var(--c-border)] ring-1 ring-black/5 max-h-[calc(100vh-2rem)] overflow-y-auto text-[var(--c-text)]`}
-				>
-					{header && (
-						<div className="border-b border-[var(--c-border)] px-6 py-4">
-							<h2 className="text-lg font-semibold text-[var(--c-text)]">{header}</h2>
-						</div>
-					)}
-					<div className="px-6 py-4">
-						{children}
-					</div>
-					{actions && (
-						<div className="border-t border-[var(--c-border)] px-6 py-4">
-							<div className="flex justify-end gap-3">
-								{actions}
+		<AnimatePresence>
+			{isOpen && (
+				<div className="fixed inset-0 z-50" style={{ zIndex: 9999 }} aria-modal role="dialog">
+											<motion.div
+							data-testid="modal-backdrop"
+							className="fixed inset-0 bg-[var(--c-modal-overlay,rgba(0,0,0,0.6))] backdrop-blur backdrop-saturate-150 cursor-pointer"
+							onClick={onClose}
+							variants={backdropVariants}
+							initial="hidden"
+							animate="visible"
+							exit="exit"
+						/>
+					<div className="flex min-h-screen items-center justify-center px-4 py-4">
+													<motion.div
+								data-testid="modal-panel"
+								className={`relative transform rounded-[var(--c-radius-xl,0.75rem)] bg-[var(--c-modal-bg,var(--c-surface))] text-left shadow-[var(--c-shadow-xl,0_20px_25px_-5px_rgb(0_0_0_/_0.1))] w-full ${maxWidthClassName} border border-[var(--c-modal-border,var(--c-border))] ring-1 ring-black/5 max-h-[calc(100vh-2rem)] overflow-y-auto text-[var(--c-text)]`}
+								variants={panelVariants}
+								initial="hidden"
+								animate="visible"
+								exit="exit"
+							>
+							{header && (
+								<div className="border-b border-[var(--c-border)] px-6 py-4">
+									<h2 className="text-lg font-semibold text-[var(--c-text)]">{header}</h2>
+								</div>
+							)}
+							<div className="px-6 py-4">
+								{children}
 							</div>
-						</div>
-					)}
+							{actions && (
+								<div className="border-t border-[var(--c-border)] px-6 py-4">
+									<div className="flex justify-end gap-3">
+										{actions}
+									</div>
+								</div>
+							)}
+						</motion.div>
+					</div>
 				</div>
-			</div>
-		</div>
+			)}
+		</AnimatePresence>
 	)
 
 	return createPortal(modalContent, document.body)

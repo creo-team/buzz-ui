@@ -1,4 +1,4 @@
-import { Card, TextInput } from '@creo-team/buzz-ui/server'
+import { Card, TextInput } from '@creo-team/buzz-ui/client'
 import Link from 'next/link'
 import { CodeBlock } from '../../../components/code-block'
 
@@ -7,13 +7,13 @@ export default function InputDocs() {
 		<div className="mx-auto max-w-6xl px-4 py-12">
 			<h1 className="text-2xl font-semibold">TextInput</h1>
 			<p className="mt-2 text-sm text-white/70">A basic text input with label and helper text.</p>
-			<Card>
+			<Card className="mt-4">
 				<div className="grid gap-3">
 					<TextInput label="Email" type="email" placeholder="you@example.com" />
 					<TextInput label="Disabled" placeholder="Cannot edit" disabled />
 				</div>
 				<div className="mt-4">
-					<CodeBlock code={`import { TextInput } from '@creo-team/buzz-ui/server'
+					<CodeBlock code={`import { TextInput } from '@creo-team/buzz-ui/client'
 
 <TextInput label="Email" placeholder="you@example.com" />`} />
 				</div>

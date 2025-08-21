@@ -1,9 +1,10 @@
 "use client"
 import { useState } from 'react'
-import { Breadcrumbs } from '@creo-team/buzz-ui/server'
-import { Button, Drawer } from '@creo-team/buzz-ui/client'
+import { Breadcrumbs } from '@creo-team/buzz-ui/client'
+import { Button as BuzzButton, Drawer } from '@creo-team/buzz-ui/client'
 import { CodeBlock } from '@/components/code-block'
 import { ApiTable } from '@/components/api-table'
+import Link from 'next/link'
 
 export default function DrawerPage() {
 	const [rightOpen, setRightOpen] = useState(false)
@@ -34,18 +35,18 @@ export default function DrawerPage() {
 					</p>
 					
 					<div className="mt-4 flex flex-wrap gap-4">
-						<Button onClick={() => setRightOpen(true)}>
+						<BuzzButton onClick={() => setRightOpen(true)}>
 							Open Right Drawer
-						</Button>
-						<Button onClick={() => setLeftOpen(true)} variant="subtle">
+						</BuzzButton>
+						<BuzzButton onClick={() => setLeftOpen(true)} variant="subtle">
 							Open Left Drawer
-						</Button>
-						<Button onClick={() => setTopOpen(true)} variant="outline">
+						</BuzzButton>
+						<BuzzButton onClick={() => setTopOpen(true)} variant="outline">
 							Open Top Drawer
-						</Button>
-						<Button onClick={() => setBottomOpen(true)} variant="text">
+						</BuzzButton>
+						<BuzzButton onClick={() => setBottomOpen(true)} variant="text">
 							Open Bottom Drawer
-						</Button>
+						</BuzzButton>
 					</div>
 
 					<CodeBlock 
@@ -129,6 +130,12 @@ export default function Example() {
 						}
 					]}
 				/>
+
+				<div className="mt-8">
+					<p className="text-sm text-[var(--c-text-secondary)]">
+						Full API: <Link className="text-[var(--c-link)] hover:underline" href="/components/drawer/api">/components/drawer/api</Link>
+					</p>
+				</div>
 			</div>
 
 			{/* Drawers */}
@@ -142,9 +149,9 @@ export default function Example() {
 			>
 				<div className="space-y-4">
 					<p>This is the content of the right drawer. You can put any content here.</p>
-					<Button onClick={() => setRightOpen(false)}>
+					<BuzzButton onClick={() => setRightOpen(false)}>
 						Close Drawer
-					</Button>
+					</BuzzButton>
 				</div>
 			</Drawer>
 
@@ -157,9 +164,9 @@ export default function Example() {
 			>
 				<div className="space-y-4">
 					<p>This drawer slides in from the left side.</p>
-					<Button onClick={() => setLeftOpen(false)} variant="subtle">
+					<BuzzButton onClick={() => setLeftOpen(false)} variant="subtle">
 						Close Drawer
-					</Button>
+					</BuzzButton>
 				</div>
 			</Drawer>
 
@@ -172,9 +179,9 @@ export default function Example() {
 			>
 				<div className="space-y-4">
 					<p>This drawer slides down from the top.</p>
-					<Button onClick={() => setTopOpen(false)} variant="outline">
+					<BuzzButton onClick={() => setTopOpen(false)} variant="outline">
 						Close Drawer
-					</Button>
+					</BuzzButton>
 				</div>
 			</Drawer>
 
@@ -187,9 +194,9 @@ export default function Example() {
 			>
 				<div className="space-y-4">
 					<p>This drawer slides up from the bottom.</p>
-					<Button onClick={() => setBottomOpen(false)} variant="text">
+					<BuzzButton onClick={() => setBottomOpen(false)} variant="text">
 						Close Drawer
-					</Button>
+					</BuzzButton>
 				</div>
 			</Drawer>
 		</div>
