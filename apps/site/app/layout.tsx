@@ -2,13 +2,11 @@ import './globals.css'
 import { TopNav, getServerTheme, Banner } from '@creo-team/buzz-ui/server'
 import { ThemeSwitcher } from '@creo-team/buzz-ui/client'
 import { Toaster } from 'react-hot-toast'
-import dynamic from 'next/dynamic'
 import { DevBanner } from '../components/dev-banner'
 import { ToastProvider } from '@creo-team/buzz-ui/client'
 import { Logo } from '../components/logo'
 import { BuzzTextLogo } from '../components/buzz-text-logo'
 import { SiteFooter } from '../components/site-footer'
-const MobileMenu = dynamic(() => import('../components/mobile-menu'), { ssr: false })
  
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
