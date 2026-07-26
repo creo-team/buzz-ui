@@ -1,5 +1,7 @@
 import './globals.css'
-import '@creo-team/buzz-ui/styles.css'
+// The site consumes the library's workspace source (see tsconfig paths), so
+// import the stylesheet source too — npm consumers use '@creo-team/buzz-ui/styles.css'.
+import '../../../packages/library/src/styles/buzz.css'
 import { cookies } from 'next/headers'
 import { TopNav, getServerTheme } from '@creo-team/buzz-ui/server'
 import { ThemeSwitcher, ToastProvider } from '@creo-team/buzz-ui/client'

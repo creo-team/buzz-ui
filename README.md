@@ -21,11 +21,11 @@ SSR-safe, themeable with CSS tokens — plus a Next.js showcase app.
 # install
 npm install
 
-# build the library (required once before running the site)
-npm run -w @creo-team/buzz-ui build
-
-# develop (runs the Next.js showcase)
+# develop (runs the Next.js showcase — consumes library source directly)
 npm run dev
+
+# build the publishable library (dist + styles.css)
+npm run -w @creo-team/buzz-ui build
 
 # test + typecheck everything
 npm test && npm run typecheck
