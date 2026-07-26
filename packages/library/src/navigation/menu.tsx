@@ -1,35 +1,44 @@
 "use client"
 import * as React from 'react'
+import { Dropdown, type DropdownItem } from '../overlays/dropdown.js'
 
 export interface MenuItem {
 	key: string
 	label: React.ReactNode
 	onSelect?: () => void
+	disabled?: boolean
+	icon?: React.ReactNode
 }
 
-export function Menu({ items, button }: { items: MenuItem[], button: React.ReactNode }) {
-	const [open, setOpen] = React.useState(false)
-	const ref = React.useRef<HTMLDivElement | null>(null)
-	React.useEffect(() => {
-		function onDoc(e: MouseEvent) {
-			if (!ref.current) return
-			if (!ref.current.contains(e.target as Node)) setOpen(false)
-		}
-		document.addEventListener('mousedown', onDoc)
-		return () => document.removeEventListener('mousedown', onDoc)
-	}, [])
+export interface MenuProps {
+	items: MenuItem[]
+	button: React.ReactNode
+	className?: string
+}
+
+/**
+ * Simple button-triggered menu. A thin wrapper over `Dropdown`, sharing its
+ * full keyboard support and positioning.
+ */
+export function Menu({ items, button, className }: MenuProps) {
+	const dropdownItems: DropdownItem[] = items.map(item => ({
+		key: item.key,
+		label: item.label,
+		icon: item.icon,
+		disabled: item.disabled,
+		onClick: item.onSelect,
+	}))
+
 	return (
-		<div ref={ref} className="relative inline-block text-left">
-			<button onClick={() => setOpen(o => !o)} className="rounded-md border border-[var(--c-border)] bg-[var(--c-surface-2)] px-3 py-1.5 text-sm">{button}</button>
-			{open && (
-				<div className="absolute right-0 z-50 mt-2 w-40 rounded-md border border-[var(--c-border)] bg-[var(--c-surface)] p-1 shadow-lg">
-					{items.map(i => (
-						<button key={i.key} onClick={() => { setOpen(false); i.onSelect?.() }} className="block w-full rounded-sm px-2 py-1 text-left text-sm text-[var(--c-text)] hover:bg-[var(--c-hover)]">{i.label}</button>
-					))}
-				</div>
-			)}
-		</div>
+		<Dropdown
+			className={className}
+			align="end"
+			items={dropdownItems}
+			trigger={
+				<button type="button" className="bz-menu-trigger">
+					{button}
+				</button>
+			}
+		/>
 	)
 }
-
-

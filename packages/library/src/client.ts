@@ -1,37 +1,77 @@
 "use client"
 
-export * from './overlays/tooltip'
-export * from './overlays/modal'
-export * from './overlays/toast'
-export * from './overlays/toast-provider'
-// Re-export react-hot-toast for convenience
-export { default as toast, Toaster } from 'react-hot-toast'
-export * from './overlays/drawer'
-export * from './overlays/dropdown'
-export * from './overlays/command-palette'
-export { ThemeProvider, useTheme, type ThemeConfig } from './theme/theme-provider'
-export { ThemeSwitcher, type ThemeConfig as SwitcherThemeConfig } from './theme/theme-switcher'
-export { EnhancedThemeSwitcher, type EnhancedThemeConfig } from './theme/enhanced-theme-switcher'
-export { CycleThemeSwitcher, type CycleThemeConfig } from './theme/cycle-theme-switcher'
-export { Theme, ThemeIcon, DEFAULT_THEMES, ALL_THEMES, setThemeCookie, getThemeFromCookie, type ThemeConfig as ThemeTypesConfig } from './theme/theme-types'
-export { 
-	ThemePreset, 
-	createThemeConfig, 
-	createStandardThemes, 
+/**
+ * Client entry — interactive components, overlays, hooks and the theme
+ * system. Import from '@creo-team/buzz-ui/client' inside client components,
+ * or from the root entry anywhere.
+ */
+
+// Overlays
+export * from './overlays/tooltip.js'
+export * from './overlays/popover.js'
+export * from './overlays/modal.js'
+export * from './overlays/drawer.js'
+export * from './overlays/sheet.js'
+export * from './overlays/dropdown.js'
+export * from './overlays/command-palette.js'
+export * from './overlays/infotip.js'
+
+// Toasts (zero-dependency, replaces react-hot-toast)
+export {
+	toast,
+	Toaster,
+	ToastProvider,
+	useToast,
+	type ToastOptions,
+	type ToastItem,
+	type ToastPosition,
+	type ToastVariant,
+	type ToasterProps,
+	type ToastPromiseMessages,
+} from './overlays/toast.js'
+export { HotToastProvider } from './overlays/toast-provider.js'
+
+// Theme system
+export { ThemeProvider, useTheme, type ThemeConfig } from './theme/theme-provider.js'
+export { ThemeSwitcher, type ThemeConfig as SwitcherThemeConfig, type ThemeSwitcherProps } from './theme/theme-switcher.js'
+export { EnhancedThemeSwitcher, type EnhancedThemeConfig, type EnhancedThemeSwitcherProps } from './theme/enhanced-theme-switcher.js'
+export { CycleThemeSwitcher, type CycleThemeConfig, type CycleThemeSwitcherProps } from './theme/cycle-theme-switcher.js'
+export { useThemeSwitcher, resolveThemeIcon, smartThemeIcon, type AnyThemeConfig } from './theme/use-theme-switcher.js'
+export {
+	Theme,
+	ThemeIcon,
+	DEFAULT_THEMES,
+	ALL_THEMES,
+	THEME_COOKIE_NAME,
+	setThemeCookie,
+	getThemeFromCookie,
+	type ThemeConfig as ThemeTypesConfig,
+} from './theme/theme-types.js'
+export {
+	ThemePreset,
+	createThemeConfig,
+	createStandardThemes,
 	createLightDarkThemes,
 	generateThemeCSS,
 	applyThemeColors,
 	THEME_PRESETS,
 	type ThemeConfigWithPreset,
-	type ThemeColorPalette 
-} from './theme/theme-presets'
-export * from './inputs/switch'
-export * from './primitives/button'
-export * from './disclosure/accordion'
-export * from './overlays/sheet'
-export * from './navigation/menu'
-export * from './navigation/pagination'
-export * from './navigation/sidebar-nav'
-export * from './utils/copy'
-export * from './feedback/circular-progress'
+	type ThemeColorPalette,
+} from './theme/theme-presets.js'
 
+// Interactive controls
+export * from './inputs/switch.js'
+export * from './primitives/button.js'
+export * from './disclosure/accordion.js'
+export * from './navigation/menu.js'
+export * from './navigation/pagination.js'
+export * from './navigation/sidebar-nav.js'
+export * from './navigation/tabs.js'
+export * from './utils/copy.js'
+export * from './feedback/circular-progress.js'
+
+// Hooks
+export * from './hooks/use-hotkey.js'
+export * from './hooks/use-modal-query.js'
+export { useReducedMotion } from './internal/use-reduced-motion.js'
+export { Portal, type PortalProps } from './internal/portal.js'

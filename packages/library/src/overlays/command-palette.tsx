@@ -1,6 +1,14 @@
 "use client"
 import * as React from 'react'
-import { useHotkey, type HotkeyConfig } from '../hooks/use-hotkey'
+import { Portal } from '../internal/portal.js'
+import { cx } from '../internal/cx.js'
+import { useScrollLock } from '../internal/use-scroll-lock.js'
+import { useFocusTrap } from '../internal/use-focus-trap.js'
+import { useDismissableLayer } from '../internal/use-dismissable-layer.js'
+import { usePresence } from '../internal/use-presence.js'
+import { useHotkey, type HotkeyConfig } from '../hooks/use-hotkey.js'
+import { IconSearch } from '../internal/icons.js'
+import { Kbd } from '../primitives/kbd.js'
 
 export interface CommandItem {
 	id: string
@@ -18,206 +26,204 @@ export interface CommandPaletteProps {
 	items: CommandItem[]
 	placeholder?: string
 	emptyMessage?: string
-	/** Additional hotkeys for command palette actions */
+	/** Additional hotkeys active while the palette is open. */
 	hotkeys?: HotkeyConfig[]
+	className?: string
 }
 
+/**
+ * Command palette (⌘K-style) implementing the ARIA combobox + listbox
+ * pattern: the input carries `aria-activedescendant` while arrow keys move
+ * the highlight through grouped, filtered results.
+ */
 export function CommandPalette({
 	open,
 	onOpenChange,
 	items,
-	placeholder = "Type a command or search...",
-	emptyMessage = "No results found.",
-	hotkeys = []
+	placeholder = 'Type a command or search…',
+	emptyMessage = 'No results found.',
+	hotkeys = [],
+	className,
 }: CommandPaletteProps) {
+	const baseId = React.useId()
+	const listId = `${baseId}-list`
 	const [search, setSearch] = React.useState('')
-	const [selectedIndex, setSelectedIndex] = React.useState(0)
+	const [activeIndex, setActiveIndex] = React.useState(0)
+	const panelRef = React.useRef<HTMLDivElement>(null)
 	const inputRef = React.useRef<HTMLInputElement>(null)
-	const listRef = React.useRef<HTMLDivElement>(null)
+	const mounted = usePresence(open, 140)
 
-	// Filter items based on search
-	const filteredItems = React.useMemo(() => {
-		if (!search.trim()) return items
+	const requestClose = React.useCallback(() => onOpenChange(false), [onOpenChange])
 
-		const searchLower = search.toLowerCase()
-		return items.filter(item => {
-			const labelMatch = item.label.toLowerCase().includes(searchLower)
-			const descriptionMatch = item.description?.toLowerCase().includes(searchLower)
-			const keywordMatch = item.keywords?.some(keyword => 
-				keyword.toLowerCase().includes(searchLower)
-			)
-			return labelMatch || descriptionMatch || keywordMatch
-		})
-	}, [items, search])
+	useScrollLock(mounted)
+	useFocusTrap(panelRef, open, { initialFocusRef: inputRef })
+	useDismissableLayer({
+		enabled: open,
+		onDismiss: requestClose,
+		refs: [panelRef],
+		outsidePress: false,
+	})
+	useHotkey(hotkeys.map(h => ({ ...h, enabled: open && (h.enabled ?? true) })))
 
-	// Group filtered items
-	const groupedItems = React.useMemo(() => {
-		const groups: Record<string, CommandItem[]> = {}
-		
-		filteredItems.forEach(item => {
-			const group = item.group || 'Commands'
-			if (!groups[group]) {
-				groups[group] = []
-			}
-			groups[group].push(item)
-		})
-
-		return groups
-	}, [filteredItems])
-
-	// Set up hotkeys when command palette is open
-	useHotkey([
-		{
-			key: 'escape',
-			action: () => onOpenChange(false),
-			enabled: open
-		},
-		{
-			key: 'arrowdown',
-			action: () => setSelectedIndex(prev => 
-				prev < filteredItems.length - 1 ? prev + 1 : prev
-			),
-			enabled: open
-		},
-		{
-			key: 'arrowup',
-			action: () => setSelectedIndex(prev => prev > 0 ? prev - 1 : prev),
-			enabled: open
-		},
-		{
-			key: 'enter',
-			action: () => {
-				if (filteredItems[selectedIndex]) {
-					filteredItems[selectedIndex].onSelect()
-					onOpenChange(false)
-				}
-			},
-			enabled: open
-		},
-		...hotkeys.map(hotkey => ({
-			...hotkey,
-			enabled: open && (hotkey.enabled ?? true)
-		}))
-	])
-
-	// Reset selected index when items change
+	// Reset the query each time the palette opens.
 	React.useEffect(() => {
-		setSelectedIndex(0)
-	}, [filteredItems])
-
-	// Focus input when opened
-	React.useEffect(() => {
-		if (open && inputRef.current) {
-			inputRef.current.focus()
+		if (open) {
+			setSearch('')
+			setActiveIndex(0)
 		}
 	}, [open])
 
+	const filtered = React.useMemo(() => {
+		if (!search.trim()) return items
+		const query = search.toLowerCase()
+		return items.filter(item => {
+			return (
+				item.label.toLowerCase().includes(query) ||
+				item.description?.toLowerCase().includes(query) ||
+				item.keywords?.some(keyword => keyword.toLowerCase().includes(query))
+			)
+		})
+	}, [items, search])
 
+	// Group while preserving a flat, navigable order.
+	const { groups, flat } = React.useMemo(() => {
+		const map = new Map<string, CommandItem[]>()
+		for (const item of filtered) {
+			const group = item.group ?? 'Commands'
+			const list = map.get(group) ?? []
+			list.push(item)
+			map.set(group, list)
+		}
+		const flatOrder: CommandItem[] = []
+		for (const list of map.values()) flatOrder.push(...list)
+		return { groups: map, flat: flatOrder }
+	}, [filtered])
 
-	if (!open) return null
+	React.useEffect(() => {
+		setActiveIndex(0)
+	}, [search])
+
+	const activeItem = flat[activeIndex]
+
+	const select = (item: CommandItem) => {
+		item.onSelect()
+		requestClose()
+	}
+
+	const handleKeyDown = (event: React.KeyboardEvent) => {
+		switch (event.key) {
+			case 'ArrowDown':
+				event.preventDefault()
+				setActiveIndex(index => Math.min(index + 1, flat.length - 1))
+				break
+			case 'ArrowUp':
+				event.preventDefault()
+				setActiveIndex(index => Math.max(index - 1, 0))
+				break
+			case 'Home':
+				event.preventDefault()
+				setActiveIndex(0)
+				break
+			case 'End':
+				event.preventDefault()
+				setActiveIndex(Math.max(flat.length - 1, 0))
+				break
+			case 'Enter':
+				event.preventDefault()
+				if (activeItem) select(activeItem)
+				break
+		}
+	}
+
+	// Keep the highlighted option in view.
+	React.useEffect(() => {
+		if (!activeItem) return
+		document.getElementById(`${baseId}-option-${activeItem.id}`)?.scrollIntoView({ block: 'nearest' })
+	}, [activeIndex, activeItem, baseId])
+
+	if (!mounted) return null
+	const state = open ? 'open' : 'closed'
 
 	return (
-		<div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
-			<div className="flex min-h-full items-start justify-center p-4 pt-[10vh]">
-				<div className="w-full max-w-xl rounded-lg border border-[var(--c-border)] bg-[var(--c-surface)] shadow-2xl">
-					{/* Search Input */}
-					<div className="border-b border-[var(--c-border)] p-4">
-						<div className="relative">
-							<svg
-								className="absolute left-5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--c-text-secondary)]"
-								fill="none"
-								viewBox="0 0 24 24"
-								stroke="currentColor"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth={2}
-									d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-								/>
-							</svg>
-							<input
-								ref={inputRef}
-								type="text"
-								className="w-full rounded-lg border-0 bg-transparent py-2 pl-10 pr-4 text-[var(--c-text)] placeholder-[var(--c-text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--c-primary)] focus:ring-offset-2 focus:ring-offset-[var(--c-surface)]"
-								placeholder={placeholder}
-								value={search}
-								onChange={(e) => setSearch(e.target.value)}
-							/>
-						</div>
+		<Portal>
+			<div className="bz-command" data-state={state}>
+				<div className="bz-command__backdrop" data-state={state} onClick={requestClose} />
+				<div
+					ref={panelRef}
+					role="dialog"
+					aria-modal="true"
+					aria-label="Command palette"
+					className={cx('bz-command__panel', className)}
+					data-state={state}
+				>
+					<div className="bz-command__input-row">
+						<IconSearch className="bz-command__search-icon" />
+						<input
+							ref={inputRef}
+							className="bz-command__input"
+							role="combobox"
+							aria-expanded="true"
+							aria-controls={listId}
+							aria-activedescendant={activeItem ? `${baseId}-option-${activeItem.id}` : undefined}
+							aria-autocomplete="list"
+							placeholder={placeholder}
+							value={search}
+							onChange={event => setSearch(event.target.value)}
+							onKeyDown={handleKeyDown}
+							data-autofocus
+						/>
 					</div>
-
-					{/* Results */}
-					<div ref={listRef} className="max-h-80 overflow-y-auto p-2">
-						{Object.keys(groupedItems).length === 0 ? (
-							<div className="flex flex-col items-center justify-center py-8 text-center">
-								<div className="text-[var(--c-text-secondary)]">
-									{emptyMessage}
-								</div>
-							</div>
+					<div id={listId} role="listbox" aria-label="Commands" className="bz-command__list">
+						{flat.length === 0 ? (
+							<div className="bz-command__empty">{emptyMessage}</div>
 						) : (
-							Object.entries(groupedItems).map(([group, groupItems]) => (
-								<div key={group} className="mb-4 last:mb-0">
-									<div className="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-[var(--c-text-secondary)]">
+							Array.from(groups.entries()).map(([group, groupItems]) => (
+								<div key={group} className="bz-command__group" role="group" aria-label={group}>
+									<div className="bz-command__group-label" aria-hidden="true">
 										{group}
 									</div>
-									{groupItems.map((item, itemIndex) => {
-										const globalIndex = filteredItems.indexOf(item)
-										const isSelected = globalIndex === selectedIndex
-
+									{groupItems.map(item => {
+										const index = flat.indexOf(item)
+										const isActive = index === activeIndex
 										return (
-											<button
+											<div
 												key={item.id}
-												className={`
-													w-full rounded-lg px-3 py-2 text-left transition-colors
-													${isSelected
-														? 'bg-[var(--c-primary-light)] text-[var(--c-text)]'
-														: 'text-[var(--c-text)] hover:bg-[var(--c-hover)]'
-													}
-												`}
-												onClick={() => {
-													item.onSelect()
-													onOpenChange(false)
-												}}
+												id={`${baseId}-option-${item.id}`}
+												role="option"
+												aria-selected={isActive}
+												className="bz-command__option"
+												data-active={isActive || undefined}
+												onPointerMove={() => setActiveIndex(index)}
+												onClick={() => select(item)}
 											>
-												<div className="flex items-center gap-3">
-													{item.icon && (
-														<span className="flex-shrink-0 text-[var(--c-text-secondary)]">
-															{item.icon}
-														</span>
+												{item.icon != null && <span className="bz-command__option-icon">{item.icon}</span>}
+												<span className="bz-command__option-text">
+													<span className="bz-command__option-label">{item.label}</span>
+													{item.description && (
+														<span className="bz-command__option-description">{item.description}</span>
 													)}
-													<div className="flex-1 min-w-0">
-														<div className="font-medium">
-															{item.label}
-														</div>
-														{item.description && (
-															<div className="text-sm text-[var(--c-text-secondary)] truncate">
-																{item.description}
-															</div>
-														)}
-													</div>
-												</div>
-											</button>
+												</span>
+											</div>
 										)
 									})}
 								</div>
 							))
 						)}
 					</div>
-
-					{/* Footer */}
-					<div className="border-t border-[var(--c-border)] px-4 py-2 text-xs text-[var(--c-text-secondary)]">
-						<div className="flex items-center justify-between">
-							<div>
-								Use ↑↓ to navigate, ↵ to select, ESC to close
-							</div>
-							<div>
-								{filteredItems.length} result{filteredItems.length !== 1 ? 's' : ''}
-							</div>
-						</div>
+					<div className="bz-command__footer">
+						<span className="bz-command__hint">
+							<Kbd>↑</Kbd>
+							<Kbd>↓</Kbd> navigate
+						</span>
+						<span className="bz-command__hint">
+							<Kbd>↵</Kbd> select
+						</span>
+						<span className="bz-command__hint">
+							<Kbd>Esc</Kbd> close
+						</span>
 					</div>
 				</div>
 			</div>
-		</div>
+		</Portal>
 	)
 }

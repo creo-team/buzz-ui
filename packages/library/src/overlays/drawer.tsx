@@ -1,79 +1,36 @@
 "use client"
 import * as React from 'react'
-import { useHotkey, type HotkeyConfig } from '../hooks/use-hotkey'
+import { Portal } from '../internal/portal.js'
+import { cx } from '../internal/cx.js'
+import { useScrollLock } from '../internal/use-scroll-lock.js'
+import { useFocusTrap } from '../internal/use-focus-trap.js'
+import { useDismissableLayer } from '../internal/use-dismissable-layer.js'
+import { usePresence } from '../internal/use-presence.js'
+import { useHotkey, type HotkeyConfig } from '../hooks/use-hotkey.js'
+import { IconX } from '../internal/icons.js'
+
+export type DrawerSide = 'left' | 'right' | 'top' | 'bottom'
+export type DrawerSize = 'sm' | 'md' | 'lg' | 'xl' | 'full'
 
 export interface DrawerProps {
 	children: React.ReactNode
 	open: boolean
 	onOpenChange: (open: boolean) => void
-	side?: 'left' | 'right' | 'top' | 'bottom'
-	size?: 'sm' | 'md' | 'lg' | 'xl' | 'full'
-	title?: string
-	description?: string
+	side?: DrawerSide
+	size?: DrawerSize
+	title?: React.ReactNode
+	description?: React.ReactNode
 	showCloseButton?: boolean
-	/** Additional hotkeys for drawer actions */
+	/** Additional hotkeys active while the drawer is open. */
 	hotkeys?: HotkeyConfig[]
+	className?: string
 }
 
-const sideClasses = {
-	left: 'left-0 top-0 h-full',
-	right: 'right-0 top-0 h-full',
-	top: 'top-0 left-0 w-full',
-	bottom: 'bottom-0 left-0 w-full',
-}
-
-const sizeClasses = {
-	sm: {
-		left: 'w-80',
-		right: 'w-80',
-		top: 'h-64',
-		bottom: 'h-64',
-	},
-	md: {
-		left: 'w-96',
-		right: 'w-96',
-		top: 'h-80',
-		bottom: 'h-80',
-	},
-	lg: {
-		left: 'w-[32rem]',
-		right: 'w-[32rem]',
-		top: 'h-96',
-		bottom: 'h-96',
-	},
-	xl: {
-		left: 'w-[40rem]',
-		right: 'w-[40rem]',
-		top: 'h-[32rem]',
-		bottom: 'h-[32rem]',
-	},
-	full: {
-		left: 'w-full',
-		right: 'w-full',
-		top: 'h-full',
-		bottom: 'h-full',
-	},
-}
-
-const slideClasses = {
-	left: {
-		enter: 'translate-x-0',
-		exit: '-translate-x-full',
-	},
-	right: {
-		enter: 'translate-x-0',
-		exit: 'translate-x-full',
-	},
-	top: {
-		enter: 'translate-y-0',
-		exit: '-translate-y-full',
-	},
-	bottom: {
-		enter: 'translate-y-0',
-		exit: 'translate-y-full',
-	},
-}
-
+/**
+ * Sliding panel from any edge. Same accessibility contract as Modal (portal,
+ * focus trap, scroll lock, layered dismissal) with CSS-driven slide
+ * animations for both enter and exit.
+ */
 export function Drawer({
 	children,
 	open,
@@ -83,101 +40,79 @@ export function Drawer({
 	title,
 	description,
 	showCloseButton = true,
-	hotkeys = []
+	hotkeys = [],
+	className,
 }: DrawerProps) {
-	const overlayRef = React.useRef<HTMLDivElement>(null)
-	const contentRef = React.useRef<HTMLDivElement>(null)
+	const titleId = React.useId()
+	const descriptionId = React.useId()
+	const panelRef = React.useRef<HTMLDivElement>(null)
+	const mounted = usePresence(open, 240)
 
-	// Set up hotkeys when drawer is open
-	useHotkey([
-		{
-			key: 'escape',
-			action: () => onOpenChange(false),
-			enabled: open
-		},
-		...hotkeys.map(hotkey => ({
+	const requestClose = React.useCallback(() => onOpenChange(false), [onOpenChange])
+
+	useScrollLock(mounted)
+	useFocusTrap(panelRef, open)
+	useDismissableLayer({
+		enabled: open,
+		onDismiss: requestClose,
+		refs: [panelRef],
+		outsidePress: false,
+	})
+
+	useHotkey(
+		hotkeys.map(hotkey => ({
 			...hotkey,
-			enabled: open && (hotkey.enabled ?? true)
+			enabled: open && (hotkey.enabled ?? true),
 		}))
-	])
+	)
 
-	React.useEffect(() => {
-		if (open) {
-			document.body.style.overflow = 'hidden'
-		}
-
-		return () => {
-			document.body.style.overflow = 'unset'
-		}
-	}, [open])
-
-	const handleOverlayClick = (e: React.MouseEvent) => {
-		if (e.target === overlayRef.current) {
-			onOpenChange(false)
-		}
-	}
-
-	if (!open) return null
+	if (!mounted) return null
+	const state = open ? 'open' : 'closed'
 
 	return (
-		<div
-			ref={overlayRef}
-			className="fixed inset-0 z-50 bg-[var(--c-modal-overlay,rgba(0,0,0,0.5))] backdrop-blur-sm"
-			onClick={handleOverlayClick}
-		>
-			<div
-				ref={contentRef}
-									className={`
-					fixed bg-[var(--c-surface-overlay,var(--c-surface))] border-[var(--c-border)] shadow-xl
-					transition-transform duration-300 ease-out
-					${sideClasses[side]}
-					${sizeClasses[size][side]}
-					${open ? slideClasses[side].enter : slideClasses[side].exit}
-					${side === 'left' || side === 'right' ? 'border-r border-l-0' : ''}
-					${side === 'top' || side === 'bottom' ? 'border-b border-t-0' : ''}
-				`}
-			>
-				{(title || description || showCloseButton) && (
-					<div className="flex items-center justify-between border-b border-[var(--c-border)] px-6 py-4">
-						<div>
-							{title && (
-								<h2 className="text-lg font-semibold text-[var(--c-text)]">
-									{title}
-								</h2>
-							)}
-							{description && (
-								<p className="mt-1 text-sm text-[var(--c-text-secondary)]">
-									{description}
-								</p>
+		<Portal>
+			<div className="bz-drawer" data-state={state}>
+				<div className="bz-drawer__backdrop" data-state={state} onClick={requestClose} />
+				<div
+					ref={panelRef}
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby={title != null ? titleId : undefined}
+					aria-describedby={description != null ? descriptionId : undefined}
+					className={cx('bz-drawer__panel', className)}
+					data-side={side}
+					data-size={size}
+					data-state={state}
+				>
+					{(title != null || description != null || showCloseButton) && (
+						<div className="bz-drawer__header">
+							<div className="bz-drawer__titles">
+								{title != null && (
+									<h2 id={titleId} className="bz-drawer__title">
+										{title}
+									</h2>
+								)}
+								{description != null && (
+									<p id={descriptionId} className="bz-drawer__description">
+										{description}
+									</p>
+								)}
+							</div>
+							{showCloseButton && (
+								<button
+									type="button"
+									className="bz-drawer__close"
+									aria-label="Close drawer"
+									onClick={requestClose}
+								>
+									<IconX />
+								</button>
 							)}
 						</div>
-						{showCloseButton && (
-							<button
-								onClick={() => onOpenChange(false)}
-								className="rounded-lg p-2 text-[var(--c-text-secondary)] hover:bg-[var(--c-hover)] hover:text-[var(--c-text)] transition-colors"
-								aria-label="Close drawer"
-							>
-								<svg
-									className="h-5 w-5"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-								>
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth={2}
-										d="M6 18L18 6M6 6l12 12"
-									/>
-								</svg>
-							</button>
-						)}
-					</div>
-				)}
-				<div className="flex-1 overflow-auto p-6">
-					{children}
+					)}
+					<div className="bz-drawer__body">{children}</div>
 				</div>
 			</div>
-		</div>
+		</Portal>
 	)
 }

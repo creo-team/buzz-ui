@@ -1,169 +1,81 @@
 # Hotkey System
 
-The Buzz UI library includes a simple, elegant, and reusable hotkey system built on top of `react-hotkeys-hook`.
+Buzz UI ships its own zero-dependency hotkey system.
 
 ## Features
 
-- **Simple API** - Easy to use hook and component props
-- **TypeScript Support** - Full type safety with intelligent autocomplete
-- **Component Integration** - Built into Button, Modal, Drawer, and CommandPalette
-- **Flexible Configuration** - Support for single hotkeys or multiple hotkey configs
-- **Automatic Formatting** - Display-friendly hotkey formatting (e.g., "Ctrl+K")
-- **Conditional Enabling** - Enable/disable hotkeys based on component state
+- **Single listener** — one document listener handles any number of hotkeys;
+  dynamic hotkey arrays are always hook-safe
+- **`mod` key** — `mod+k` means ⌘K on macOS and Ctrl+K everywhere else
+- **Form-tag awareness** — plain keys don't fire while typing in inputs;
+  modifier combos always do (override with `enableOnFormTags`)
+- **Display formatting** — `formatHotkey('mod+k')` → `⌘+K` / `Ctrl+K`
+- **Component integration** — built into Button, Modal, Drawer, CommandPalette
+- **`<Kbd>`** — a matching key-cap component for rendering shortcuts
 
-## Basic Usage
-
-### useHotkey Hook
+## useHotkey
 
 ```tsx
-import { useHotkey } from '@creo-team/buzz-ui'
+import { useHotkey } from '@creo-team/buzz-ui/client'
 
 function MyComponent() {
-  useHotkey({
-    key: 'ctrl+k',
-    action: () => console.log('Hotkey pressed!'),
-    description: 'Open search'
-  })
+	useHotkey({
+		key: 'mod+k',
+		action: openSearch,
+		description: 'Open search',
+	})
 
-  // Multiple hotkeys
-  useHotkey([
-    { key: 'ctrl+s', action: handleSave },
-    { key: 'ctrl+n', action: handleNew }
-  ])
-
-  return <div>My Component</div>
+	// Arrays are fine, and may change length between renders
+	useHotkey([
+		{ key: 'mod+s', action: handleSave },
+		{ key: 'escape', action: handleCancel, enabled: isEditing },
+	])
 }
 ```
 
-### Component Props
+### Options
 
-#### Button with Hotkey
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | — | Combination, e.g. `'ctrl+k'`, `'mod+shift+p'`, `'escape'` |
+| `action` | `() => void` | — | Handler |
+| `enabled` | `boolean` | `true` | Toggle without unregistering |
+| `preventDefault` | `boolean` | `true` | Prevent the browser default |
+| `enableOnFormTags` | `boolean` | `false` | Fire plain keys inside inputs/textareas |
+| `description` | `string` | — | For tooltips / help surfaces |
+
+Key aliases: `esc`, `return`, `space`, `up/down/left/right`, plus any
+`event.key` value (`arrowdown`, `tab`, `f5`, single characters…).
+
+## Buttons with shortcuts
 
 ```tsx
-import { Button } from '@creo-team/buzz-ui'
-
-<Button hotkey="ctrl+s" onClick={handleSave}>
-  Save
-</Button>
-
-// With HotkeyConfig object
-<Button 
-  hotkey={{ key: 'enter', description: 'Submit form' }}
-  onClick={handleSubmit}
->
-  Submit
-</Button>
+<Button hotkey="mod+s" onClick={save}>Save</Button>
 ```
 
-#### Modal with Hotkeys
+The hotkey clicks the real button (so forms and analytics behave), is disabled
+while the button is disabled or loading, and adds a "Press ⌘+S" title hint.
+
+## Displaying shortcuts
 
 ```tsx
-import { Modal } from '@creo-team/buzz-ui'
+import { Kbd, formatHotkey } from '@creo-team/buzz-ui/client'
 
+<Kbd>{formatHotkey('mod+k')}</Kbd>
+```
+
+## Overlays
+
+Escape handling for Modal, Drawer, Dropdown, and CommandPalette goes through a
+shared **layer stack** — when overlays nest, Escape closes only the topmost
+one. Extra shortcuts can be scoped to an open overlay:
+
+```tsx
 <Modal
-  isOpen={open}
-  onClose={handleClose}
-  hotkeys={[
-    { key: 'ctrl+s', action: handleSave, description: 'Save' },
-    { key: 'ctrl+enter', action: handleSubmit, description: 'Submit' }
-  ]}
+	open={open}
+	onClose={close}
+	hotkeys={[{ key: 'mod+enter', action: submit, description: 'Submit' }]}
 >
-  Modal content
+	…
 </Modal>
 ```
-
-#### Drawer with Hotkeys
-
-```tsx
-import { Drawer } from '@creo-team/buzz-ui'
-
-<Drawer
-  open={open}
-  onOpenChange={setOpen}
-  hotkeys={[
-    { key: 'ctrl+shift+d', action: handleSpecialAction }
-  ]}
->
-  Drawer content
-</Drawer>
-```
-
-## API Reference
-
-### HotkeyConfig Interface
-
-```tsx
-interface HotkeyConfig {
-  /** The key combination (e.g., 'ctrl+k', 'alt+t', 'enter', 'escape') */
-  key: string
-  /** The action to perform when the hotkey is pressed */
-  action: () => void
-  /** Optional description for the hotkey (useful for tooltips/help) */
-  description?: string
-  /** Whether the hotkey is enabled (default: true) */
-  enabled?: boolean
-  /** Prevent default browser behavior (default: true) */
-  preventDefault?: boolean
-}
-```
-
-### useHotkey Hook
-
-```tsx
-function useHotkey(config: HotkeyConfig | HotkeyConfig[]): void
-```
-
-### formatHotkey Utility
-
-```tsx
-function formatHotkey(key: string): string
-
-// Examples:
-formatHotkey('ctrl+k') // 'Ctrl+K'
-formatHotkey('alt+shift+t') // 'Alt+Shift+T'
-formatHotkey('escape') // 'Esc'
-```
-
-## Key Combinations
-
-The hotkey system supports all standard key combinations:
-
-- **Modifiers**: `ctrl`, `alt`, `shift`, `meta` (cmd on Mac)
-- **Special Keys**: `enter`, `escape`, `space`, `tab`, `backspace`, `delete`
-- **Arrow Keys**: `arrowup`, `arrowdown`, `arrowleft`, `arrowright`
-- **Letters/Numbers**: `a-z`, `0-9`
-- **Function Keys**: `f1-f12`
-
-## Component Behavior
-
-### Button
-- Hotkey is only active when button is enabled (not disabled or loading)
-- Automatically adds hotkey hint to title attribute
-- Triggers the onClick handler when hotkey is pressed
-
-### Modal
-- Includes built-in `Escape` key to close
-- Custom hotkeys are only active when modal is open
-- Hotkeys are automatically disabled when modal closes
-
-### Drawer
-- Includes built-in `Escape` key to close
-- Custom hotkeys are only active when drawer is open
-- Hotkeys are automatically disabled when drawer closes
-
-### CommandPalette
-- Includes built-in navigation (`↑`/`↓`, `Enter`, `Escape`)
-- Custom hotkeys are only active when palette is open
-- Hotkeys are automatically disabled when palette closes
-
-## Best Practices
-
-1. **Use descriptive keys**: Choose intuitive key combinations
-2. **Provide descriptions**: Help users understand what hotkeys do
-3. **Avoid conflicts**: Be mindful of browser and system hotkeys
-4. **Test thoroughly**: Ensure hotkeys work across different browsers
-5. **Document hotkeys**: Make hotkeys discoverable to users
-
-## Examples
-
-See the `HotkeyDemo` component for comprehensive examples of all hotkey features.

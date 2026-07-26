@@ -1,12 +1,18 @@
 "use client"
 
-import { Toaster } from "react-hot-toast"
+import * as React from 'react'
+import { Toaster, type ToasterProps } from './toast.js'
 
-export function HotToastProvider({ children }: { children: React.ReactNode }) {
+/**
+ * @deprecated Buzz UI no longer depends on react-hot-toast. This shim keeps
+ * the old name working — it renders the built-in `<Toaster />`. Mount
+ * `<Toaster />` directly instead.
+ */
+export function HotToastProvider({ children, ...props }: { children: React.ReactNode } & ToasterProps) {
 	return (
 		<>
 			{children}
-			<Toaster />
+			<Toaster {...props} />
 		</>
 	)
 }

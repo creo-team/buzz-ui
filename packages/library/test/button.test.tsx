@@ -8,11 +8,11 @@ describe('Button', () => {
 		expect(screen.getByText('Click')).toBeInTheDocument()
 	})
 
-	it('applies subtle variant class', () => {
+	it('applies subtle variant styling hook', () => {
 		render(<Button variant="subtle">Subtle</Button>)
 		const btn = screen.getByText('Subtle')
-		// Check that the button has the correct variant styling
-		expect(btn).toHaveClass('bg-[var(--c-surface-2)]')
+		expect(btn).toHaveClass('bz-button')
+		expect(btn).toHaveAttribute('data-variant', 'subtle')
 	})
 })
 

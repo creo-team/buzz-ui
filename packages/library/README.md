@@ -1,138 +1,155 @@
 # Buzz UI
 
-Elegant, SSR-friendly React components with clear theming and great DX.
-
-## Installation
+Elegant, zero-dependency React components. Server-first, SSR-safe, themeable with CSS tokens.
 
 ```bash
 npm install @creo-team/buzz-ui
 ```
 
-Peer deps:
+## Why Buzz UI
 
-```bash
-npm install react react-dom
-```
+- **Zero runtime dependencies.** No animation library, no toast library, no icon
+  library, no CSS-in-JS. Just React. Nothing to version-conflict with, and the
+  smallest possible footprint in your bundle.
+- **Server Components first.** Static components (Card, Badge, Table, Alert,
+  forms, Footer, …) ship **zero client JavaScript**. Interactive pieces are
+  precise client islands — even inside server components (e.g. the Footer's
+  newsletter form, the Avatar image fallback, Checkbox's indeterminate sync).
+- **Real accessibility.** Focus trapping and restoration, layered Escape /
+  outside-press dismissal (nested overlays close one at a time), roving
+  tabindex tabs, WAI-ARIA menu keyboard support with typeahead, combobox
+  command palette, `aria-*` wiring done for you.
+- **Zero-runtime styling.** One shipped stylesheet with CSS custom-property
+  design tokens. Works with Tailwind, CSS Modules, or nothing. All motion is
+  CSS-driven and honors `prefers-reduced-motion`.
+- **Collision-aware overlays.** Tooltips, popovers, and menus render in a
+  portal with flip/shift positioning — never clipped by `overflow: hidden`.
+- **React 18.3 & 19.** Modern hooks (`useSyncExternalStore`, `useId`),
+  controlled *and* uncontrolled modes everywhere, `asChild` polymorphism.
 
-## Usage
+## Setup
+
+Import the stylesheet once (tokens + all component styles, ~8 kB gzipped):
 
 ```tsx
-// SSR-safe imports
-import { Button, Card } from '@creo-team/buzz-ui/server'
+// app/layout.tsx (or your app entry)
+import '@creo-team/buzz-ui/styles.css'
+```
 
-// Client-only imports (hooks, contexts, interactive components)
-// import { Tooltip, Modal, ThemeProvider } from '@creo-team/buzz-ui/client'
+Then use components:
+
+```tsx
+import { Card, Button } from '@creo-team/buzz-ui'
 
 export default function Example() {
-	return <Card header="Hello"><Button>Click me</Button></Card>
+	return (
+		<Card header="Hello">
+			<Button hotkey="mod+s" onClick={save}>Save</Button>
+		</Card>
+	)
 }
 ```
 
-Code blocks can add a copy button with the `CopyButton`:
+### Entry points
+
+| Import | Contents |
+| --- | --- |
+| `@creo-team/buzz-ui` | Everything |
+| `@creo-team/buzz-ui/server` | RSC-safe subset — static components render with zero client JS |
+| `@creo-team/buzz-ui/client` | Interactive components, overlays, hooks, theme system |
+| `@creo-team/buzz-ui/styles.css` | Design tokens + component styles |
+
+The package is ESM-only with per-file modules, so tree-shaking works at file
+granularity and `"use client"` boundaries are preserved exactly.
+
+## Highlights
+
+### Composition with `asChild`
+
+Lend Button's styling and behavior to your router's link — no wrapper element:
 
 ```tsx
-import { CopyButton } from '@creo-team/buzz-ui/client'
-
-export function MySnippet() {
-	return <CopyButton value="npm i @creo-team/buzz-ui" label="install" />
-}
+<Button asChild variant="outline">
+	<Link href="/docs">Documentation</Link>
+</Button>
 ```
 
-## Server vs Client
+### Toasts (no dependency)
 
-- `@creo-team/buzz-ui/server`: SSR-safe primitives, layout, navigation, data display
-- `@creo-team/buzz-ui/client`: interactive/animated overlays, providers, hooks
+```tsx
+import { Toaster, toast } from '@creo-team/buzz-ui/client'
 
-This split prevents client-only code from executing on the server in Next.js.
+// Mount once near the root
+<Toaster position="bottom-right" />
+
+// Anywhere — including outside React
+toast.success('Profile updated', { description: 'Changes are live.' })
+toast.promise(save(), { loading: 'Saving…', success: 'Saved', error: 'Failed' })
+```
+
+### Keyboard shortcuts
+
+```tsx
+import { useHotkey, formatHotkey, Kbd } from '@creo-team/buzz-ui/client'
+
+useHotkey({ key: 'mod+k', action: openPalette })
+// 'mod' = ⌘ on macOS, Ctrl elsewhere
+<Kbd>{formatHotkey('mod+k')}</Kbd>
+```
+
+### SSR theming without flashes
+
+```tsx
+// Server layout
+import { cookies } from 'next/headers'
+import { getServerTheme, themeInitScript } from '@creo-team/buzz-ui/server'
+
+const theme = getServerTheme(cookies())
+<html data-theme={theme}>
+	<head><script dangerouslySetInnerHTML={{ __html: themeInitScript(theme) }} /></head>
+```
+
+See [THEMING.md](./THEMING.md) for the token reference and custom themes, and
+[HOTKEYS.md](./HOTKEYS.md) for the shortcut system.
 
 ## Components
 
-### Primitives
-- Button - Multiple variants with hotkey support
+**Primitives** Button (9 variants, loading, hotkeys, asChild) · Spinner · Kbd ·
+Separator · VisuallyHidden · Slot
 
-### Forms
-- TextInput, Textarea, Select
-- Checkbox, RadioGroup
+**Forms** TextInput/Input · Textarea (CSS auto-resize) · Select · Checkbox
+(indeterminate) · RadioGroup · Switch · Field
 
-### Overlays
-- Tooltip - Smart positioning, overflow prevention
-- Modal - Backdrop, animations, document title
-- Drawer - Slide-out panels
-- Dropdown - Context menus
-- CommandPalette - Command search interface
-- Toast - Beautiful notifications (react-hot-toast)
+**Display** Card · Badge · Chip (removable) · Alert · Banner · Avatar +
+AvatarGroup · Skeleton · Table · CodeBox · Progress · CircularProgress ·
+Stepper
 
-### Layout
-- Card - Content containers
-- TopNav - Navigation header
-- Footer - Page footer
-- SidebarNav - Side navigation
-- SidebarNavEnhanced - Advanced sidebar with search, sorting, and grouping
+**Overlays** Tooltip · Infotip · Popover · Modal · Drawer · Dropdown ·
+CommandPalette · Toast
 
-### Data Display
-- Table - Data tables
-- CodeBox - Syntax highlighted code
-- Alert, Banner - Notifications
-- Badge, Chip - Labels
-- Avatar - User avatars
-- Skeleton - Loading states
-- Progress - Progress indicators
+**Navigation** Tabs + TabPanel · Breadcrumbs · Pagination · TopNav ·
+SidebarNav · Menu · Footer
 
-### Navigation
-- Breadcrumbs - Navigation trail
-- Tabs - Tab navigation
-- Pagination - Page navigation
-- Menu - Menu dropdowns
+**Theme** ThemeProvider · ThemeSwitcher · EnhancedThemeSwitcher ·
+CycleThemeSwitcher · six built-in themes + preset factory
 
-### Miscellaneous
-- Accordion - Collapsible content
-- Sheet - Slide-over panels
-- Stepper - Step indicators
-- InfoTip - Information tooltips
-- ThemeSwitcher - Theme selection
+## Styling and customization
 
-## Theming
+Components expose stable styling hooks instead of utility soup:
 
-Buzz UI uses a comprehensive CSS variable system for complete theme customization. Choose from 6 built-in themes or create your own.
+- a class per part: `.bz-button`, `.bz-modal__panel`, `.bz-tabs__tab`, …
+- state/variant data-attributes: `[data-variant="bold"]`, `[data-state="open"]`,
+  `[data-selected]`, …
 
-```tsx
-// In your app root (client)
-import { ThemeProvider } from '@creo-team/buzz-ui/client'
-import { createThemeConfig, ThemePreset } from '@creo-team/buzz-ui'
+Override with plain CSS (or Tailwind's arbitrary variants):
 
-const themes = [
-	createThemeConfig(ThemePreset.Light),
-	createThemeConfig(ThemePreset.Dark),
-	// Add more themes as needed
-]
-
-export default function Root({ children }) {
-	return <ThemeProvider themes={themes} defaultTheme="light">
-		{children}
-	</ThemeProvider>
-}
+```css
+.bz-button[data-variant='bold'] { border-radius: 999px; }
 ```
 
-**See [THEMING.md](./THEMING.md) for the complete theming guide with all CSS variables.**
-
-## SSR with Next.js
-
-- Import SSR-safe components from `/server` and client-only from `/client`
-- For client providers (ThemeProvider, ToastProvider), wrap in client components or dynamic imports with `ssr: false`
-
-## Contributing
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup, coding standards, and release process.
-
-## Testing
-
-We use Vitest + Testing Library. Run:
-
-```bash
-npm run test
-```
-
-Aim for high coverage by adding unit tests for each component and state.
+Every color, radius and shadow is a CSS custom property (`--c-primary`,
+`--radius-lg`, `--shadow-md`, …) — redefine them under your own
+`[data-theme='…']` selector to create themes with no JavaScript at all.
 
 ## License
 

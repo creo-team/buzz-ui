@@ -29,39 +29,35 @@ describe('Progress', () => {
 		expect(progressBar).toHaveAttribute('aria-valuenow', '0')
 	})
 
-	it('applies size classes correctly', () => {
+	it('applies size styling hooks correctly', () => {
 		const { rerender } = render(<Progress value={50} size="xs" />)
-		let progressBar = screen.getByRole('progressbar')
-		expect(progressBar).toHaveClass('h-0.5')
+		expect(screen.getByRole('progressbar').closest('.bz-progress')).toHaveAttribute('data-size', 'xs')
 		
 		rerender(<Progress value={50} size="xl" />)
-		progressBar = screen.getByRole('progressbar')
-		expect(progressBar).toHaveClass('h-4')
+		expect(screen.getByRole('progressbar').closest('.bz-progress')).toHaveAttribute('data-size', 'xl')
 	})
 
-	it('applies variant classes correctly', () => {
+	it('applies variant styling hooks correctly', () => {
 		const { rerender } = render(<Progress value={50} variant="success" />)
-		let progressBar = screen.getByRole('progressbar')
-		expect(progressBar).toHaveClass('bg-[var(--c-success)]')
+		let bar = screen.getByRole('progressbar').querySelector('.bz-progress__bar')
+		expect(bar).toHaveAttribute('data-variant', 'success')
 		
 		rerender(<Progress value={50} variant="danger" />)
-		progressBar = screen.getByRole('progressbar')
-		expect(progressBar).toHaveClass('bg-[var(--c-danger)]')
+		bar = screen.getByRole('progressbar').querySelector('.bz-progress__bar')
+		expect(bar).toHaveAttribute('data-variant', 'danger')
 	})
 
 	it('renders indeterminate state', () => {
 		render(<Progress indeterminate />)
 		const progressBar = screen.getByRole('progressbar')
 		expect(progressBar).not.toHaveAttribute('aria-valuenow')
-		expect(progressBar).toHaveStyle({ width: '30%' })
+		expect(progressBar.querySelector('.bz-progress__bar')).toHaveAttribute('data-indeterminate')
 	})
 
-	it('applies striped pattern when striped prop is true', () => {
+	it('applies striped styling hook when striped prop is true', () => {
 		render(<Progress value={50} striped />)
 		const progressBar = screen.getByRole('progressbar')
-		expect(progressBar).toHaveStyle({
-			backgroundImage: expect.stringContaining('linear-gradient')
-		})
+		expect(progressBar.querySelector('.bz-progress__bar')).toHaveAttribute('data-striped')
 	})
 })
 
@@ -86,17 +82,17 @@ describe('CircularProgress', () => {
 		expect(svg).toHaveAttribute('height', '80')
 	})
 
-	it('applies variant colors', () => {
+	it('applies variant styling hooks', () => {
 		render(<CircularProgress value={50} variant="success" />)
 		const circles = document.querySelectorAll('circle')
 		// Second circle is the progress circle
-		expect(circles[1]).toHaveAttribute('stroke', 'var(--c-success)')
+		expect(circles[1]).toHaveAttribute('data-variant', 'success')
 	})
 
 	it('handles indeterminate state with spinning animation', () => {
 		render(<CircularProgress indeterminate />)
 		const svg = document.querySelector('svg')
-		expect(svg).toHaveClass('animate-spin')
+		expect(svg).toHaveAttribute('data-indeterminate')
 	})
 
 	it('clamps values to 0-100 range', () => {

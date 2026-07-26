@@ -1,24 +1,54 @@
 import * as React from 'react'
+import { cx } from '../internal/cx.js'
+import { IconCheck } from '../internal/icons.js'
 
-export interface StepperProps {
-	steps: { key: string, label: React.ReactNode }[]
-	current: string
+export interface Step {
+	key: string
+	label: React.ReactNode
+	/** Secondary line under the label. */
+	description?: React.ReactNode
 }
 
-export function Stepper({ steps, current }: StepperProps) {
+export interface StepperProps {
+	steps: Step[]
+	/** Key of the current step. */
+	current: string
+	/** Layout direction. Default 'horizontal'. */
+	orientation?: 'horizontal' | 'vertical'
+	className?: string
+}
+
+/**
+ * Multi-step progress indicator. Steps before the current one render as
+ * completed with a check. Server-component safe.
+ */
+export function Stepper({ steps, current, orientation = 'horizontal', className }: StepperProps) {
+	const currentIndex = steps.findIndex(s => s.key === current)
+
 	return (
-		<ol className="flex items-center gap-3 text-sm">
-			{steps.map((s, i) => {
-				const isActive = s.key === current
+		<ol className={cx('bz-stepper', className)} data-orientation={orientation}>
+			{steps.map((step, index) => {
+				const state = index < currentIndex ? 'complete' : index === currentIndex ? 'active' : 'upcoming'
 				return (
-					<li key={s.key} className="flex items-center gap-2">
-						<span className={["inline-flex h-6 w-6 items-center justify-center rounded-full border", isActive ? 'border-[var(--c-primary)] text-[var(--c-primary)]' : 'border-[var(--c-border)] text-white/70'].join(' ')}>{i+1}</span>
-						<span className={isActive ? 'text-[var(--c-primary)]' : 'text-white/70'}>{s.label}</span>
+					<li
+						key={step.key}
+						className="bz-stepper__step"
+						data-state={state}
+						aria-current={state === 'active' ? 'step' : undefined}
+					>
+						<span className="bz-stepper__marker" aria-hidden="true">
+							{state === 'complete' ? <IconCheck className="bz-stepper__check" /> : index + 1}
+						</span>
+						<span className="bz-stepper__text">
+							<span className="bz-stepper__label">{step.label}</span>
+							{step.description != null && (
+								<span className="bz-stepper__description">{step.description}</span>
+							)}
+						</span>
+						{index < steps.length - 1 && <span className="bz-stepper__connector" aria-hidden="true" />}
 					</li>
 				)
 			})}
 		</ol>
 	)
 }
-
-
