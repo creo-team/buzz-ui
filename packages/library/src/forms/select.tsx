@@ -1,72 +1,62 @@
 import * as React from 'react'
+import { cx } from '../internal/cx.js'
+import { Field, fieldDescribedBy } from './field.js'
 
 export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-	label?: string
+	label?: React.ReactNode
 	error?: string
-	helpText?: string
+	helpText?: React.ReactNode
+	/** className for the outer field wrapper. */
+	wrapperClassName?: string
 }
 
 /**
- * Select component inspired by Umbro's clean form design
- * Native select element with consistent styling and validation states
+ * Native select with consistent styling and validation states. Uses the
+ * platform picker — the most accessible and mobile-friendly select there is.
+ * Server-component safe.
  */
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(function Select(
-	{ label, error, helpText, className = '', children, id, ...props },
+	{ label, error, helpText, className, wrapperClassName, children, id, required, ...props },
 	ref
 ) {
-	const selectId = id || React.useId()
-	const hasError = Boolean(error)
+	const autoId = React.useId()
+	const selectId = id ?? autoId
 
 	return (
-		<div className="space-y-1">
-			{label && (
-				<label 
-					htmlFor={selectId} 
-					className="block text-sm font-medium text-[var(--c-text)]"
+		<Field
+			htmlFor={selectId}
+			label={label}
+			required={required}
+			error={error}
+			helpText={helpText}
+			className={wrapperClassName}
+		>
+			<span className="bz-select-wrap">
+				<select
+					ref={ref}
+					id={selectId}
+					className={cx('bz-select', className)}
+					data-tone={error ? 'error' : undefined}
+					aria-invalid={error ? true : undefined}
+					aria-describedby={fieldDescribedBy(selectId, { error, helpText })}
+					required={required}
+					{...props}
 				>
-					{label}
-				</label>
-			)}
-			<select
-				ref={ref}
-				id={selectId}
-				className={[
-					'w-full rounded-[var(--radius-lg)] border px-3 py-2 text-[var(--c-text)] transition-colors focus:outline-none focus:ring-1 appearance-none bg-[var(--c-surface)]',
-					'bg-[url("data:svg+xml;charset=utf-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3E%3Cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'M6 8l4 4 4-4\'/%3E%3C/svg%3E")] bg-[length:1.5em_1.5em] bg-[right_0.5rem_center] bg-no-repeat pr-10',
-					hasError 
-						? 'border-[var(--c-danger)] focus:border-[var(--c-danger)] focus:ring-[var(--c-danger)]/20' 
-						: 'border-[var(--c-border-strong)] focus:border-[var(--c-primary)] focus:ring-[var(--c-primary-ring)]',
-					'disabled:cursor-not-allowed disabled:opacity-50',
-					className,
-				].join(' ')}
-				aria-invalid={hasError}
-				aria-describedby={
-					[
-						error && `${selectId}-error`,
-						helpText && `${selectId}-help`
-					].filter(Boolean).join(' ') || undefined
-				}
-				{...props}
-			>
-				{children}
-			</select>
-			{error && (
-				<div 
-					id={`${selectId}-error`}
-					className="text-xs text-[var(--c-danger)]"
+					{children}
+				</select>
+				<svg
+					className="bz-select-wrap__chevron"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="2"
+					strokeLinecap="round"
+					strokeLinejoin="round"
+					aria-hidden="true"
 				>
-					{error}
-				</div>
-			)}
-			{helpText && !error && (
-				<div 
-					id={`${selectId}-help`}
-					className="text-xs text-[var(--c-text-muted)]"
-				>
-					{helpText}
-				</div>
-			)}
-		</div>
+					<path d="m6 9 6 6 6-6" />
+				</svg>
+			</span>
+		</Field>
 	)
 })
-

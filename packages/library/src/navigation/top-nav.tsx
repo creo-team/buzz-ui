@@ -1,5 +1,7 @@
 "use client"
 import * as React from 'react'
+import { cx } from '../internal/cx.js'
+import { IconMenu, IconX } from '../internal/icons.js'
 
 export interface TopNavItem {
 	key: string
@@ -13,101 +15,106 @@ export interface TopNavProps {
 	brand?: React.ReactNode
 	items?: TopNavItem[]
 	right?: React.ReactNode
+	/** Rendered above the bar (e.g. a `Banner`). */
 	before?: React.ReactNode
+	/** Distance from the top of the viewport (number = px). */
 	offsetTop?: number | string
+	/** Custom link renderer (e.g. Next.js `Link`). Defaults to `<a>`. */
+	linkComponent?: React.ComponentType<{
+		href: string
+		className: string
+		children: React.ReactNode
+		onClick?: (event: React.MouseEvent) => void
+		'aria-current'?: 'page'
+	}>
+	className?: string
 }
 
-export function TopNav({ brand, items = [], right, before, offsetTop }: TopNavProps) {
-	const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
+const DefaultLink: NonNullable<TopNavProps['linkComponent']> = ({ href, ...props }) => (
+	<a href={href} {...props} />
+)
+
+/**
+ * Fixed top navigation bar with a frosted-glass surface, active-item
+ * indication and an accessible mobile menu (Escape closes, state announced).
+ */
+export function TopNav({
+	brand,
+	items = [],
+	right,
+	before,
+	offsetTop,
+	linkComponent: Link = DefaultLink,
+	className,
+}: TopNavProps) {
+	const menuId = React.useId()
+	const [mobileOpen, setMobileOpen] = React.useState(false)
+
+	React.useEffect(() => {
+		if (!mobileOpen) return
+		const onKeydown = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') setMobileOpen(false)
+		}
+		document.addEventListener('keydown', onKeydown)
+		return () => document.removeEventListener('keydown', onKeydown)
+	}, [mobileOpen])
+
+	const top = offsetTop !== undefined ? offsetTop : before ? 40 : 0
+
+	const renderItem = (item: TopNavItem, mobile: boolean) => {
+		const itemClass = mobile ? 'bz-top-nav__mobile-link' : 'bz-top-nav__link'
+		const handleClick = () => {
+			item.onClick?.()
+			if (mobile) setMobileOpen(false)
+		}
+		const className = cx(itemClass)
+		const shared = {
+			className,
+			'aria-current': item.active ? ('page' as const) : undefined,
+			'data-active': item.active || undefined,
+		}
+		return item.href ? (
+			<Link key={item.key} href={item.href} onClick={handleClick} {...shared}>
+				{item.label}
+			</Link>
+		) : (
+			<button key={item.key} type="button" onClick={handleClick} {...shared}>
+				{item.label}
+			</button>
+		)
+	}
 
 	return (
 		<>
 			{before}
-			<header
-				className={`fixed left-0 right-0 z-50 w-full bg-[var(--c-surface)]/20 backdrop-blur-lg border-b border-[var(--c-border)]/30 top-0`}
-				style={{ top: typeof offsetTop !== 'undefined' ? offsetTop as any : (before ? 40 : 0) }}
-			>
-				<div className="mx-auto max-w-7xl px-4">
-					<div className="flex h-16 items-center justify-between">
-						{/* Brand */}
-						<div className="flex-shrink-0">
-							{brand && (
-								<div className="text-lg font-bold text-[var(--c-text)] transition-transform hover:scale-[1.02] cursor-pointer">
-									{brand}
-								</div>
-							)}
-						</div>
-
-						{/* Desktop Navigation */}
-						<nav className="hidden md:flex items-center gap-1">
-							{items.map(item => (
-								<a
-									key={item.key}
-									href={item.href}
-									onClick={item.onClick}
-									className={[
-										'no-underline rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
-										item.active 
-											? 'text-[var(--c-text)] bg-[var(--c-primary-light)] border border-[var(--c-primary)]/20' 
-											: 'text-[var(--c-text-secondary)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)]'
-									].join(' ')}
-								>
-									{item.label}
-								</a>
-							))}
+			<header className={cx('bz-top-nav', className)} style={{ top }}>
+				<div className="bz-top-nav__inner">
+					<div className="bz-top-nav__bar">
+						{brand != null && <div className="bz-top-nav__brand">{brand}</div>}
+						<nav className="bz-top-nav__nav" aria-label="Main">
+							{items.map(item => renderItem(item, false))}
 						</nav>
-
-						{/* Right side content and mobile menu button */}
-						<div className="flex items-center gap-3">
+						<div className="bz-top-nav__right">
 							{right}
-							
-							{/* Mobile menu button */}
 							<button
-								onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-								className="md:hidden inline-flex items-center justify-center rounded-lg border border-[var(--c-border)] bg-[var(--c-surface)]/80 p-2 text-[var(--c-text-secondary)] hover:bg-[var(--c-hover)] hover:text-[var(--c-text)] transition-colors"
-								aria-label="Toggle navigation menu"
+								type="button"
+								className="bz-top-nav__menu-button"
+								aria-expanded={mobileOpen}
+								aria-controls={menuId}
+								aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
+								onClick={() => setMobileOpen(open => !open)}
 							>
-								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
-									{mobileMenuOpen ? (
-										<path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-									) : (
-										<path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-									)}
-								</svg>
+								{mobileOpen ? <IconX /> : <IconMenu />}
 							</button>
 						</div>
 					</div>
 				</div>
-
-				{/* Mobile Menu */}
-				{mobileMenuOpen && (
-					<div className="md:hidden bg-[var(--c-surface)]/95 backdrop-blur-lg border-t border-[var(--c-border)]">
-						<div className="mx-auto max-w-7xl px-4 py-2">
-							<div className="flex flex-col gap-1 py-2">
-								{items.map(item => (
-									<a
-										key={item.key}
-										href={item.href}
-										onClick={(e) => {
-											item.onClick?.()
-											setMobileMenuOpen(false)
-										}}
-										className={[
-											'no-underline px-3 py-2 text-sm font-medium border-l-2 transition-colors rounded-r-lg',
-											item.active 
-												? 'text-[var(--c-text)] border-[var(--c-primary)] bg-[var(--c-primary-light)]' 
-												: 'text-[var(--c-text-secondary)] border-transparent hover:bg-[var(--c-hover)] hover:text-[var(--c-text)]'
-										].join(' ')}
-									>
-										{item.label}
-									</a>
-								))}
-							</div>
-						</div>
-					</div>
+				{mobileOpen && (
+					<nav id={menuId} className="bz-top-nav__mobile" aria-label="Main">
+						<div className="bz-top-nav__mobile-list">{items.map(item => renderItem(item, true))}</div>
+					</nav>
 				)}
 			</header>
 		</>
 	)
 }
-

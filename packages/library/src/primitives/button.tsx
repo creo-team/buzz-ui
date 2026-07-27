@@ -1,10 +1,12 @@
 "use client"
 import * as React from 'react'
-import { motion, type HTMLMotionProps, type Variants } from 'framer-motion'
-import { useHotkey, type HotkeyConfig, formatHotkey } from '../hooks/use-hotkey'
-import { type ButtonAnimationVariants, AnimationPresets } from '../types/animations'
+import { cx } from '../internal/cx.js'
+import { Slot } from '../internal/slot.js'
+import { useComposedRefs } from '../internal/compose-refs.js'
+import { useHotkey, formatHotkey, type HotkeyConfig } from '../hooks/use-hotkey.js'
+import { Spinner } from './spinner.js'
 
-/** Visual styles for the button - inspired by Umbro design patterns */
+/** Visual styles for the button. */
 export enum ButtonVariant {
 	Bold = 'bold',
 	Outline = 'outline',
@@ -15,149 +17,120 @@ export enum ButtonVariant {
 	Danger = 'danger',
 	Glass = 'glass',
 	Ghost = 'ghost',
-	Icon = 'icon'
+	Icon = 'icon',
 }
 
-/** Size presets for padding and font size */
+/** Size presets for padding and font size. */
 export enum ButtonSize {
 	Small = 'sm',
 	Medium = 'md',
-	Large = 'lg'
+	Large = 'lg',
 }
 
 type ButtonVariantInput = ButtonVariant | `${ButtonVariant}`
 type ButtonSizeInput = ButtonSize | `${ButtonSize}`
 
+/** Hotkey shorthand — `action` is optional because the button's own click is the action. */
+export type ButtonHotkey = string | (Omit<HotkeyConfig, 'action'> & { action?: () => void })
+
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+	/** Visual variant. */
+	variant?: ButtonVariantInput
+	/** Size preset. */
+	size?: ButtonSizeInput
+	/** Loading state — shows a spinner, disables interaction, sets aria-busy. */
+	loading?: boolean
+	/** Selected state for toggle buttons (sets aria-pressed). */
+	selected?: boolean
+	/** Keyboard shortcut that clicks this button (e.g. 'mod+s'). */
+	hotkey?: ButtonHotkey
+	/** Icon-only mode — square hit area, circular shape. */
+	iconOnly?: boolean
+	/** Stretch to the container's width. */
+	fullWidth?: boolean
+	/**
+	 * Render the child element instead of a `<button>`, merging behavior and
+	 * styling onto it. Ideal for framework links:
+	 * `<Button asChild><Link href="/docs">Docs</Link></Button>`
+	 */
+	asChild?: boolean
+	children?: React.ReactNode
+}
+
 /**
- * Button props
- *
- * Inherits all native HTMLButtonElement attributes (onClick, disabled, type, etc.)
- * Based on Umbro's button design with modern styling
+ * The Buzz UI button. Styled entirely by the shipped stylesheet (CSS
+ * transitions handle hover/press feedback — no animation library, no runtime
+ * style computation, SSR-clean output).
  */
-export interface ButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
-    /** Visual variant */
-    variant?: ButtonVariantInput
-    /** Size preset */
-    size?: ButtonSizeInput
-    /** Loading state with spinner */
-    loading?: boolean
-    /** Selected state for toggle buttons */
-    selected?: boolean
-    /** Hotkey configuration to trigger this button */
-    hotkey?: string | HotkeyConfig
-    /** Icon only mode - removes padding and makes button circular */
-    iconOnly?: boolean
-    /** Children content */
-    children?: React.ReactNode
-}
-
-const base = 'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer'
-const sizes: Record<ButtonSize, string> = {
-	[ButtonSize.Large]: 'px-6 py-3 text-base rounded-2xl',
-	[ButtonSize.Medium]: 'px-4 py-2 text-sm rounded-xl',
-	[ButtonSize.Small]: 'px-3 py-1.5 text-xs rounded-lg',
-}
-const iconSizes: Record<ButtonSize, string> = {
-	[ButtonSize.Large]: 'h-12 w-12 text-base rounded-full',
-	[ButtonSize.Medium]: 'h-10 w-10 text-sm rounded-full',
-	[ButtonSize.Small]: 'h-8 w-8 text-xs rounded-full',
-}
-const variants: Record<ButtonVariant, string> = {
-	[ButtonVariant.Bold]: 'bg-[var(--c-primary)] hover:bg-[var(--c-primary-hover)] text-white shadow-md hover:shadow-lg focus:ring-[var(--c-primary-ring)]',
-	[ButtonVariant.Outline]: 'border border-[var(--c-border-strong)] text-[var(--c-text)] bg-transparent hover:bg-[var(--c-hover)]/30 hover:border-[var(--c-primary)] hover:text-[var(--c-primary)] focus:ring-[var(--c-primary-ring)]',
-	[ButtonVariant.Subtle]: 'bg-[var(--c-surface-2)] text-[var(--c-text)] border border-[var(--c-border)] hover:bg-[var(--c-hover)] focus:ring-[var(--c-primary-ring)]',
-	[ButtonVariant.Glass]: 'bg-white/8 dark:bg-black/20 backdrop-blur-xl backdrop-saturate-150 border border-white/10 dark:border-white/5 text-[var(--c-text)] hover:bg-white/12 dark:hover:bg-black/30 shadow-sm',
-	[ButtonVariant.Ghost]: 'bg-transparent hover:bg-[var(--c-hover)]/20 text-[var(--c-text-secondary)] hover:text-[var(--c-text)] border-0',
-	[ButtonVariant.Icon]: 'bg-transparent hover:bg-[var(--c-hover)]/40 text-[var(--c-text-secondary)] hover:text-[var(--c-text)] border-0',
-	[ButtonVariant.Text]: 'bg-transparent text-[var(--c-primary)] hover:text-[var(--c-primary-hover)] focus:ring-0 p-0 rounded-none',
-	[ButtonVariant.Nav]: 'border-0 bg-transparent text-[var(--c-text-secondary)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)]/20 focus:ring-0',
-	[ButtonVariant.Success]: 'bg-[var(--c-success)] text-white hover:brightness-110 shadow-sm hover:shadow-md focus:ring-green-400/50',
-	[ButtonVariant.Danger]: 'bg-[var(--c-danger)] text-white hover:brightness-110 shadow-sm hover:shadow-md focus:ring-red-400/50',
-}
-
-const selectedVariants: Record<ButtonVariant, string> = {
-	[ButtonVariant.Bold]: 'bg-[var(--c-primary)] text-white shadow-lg ring-2 ring-[var(--c-primary-ring)]',
-	[ButtonVariant.Outline]: 'border-[var(--c-primary)] text-[var(--c-primary)] bg-[var(--c-primary)]/10',
-	[ButtonVariant.Subtle]: 'bg-[var(--c-hover)]/60 text-[var(--c-text)]',
-	[ButtonVariant.Glass]: 'bg-white/15 dark:bg-black/40 backdrop-blur-xl border-white/20 dark:border-white/10 text-[var(--c-text)] shadow-md',
-	[ButtonVariant.Ghost]: 'bg-[var(--c-hover)]/40 text-[var(--c-text)]',
-	[ButtonVariant.Icon]: 'bg-[var(--c-hover)]/60 text-[var(--c-text)]',
-	[ButtonVariant.Text]: 'text-[var(--c-primary)] font-semibold',
-	[ButtonVariant.Nav]: 'text-[var(--c-primary)] bg-[var(--c-primary)]/10',
-	[ButtonVariant.Success]: 'bg-[var(--c-success)] brightness-110 shadow-md ring-2 ring-green-400/50',
-	[ButtonVariant.Danger]: 'bg-[var(--c-danger)] brightness-110 shadow-md ring-2 ring-red-400/50',
-}
-
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-	{ className = '', variant = ButtonVariant.Bold, size = ButtonSize.Medium, loading = false, selected = false, hotkey, iconOnly = false, children, disabled, onClick, ...props },
-	ref
+	{
+		className,
+		variant = ButtonVariant.Bold,
+		size = ButtonSize.Medium,
+		loading = false,
+		selected,
+		hotkey,
+		iconOnly = false,
+		fullWidth = false,
+		asChild = false,
+		children,
+		disabled,
+		type,
+		...props
+	},
+	forwardedRef
 ) {
-	// Minimal animation - only on tap for feedback
-	const animVariants = {
-		idle: { scale: 1 },
-		hover: { scale: 1 },
-		tap: { scale: 0.97 }
-	}
+	const internalRef = React.useRef<HTMLButtonElement>(null)
+	const ref = useComposedRefs(forwardedRef, internalRef)
 
-	// Set up hotkey if provided
-	const handleHotkeyAction = React.useCallback(() => {
-		if (!disabled && !loading && onClick) {
-			onClick({} as React.MouseEvent<HTMLButtonElement>)
-		}
-	}, [disabled, loading, onClick])
-
-	// Always call useHotkey hook (required by React rules)
-	const hotkeyEnabled = Boolean(hotkey && onClick && !disabled && !loading)
-	const hotkeyKey = typeof hotkey === 'string' ? hotkey : hotkey?.key || ''
-	
+	const hotkeyKey = typeof hotkey === 'string' ? hotkey : hotkey?.key ?? ''
+	const hotkeyEnabled = Boolean(hotkeyKey) && !disabled && !loading
 	useHotkey({
-		key: hotkeyKey,
-		action: handleHotkeyAction,
-		enabled: hotkeyEnabled
+		key: hotkeyKey || 'unassigned',
+		enabled: hotkeyEnabled,
+		description: typeof hotkey === 'object' ? hotkey.description : undefined,
+		action: () => {
+			if (typeof hotkey === 'object' && hotkey.action) hotkey.action()
+			// Dispatch a real click so forms, analytics and default handlers all work.
+			else internalRef.current?.click()
+		},
 	})
 
-	// Choose the appropriate variant based on selected state
-	const resolvedVariant = variant as ButtonVariant
-	const resolvedSize = size as ButtonSize
-	const activeVariant = selected ? selectedVariants[resolvedVariant] : variants[resolvedVariant]
-	
-	let variantClasses: string
-	if (iconOnly || resolvedVariant === ButtonVariant.Icon) {
-		variantClasses = `${base} ${iconSizes[resolvedSize]} ${activeVariant} ${className}`
-	} else if (resolvedVariant === ButtonVariant.Text) {
-		variantClasses = `${base.replace('rounded-lg ', '')} ${activeVariant} ${className}`
-	} else {
-		variantClasses = `${base} ${sizes[resolvedSize]} ${activeVariant} ${className}`
+	const hotkeyHint = hotkeyKey ? formatHotkey(hotkeyKey) : undefined
+	const title = props.title ?? (hotkeyHint ? `Press ${hotkeyHint}` : undefined)
+
+	const isIcon = iconOnly || variant === ButtonVariant.Icon
+	const sharedProps = {
+		className: cx('bz-button', className),
+		'data-variant': variant as string,
+		'data-size': size as string,
+		'data-icon-only': isIcon || undefined,
+		'data-full-width': fullWidth || undefined,
+		'data-loading': loading || undefined,
+		'data-selected': selected || undefined,
+		'aria-pressed': selected,
+		'aria-busy': loading || undefined,
+		title,
 	}
 
-	// Add hotkey hint to title if provided
-	const hotkeyHint = hotkey 
-		? (typeof hotkey === 'string' ? formatHotkey(hotkey) : formatHotkey(hotkey.key))
-		: undefined
-	const title = props.title || (hotkeyHint ? `Press ${hotkeyHint}` : undefined)
+	if (asChild) {
+		return (
+			<Slot ref={ref as unknown as React.Ref<HTMLElement>} {...sharedProps} {...props}>
+				{children}
+			</Slot>
+		)
+	}
 
 	return (
-		<motion.button 
-			ref={ref} 
-			className={variantClasses}
+		<button
+			ref={ref}
+			type={type ?? 'button'}
 			disabled={disabled || loading}
-			aria-pressed={selected}
-			onClick={onClick}
-			title={title}
-			variants={animVariants}
-			initial="idle"
-			whileHover={!disabled && !loading ? "hover" : "idle"}
-			whileTap={!disabled && !loading ? "tap" : "idle"}
+			{...sharedProps}
 			{...props}
 		>
-			{loading && (
-				<svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
-					<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-					<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-				</svg>
-			)}
+			{loading && <Spinner size="sm" className="bz-button__spinner" label={null} />}
 			{children}
-		</motion.button>
+		</button>
 	)
 })
-

@@ -63,27 +63,27 @@ describe('Tabs', () => {
 		const { rerender } = render(
 			<Tabs items={items} value="tab1" onChange={() => {}} variant="pills" />
 		)
-		expect(screen.getByRole('tab', { name: 'Tab 1' })).toHaveClass('rounded-xl')
+		expect(screen.getByRole('tablist')).toHaveAttribute('data-variant', 'pills')
 		
 		rerender(<Tabs items={items} value="tab1" onChange={() => {}} variant="underline" />)
-		expect(screen.getByRole('tab', { name: 'Tab 1' })).toHaveClass('border-b-2')
+		expect(screen.getByRole('tablist')).toHaveAttribute('data-variant', 'underline')
 	})
 
 	it('applies size classes correctly', () => {
 		const { rerender } = render(
 			<Tabs items={items} value="tab1" onChange={() => {}} size="sm" />
 		)
-		expect(screen.getByRole('tab', { name: 'Tab 1' })).toHaveClass('text-xs')
+		expect(screen.getByRole('tablist')).toHaveAttribute('data-size', 'sm')
 		
 		rerender(<Tabs items={items} value="tab1" onChange={() => {}} size="lg" />)
-		expect(screen.getByRole('tab', { name: 'Tab 1' })).toHaveClass('text-base')
+		expect(screen.getByRole('tablist')).toHaveAttribute('data-size', 'lg')
 	})
 
 	it('stretches to full width when fullWidth is true', () => {
 		render(<Tabs items={items} value="tab1" onChange={() => {}} fullWidth />)
 		
 		const container = screen.getByRole('tablist')
-		expect(container).toHaveClass('flex', 'w-full')
+		expect(container).toHaveAttribute('data-full-width')
 	})
 })
 
@@ -108,7 +108,7 @@ describe('TabPanel', () => {
 		expect(screen.queryByText('Tab 1 Content')).not.toBeInTheDocument()
 	})
 
-	it('applies animation classes', () => {
+	it('applies the panel base class', () => {
 		render(
 			<TabPanel value="tab1" selectedValue="tab1">
 				<div>Content</div>
@@ -116,7 +116,7 @@ describe('TabPanel', () => {
 		)
 		
 		const panel = screen.getByRole('tabpanel')
-		expect(panel).toHaveClass('animate-in', 'fade-in-0', 'slide-in-from-bottom-1')
+		expect(panel).toHaveClass('bz-tab-panel')
 	})
 
 	it('applies custom className', () => {

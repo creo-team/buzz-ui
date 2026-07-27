@@ -83,7 +83,6 @@ describe('CodeBox', () => {
 	})
 
 	it('should handle copy errors gracefully', async () => {
-		const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 		vi.mocked(navigator.clipboard.writeText).mockRejectedValue(new Error('Copy failed'))
 		
 		const code = 'test code'
@@ -92,11 +91,11 @@ describe('CodeBox', () => {
 		const copyButton = screen.getByTitle('Copy code')
 		fireEvent.click(copyButton)
 
+		// Failure is swallowed: the button stays in its idle state
 		await waitFor(() => {
-			expect(consoleSpy).toHaveBeenCalledWith('Failed to copy code:', expect.any(Error))
+			expect(navigator.clipboard.writeText).toHaveBeenCalledWith(code)
 		})
-
-		consoleSpy.mockRestore()
+		expect(screen.getByTitle('Copy code')).toBeInTheDocument()
 	})
 
 	it('should apply custom className', () => {
@@ -114,7 +113,7 @@ describe('CodeBox', () => {
 		render(<CodeBox code={code} label="Test" />)
 
 		const pre = screen.getByText(code).closest('pre')
-		expect(pre).toHaveClass('bg-[var(--c-surface-3)]', 'border-[var(--c-border)]', 'text-[var(--c-text)]')
+		expect(pre).toHaveClass('bz-code-box__pre')
 	})
 
 	it('should handle empty code', () => {

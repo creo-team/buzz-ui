@@ -1,47 +1,75 @@
 "use client"
 import * as React from 'react'
+import { cx } from '../internal/cx.js'
+import { useControllableState } from '../internal/use-controllable-state.js'
+import { IconChevronDown } from '../internal/icons.js'
 
 export interface AccordionItem {
 	key: string
 	header: React.ReactNode
 	content: React.ReactNode
+	disabled?: boolean
 }
 
 export interface AccordionProps {
 	items: AccordionItem[]
+	/** Controlled open key (null = all closed). */
 	openKey?: string | null
+	/** Initial open key for uncontrolled usage. */
+	defaultOpenKey?: string | null
 	onChange?: (key: string | null) => void
 	className?: string
 }
 
-export function Accordion({ items, openKey, onChange, className = '' }: AccordionProps) {
-	const [internal, setInternal] = React.useState<string | null>(openKey ?? null)
-	React.useEffect(() => {
-		if (openKey !== undefined) setInternal(openKey)
-	}, [openKey])
-	const setOpen = (key: string | null) => {
-		if (onChange) onChange(key)
-		if (openKey === undefined) setInternal(key)
-	}
-	const current = openKey !== undefined ? openKey : internal
+/**
+ * Single-open accordion with correct disclosure semantics
+ * (`aria-expanded` + `aria-controls` + labelled regions) and a pure-CSS
+ * expand animation (grid-rows trick — no JS measurement).
+ */
+export function Accordion({ items, openKey, defaultOpenKey = null, onChange, className }: AccordionProps) {
+	const baseId = React.useId()
+	const [current, setCurrent] = useControllableState<string | null>({
+		value: openKey,
+		defaultValue: defaultOpenKey,
+		onChange,
+	})
+
 	return (
-		<div className={["rounded-md border border-[var(--c-border)] bg-[var(--c-surface-2)]", className].join(' ')}>
+		<div className={cx('bz-accordion', className)}>
 			{items.map(item => {
 				const isOpen = current === item.key
+				const headerId = `${baseId}-header-${item.key}`
+				const panelId = `${baseId}-panel-${item.key}`
 				return (
-					<div key={item.key} className="border-b last:border-b-0 border-[var(--c-border)]">
-						<button onClick={() => setOpen(isOpen ? null : item.key)} className="flex w-full items-center justify-between px-3 py-2 text-left text-sm text-[var(--c-text)] hover:bg-[var(--c-hover)]">
-							<span>{item.header}</span>
-							<span className={['transition-transform', isOpen ? 'rotate-180' : ''].join(' ')}>⌄</span>
-						</button>
-						{isOpen && (
-							<div className="px-3 pb-3 text-sm text-white/80">{item.content}</div>
-						)}
+					<div key={item.key} className="bz-accordion__item" data-state={isOpen ? 'open' : 'closed'}>
+						<h3 className="bz-accordion__heading">
+							<button
+								type="button"
+								id={headerId}
+								className="bz-accordion__trigger"
+								aria-expanded={isOpen}
+								aria-controls={panelId}
+								disabled={item.disabled}
+								onClick={() => setCurrent(isOpen ? null : item.key)}
+							>
+								<span className="bz-accordion__header">{item.header}</span>
+								<IconChevronDown className="bz-accordion__chevron" aria-hidden="true" />
+							</button>
+						</h3>
+						<div
+							id={panelId}
+							role="region"
+							aria-labelledby={headerId}
+							className="bz-accordion__panel"
+							data-state={isOpen ? 'open' : 'closed'}
+						>
+							<div className="bz-accordion__panel-inner">
+								<div className="bz-accordion__content">{item.content}</div>
+							</div>
+						</div>
 					</div>
 				)
 			})}
 		</div>
 	)
 }
-
-

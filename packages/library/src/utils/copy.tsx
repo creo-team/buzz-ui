@@ -1,21 +1,47 @@
 "use client"
 import * as React from 'react'
+import { cx } from '../internal/cx.js'
+import { IconCheck, IconCopy } from '../internal/icons.js'
 
-export interface CopyButtonProps {
+export interface CopyButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'value'> {
+	/** Text written to the clipboard. */
 	value: string
+	/** Used in the tooltip/title, e.g. "Copy link". */
 	label?: string
-	className?: string
+	/** Feedback duration in ms. Default 1500. */
+	timeout?: number
+	/** Called after a successful copy. */
+	onCopied?: () => void
 }
 
-export function CopyButton({ value, label = 'Copy', className = '' }: CopyButtonProps) {
+/** Icon button that copies `value` to the clipboard with themed feedback. */
+export function CopyButton({
+	value,
+	label = 'Copy',
+	timeout = 1500,
+	onCopied,
+	className,
+	...props
+}: CopyButtonProps) {
 	const [copied, setCopied] = React.useState(false)
+	const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+
+	React.useEffect(() => {
+		return () => {
+			if (timer.current) clearTimeout(timer.current)
+		}
+	}, [])
 
 	async function onCopy() {
 		try {
 			await navigator.clipboard.writeText(value)
 			setCopied(true)
-			setTimeout(() => setCopied(false), 1500)
-		} catch {}
+			onCopied?.()
+			if (timer.current) clearTimeout(timer.current)
+			timer.current = setTimeout(() => setCopied(false), timeout)
+		} catch {
+			// Clipboard unavailable (permissions/insecure context) — stay silent.
+		}
 	}
 
 	return (
@@ -23,23 +49,12 @@ export function CopyButton({ value, label = 'Copy', className = '' }: CopyButton
 			type="button"
 			onClick={onCopy}
 			title={copied ? 'Copied!' : `Copy ${label.toLowerCase()}`}
-			className={[
-				'inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/15 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white',
-				className,
-			].join(' ')}
+			aria-label={copied ? 'Copied' : `Copy ${label.toLowerCase()}`}
+			className={cx('bz-copy-button', className)}
+			data-copied={copied || undefined}
+			{...props}
 		>
-			{copied ? (
-				<svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-					<path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-				</svg>
-			) : (
-				<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-					<rect x="9" y="9" width="12" height="12" rx="2" fill="currentColor" opacity="0.15" />
-					<rect x="3" y="3" width="12" height="12" rx="2" stroke="currentColor" strokeWidth="1.5" />
-				</svg>
-			)}
+			{copied ? <IconCheck className="bz-copy-button__icon" /> : <IconCopy className="bz-copy-button__icon" />}
 		</button>
 	)
 }
-
-

@@ -1,12 +1,13 @@
 "use client"
 
-import React, { useState, useMemo } from 'react'
-import { Search } from 'lucide-react'
+import * as React from 'react'
+import { cx } from '../internal/cx.js'
+import { IconSearch, IconX } from '../internal/icons.js'
 
 export enum SidebarNavVariant {
 	Default = 'default',
 	Compact = 'compact',
-	Spacious = 'spacious'
+	Spacious = 'spacious',
 }
 
 export interface SidebarNavItem {
@@ -28,21 +29,22 @@ export interface SidebarNavProps {
 	variant?: SidebarNavVariant | `${SidebarNavVariant}`
 	stickyHeader?: boolean
 	currentPath?: string
-	linkComponent?: React.ComponentType<{ href: string; className: string; children: React.ReactNode }>
+	linkComponent?: React.ComponentType<{ href: string; className: string; children: React.ReactNode; 'aria-current'?: 'page' }>
 	scrollable?: boolean
 }
 
-// Default link component that renders a simple anchor tag
-const DefaultLink: React.FC<{ href: string; className: string; children: React.ReactNode }> = ({ href, className, children }) => (
-	<a href={href} className={className}>
-		{children}
-	</a>
+const DefaultLink: NonNullable<SidebarNavProps['linkComponent']> = ({ href, ...props }) => (
+	<a href={href} {...props} />
 )
 
-export function SidebarNav({ 
-	items, 
-	title = "Navigation",
-	className = "",
+/**
+ * Filterable sidebar navigation with grouping, active-route highlighting and
+ * framework-agnostic links.
+ */
+export function SidebarNav({
+	items,
+	title = 'Navigation',
+	className,
 	sortAlphabetically = false,
 	showSearch = true,
 	groupBy,
@@ -50,192 +52,122 @@ export function SidebarNav({
 	stickyHeader = true,
 	currentPath = '',
 	linkComponent: LinkComponent = DefaultLink,
-	scrollable = false
+	scrollable = false,
 }: SidebarNavProps) {
-	const [searchQuery, setSearchQuery] = useState('')
+	const [query, setQuery] = React.useState('')
+	const searchId = React.useId()
 
-	// Filter and sort items
-	const processedItems = useMemo(() => {
+	const processed = React.useMemo(() => {
 		let filtered = items
-
-		// Apply search filter
-		if (searchQuery) {
-			const query = searchQuery.toLowerCase()
-			filtered = items.filter(item => {
-				const matchLabel = item.label.toLowerCase().includes(query)
-				const matchDescription = item.description?.toLowerCase().includes(query)
-				const matchHref = item.href.toLowerCase().includes(query)
-				return matchLabel || matchDescription || matchHref
-			})
-			
-			// Sort by relevance when searching
-			filtered.sort((a, b) => {
-				const aLabelMatch = a.label.toLowerCase().startsWith(query) ? 2 : a.label.toLowerCase().includes(query) ? 1 : 0
-				const bLabelMatch = b.label.toLowerCase().startsWith(query) ? 2 : b.label.toLowerCase().includes(query) ? 1 : 0
-				return bLabelMatch - aLabelMatch
+		if (query) {
+			const lower = query.toLowerCase()
+			filtered = items.filter(
+				item =>
+					item.label.toLowerCase().includes(lower) ||
+					item.description?.toLowerCase().includes(lower) ||
+					item.href.toLowerCase().includes(lower)
+			)
+			filtered = [...filtered].sort((a, b) => {
+				const score = (item: SidebarNavItem) =>
+					item.label.toLowerCase().startsWith(lower) ? 2 : item.label.toLowerCase().includes(lower) ? 1 : 0
+				return score(b) - score(a)
 			})
 		} else if (sortAlphabetically) {
-			// Sort alphabetically when not searching
 			filtered = [...filtered].sort((a, b) => a.label.localeCompare(b.label))
 		}
-
 		return filtered
-	}, [items, searchQuery, sortAlphabetically])
+	}, [items, query, sortAlphabetically])
 
-	// Group items if groupBy function is provided
-	const groupedItems = useMemo(() => {
+	const grouped = React.useMemo(() => {
 		if (!groupBy) return null
-
 		const groups = new Map<string, SidebarNavItem[]>()
-		processedItems.forEach(item => {
+		for (const item of processed) {
 			const group = groupBy(item)
-			if (!groups.has(group)) {
-				groups.set(group, [])
-			}
-			groups.get(group)!.push(item)
-		})
-
+			const list = groups.get(group) ?? []
+			list.push(item)
+			groups.set(group, list)
+		}
 		return Array.from(groups.entries()).sort(([a], [b]) => a.localeCompare(b))
-	}, [processedItems, groupBy])
-
-	const getPaddingClass = () => {
-		switch (variant) {
-			case SidebarNavVariant.Compact: return 'px-2 py-1.5'
-			case SidebarNavVariant.Spacious: return 'px-4 py-3'
-			default: return 'px-3 py-2'
-		}
-	}
-
-	const getTextClass = () => {
-		switch (variant) {
-			case SidebarNavVariant.Compact: return 'text-xs'
-			case SidebarNavVariant.Spacious: return 'text-base'
-			default: return 'text-sm'
-		}
-	}
+	}, [processed, groupBy])
 
 	const renderItem = (item: SidebarNavItem) => {
 		const isActive = currentPath === item.href
-		const isPartialMatch = currentPath.startsWith(item.href) && item.href !== '/'
-		
-		const linkClassName = [
-			'block rounded-xl transition-all duration-200 no-underline',
-			getPaddingClass(),
-			getTextClass(),
-			isActive 
-				? 'bg-[var(--c-primary)]/10 text-[var(--c-primary)] font-medium shadow-sm ring-1 ring-[var(--c-primary)]/20' 
-				: isPartialMatch
-				? 'bg-[var(--c-hover)]/50 text-[var(--c-text)] hover:bg-[var(--c-hover)]'
-				: 'text-[var(--c-text-secondary)] hover:bg-[var(--c-hover)]/40 hover:text-[var(--c-text)]',
-		].join(' ')
-		
-		const content = (
-			<div className="flex items-center gap-3">
-				{item.icon && (
-					<span className="flex-shrink-0 opacity-75">
-						{item.icon}
-					</span>
-				)}
-				<div className="flex-1 min-w-0">
-					<div className="flex items-center gap-2">
-						<span className="truncate">{item.label}</span>
-						{item.badge && (
-							<span className="flex-shrink-0 px-1.5 py-0.5 text-[10px] font-medium bg-[var(--c-primary)] text-[var(--c-on-primary)] rounded-full">
-								{item.badge}
-							</span>
-						)}
-					</div>
-					{item.description && variant === SidebarNavVariant.Spacious && (
-						<div className="text-xs text-[var(--c-text-muted)] mt-0.5 truncate">
-							{item.description}
-						</div>
-					)}
-				</div>
-			</div>
-		)
-		
+		const isPartial = !isActive && item.href !== '/' && currentPath.startsWith(item.href)
 		return (
 			<LinkComponent
 				key={item.key}
 				href={item.href}
-				className={linkClassName}
+				aria-current={isActive ? 'page' : undefined}
+				className={cx('bz-sidebar-nav__link')}
 			>
-				{content}
+				<span
+					className="bz-sidebar-nav__link-inner"
+					data-active={isActive || undefined}
+					data-partial={isPartial || undefined}
+				>
+					{item.icon != null && <span className="bz-sidebar-nav__icon">{item.icon}</span>}
+					<span className="bz-sidebar-nav__text">
+						<span className="bz-sidebar-nav__label-row">
+							<span className="bz-sidebar-nav__label">{item.label}</span>
+							{item.badge && <span className="bz-sidebar-nav__badge">{item.badge}</span>}
+						</span>
+						{item.description && variant === SidebarNavVariant.Spacious && (
+							<span className="bz-sidebar-nav__description">{item.description}</span>
+						)}
+					</span>
+				</span>
 			</LinkComponent>
 		)
 	}
 
-	const navContent = (
-		<nav className="space-y-1">
-					{(title || showSearch) && (
-			<div className={`mb-4 ${stickyHeader ? 'sticky top-0 bg-[var(--c-background)] z-[5]' : ''}`}>
-				{title && (
-					<h3 className={`font-semibold text-[var(--c-text)] ${getPaddingClass()} mb-2`}>
-						{title}
-					</h3>
-				)}
-				
-				{showSearch && (
-					<div className={`relative ${getPaddingClass()}`}>
-						<Search className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--c-text-muted)] pointer-events-none" />
-						<input
-							type="text"
-							placeholder="Filter components..."
-							value={searchQuery}
-							onChange={(e) => setSearchQuery(e.target.value)}
-							className={[
-								'w-full pl-9 pr-8 py-2 rounded-lg',
-								'bg-[var(--c-surface)] border border-[var(--c-border)]',
-								'text-[var(--c-text)] placeholder:text-[var(--c-text-muted)]',
-								'focus:outline-none focus:border-[var(--c-primary)] focus:ring-1 focus:ring-[var(--c-primary-ring)]',
-								getTextClass()
-							].join(' ')}
-						/>
-						{searchQuery && (
-							<button
-								onClick={() => setSearchQuery('')}
-								className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--c-text-muted)] hover:text-[var(--c-text)] p-1"
-							>
-								<svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-								</svg>
-							</button>
+	return (
+		<div className={cx('bz-sidebar-nav', scrollable && 'bz-sidebar-nav--scrollable', className)} data-variant={variant as string}>
+			<nav aria-label={title}>
+				{(title || showSearch) && (
+					<div className="bz-sidebar-nav__header" data-sticky={stickyHeader || undefined}>
+						{title && <h3 className="bz-sidebar-nav__title">{title}</h3>}
+						{showSearch && (
+							<div className="bz-sidebar-nav__search">
+								<IconSearch className="bz-sidebar-nav__search-icon" />
+								<input
+									id={searchId}
+									type="text"
+									placeholder="Filter…"
+									aria-label={`Filter ${title.toLowerCase()}`}
+									value={query}
+									onChange={event => setQuery(event.target.value)}
+									className="bz-sidebar-nav__search-input"
+								/>
+								{query && (
+									<button
+										type="button"
+										className="bz-sidebar-nav__search-clear"
+										aria-label="Clear filter"
+										onClick={() => setQuery('')}
+									>
+										<IconX />
+									</button>
+								)}
+							</div>
 						)}
 					</div>
 				)}
-				</div>
-			)}
 
-			{processedItems.length === 0 && searchQuery && (
-				<div className={`text-center ${getPaddingClass()} text-[var(--c-text-muted)] ${getTextClass()}`}>
-					No results found for "{searchQuery}"
-				</div>
-			)}
+				{processed.length === 0 && query && (
+					<div className="bz-sidebar-nav__empty">No results for “{query}”</div>
+				)}
 
-			{groupedItems ? (
-				// Render grouped items
-				groupedItems.map(([group, groupItems]) => (
-					<div key={group} className="mb-4">
-						<h4 className={`font-medium text-[var(--c-text-secondary)] ${getPaddingClass()} mb-1 ${getTextClass()}`}>
-							{group}
-						</h4>
-						{groupItems.map(renderItem)}
-					</div>
-				))
-			) : (
-				// Render flat list
-				processedItems.map(renderItem)
-			)}
-		</nav>
-	)
-	
-	return scrollable ? (
-		<div className={`overflow-y-auto max-h-[calc(100vh-5rem)] ${className}`}>
-			{navContent}
-		</div>
-	) : (
-		<div className={className}>
-			{navContent}
+				{grouped ? (
+					grouped.map(([group, groupItems]) => (
+						<div key={group} className="bz-sidebar-nav__group">
+							<h4 className="bz-sidebar-nav__group-title">{group}</h4>
+							{groupItems.map(renderItem)}
+						</div>
+					))
+				) : (
+					processed.map(renderItem)
+				)}
+			</nav>
 		</div>
 	)
 }

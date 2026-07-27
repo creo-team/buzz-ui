@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { cx } from '../internal/cx.js'
 
 export enum ProgressVariant {
 	Primary = 'primary',
@@ -6,7 +7,7 @@ export enum ProgressVariant {
 	Warning = 'warning',
 	Danger = 'danger',
 	Info = 'info',
-	Glass = 'glass'
+	Glass = 'glass',
 }
 
 export enum ProgressSize {
@@ -14,67 +15,41 @@ export enum ProgressSize {
 	Small = 'sm',
 	Medium = 'md',
 	Large = 'lg',
-	ExtraLarge = 'xl'
+	ExtraLarge = 'xl',
 }
 
 export enum ProgressShape {
 	Rounded = 'rounded',
 	Square = 'square',
-	Pill = 'pill'
+	Pill = 'pill',
 }
 
 export interface ProgressProps {
-	/** percentage 0-100 */
+	/** Percentage 0–100. */
 	value?: number
-	/** Size variant */
 	size?: ProgressSize | `${ProgressSize}`
-	/** Color variant */
 	variant?: ProgressVariant | `${ProgressVariant}`
-	/** Show percentage label */
+	/** Show label row with percentage. */
 	showLabel?: boolean
-	/** Animation style */
+	/** Animated shine on the filled bar. */
 	animated?: boolean
-	/** Striped pattern */
+	/** Striped pattern. */
 	striped?: boolean
-	/** Indeterminate state (loading) */
+	/** Indeterminate (loading) state with a sweeping bar. */
 	indeterminate?: boolean
-	/** Custom label text */
+	/** Custom label text. */
 	label?: string
-	/** Shape variant */
 	shape?: ProgressShape | `${ProgressShape}`
 	className?: string
 }
 
-const sizeClasses = {
-	[ProgressSize.ExtraSmall]: 'h-0.5',
-	[ProgressSize.Small]: 'h-1',
-	[ProgressSize.Medium]: 'h-2',
-	[ProgressSize.Large]: 'h-3',
-	[ProgressSize.ExtraLarge]: 'h-4'
-}
-
-const variantClasses = {
-	[ProgressVariant.Primary]: 'bg-[var(--c-primary)]',
-	[ProgressVariant.Success]: 'bg-[var(--c-success)]',
-	[ProgressVariant.Warning]: 'bg-[var(--c-warning)]',
-	[ProgressVariant.Danger]: 'bg-[var(--c-danger)]',
-	[ProgressVariant.Info]: 'bg-blue-500',
-	[ProgressVariant.Glass]: 'bg-white/20 dark:bg-white/10 backdrop-blur-sm border border-white/20'
-}
-
-const shapeClasses = {
-	[ProgressShape.Rounded]: 'rounded-lg',
-	[ProgressShape.Square]: 'rounded-none',
-	[ProgressShape.Pill]: 'rounded-full'
-}
-
 /**
- * Progress bar component with multiple variants and sizes
- * Shows completion percentage with smooth animations
+ * Linear progress bar. All motion is CSS-driven and honors
+ * `prefers-reduced-motion`. Server-component safe.
  */
-export function Progress({ 
-	value = 0, 
-	size = ProgressSize.Medium, 
+export function Progress({
+	value = 0,
+	size = ProgressSize.Medium,
 	variant = ProgressVariant.Primary,
 	showLabel = false,
 	animated = false,
@@ -82,47 +57,39 @@ export function Progress({
 	indeterminate = false,
 	label,
 	shape = ProgressShape.Rounded,
-	className = ''
+	className,
 }: ProgressProps) {
 	const clamped = Math.max(0, Math.min(100, value))
-	
-	// Striped pattern styles
-	const stripedStyles = striped ? {
-		backgroundImage: 'linear-gradient(45deg, rgba(255,255,255,.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.15) 50%, rgba(255,255,255,.15) 75%, transparent 75%, transparent)',
-		backgroundSize: '1rem 1rem'
-	} : {}
-	
-	// Animation classes - use standard Tailwind animations
-	const animationClasses = [
-		animated && !indeterminate ? 'animate-pulse' : '',
-		indeterminate ? 'animate-pulse' : ''
-	].filter(Boolean).join(' ')
-	
+	const labelId = React.useId()
+
 	return (
-		<div className={className}>
+		<div className={cx('bz-progress', className)} data-size={size as string} data-shape={shape as string}>
 			{showLabel && (
-				<div className="mb-2 flex justify-between text-sm">
-					<span className="text-[var(--c-text-secondary)]">{label || 'Progress'}</span>
-					{!indeterminate && (
-						<span className="text-[var(--c-text)] font-medium">{Math.round(clamped)}%</span>
-					)}
+				<div className="bz-progress__labels">
+					<span id={labelId} className="bz-progress__label">
+						{label ?? 'Progress'}
+					</span>
+					{!indeterminate && <span className="bz-progress__value">{Math.round(clamped)}%</span>}
 				</div>
 			)}
-			<div className={`w-full bg-[var(--c-surface-3)] border border-[var(--c-border)] overflow-hidden ${sizeClasses[size as ProgressSize]} ${shapeClasses[shape as ProgressShape]}`}>
-				<div 
-					className={`${sizeClasses[size as ProgressSize]} transition-all duration-300 ease-out ${variantClasses[variant as ProgressVariant]} ${animationClasses} ${shapeClasses[shape as ProgressShape]}`}
-					style={{
-						width: indeterminate ? '30%' : `${clamped}%`,
-						...stripedStyles
-					}}
-					role="progressbar"
-					aria-valuenow={indeterminate ? undefined : clamped}
-					aria-valuemin={0}
-					aria-valuemax={100}
+			<div
+				className="bz-progress__track"
+				role="progressbar"
+				aria-valuenow={indeterminate ? undefined : clamped}
+				aria-valuemin={0}
+				aria-valuemax={100}
+				aria-labelledby={showLabel ? labelId : undefined}
+				aria-label={!showLabel ? label ?? 'Progress' : undefined}
+			>
+				<div
+					className="bz-progress__bar"
+					data-variant={variant as string}
+					data-striped={striped || undefined}
+					data-animated={animated || undefined}
+					data-indeterminate={indeterminate || undefined}
+					style={indeterminate ? undefined : { width: `${clamped}%` }}
 				/>
 			</div>
-
 		</div>
 	)
 }
-

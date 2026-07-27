@@ -1,21 +1,23 @@
 "use client"
 import * as React from 'react'
+import { cx } from '../internal/cx.js'
+import { useControllableState } from '../internal/use-controllable-state.js'
 
 export enum TabsVariant {
 	Default = 'default',
 	Pills = 'pills',
 	Underline = 'underline',
 	Buttons = 'buttons',
-	Glass = 'glass'
+	Glass = 'glass',
 }
 
 export enum TabsSize {
 	Small = 'sm',
 	Medium = 'md',
-	Large = 'lg'
+	Large = 'lg',
 }
 
-export interface TabItem { 
+export interface TabItem {
 	key: string
 	label: React.ReactNode
 	icon?: React.ReactNode
@@ -23,135 +25,169 @@ export interface TabItem {
 	disabled?: boolean
 }
 
+interface TabsContextValue {
+	baseId: string
+	value: string
+}
+
+const TabsContext = React.createContext<TabsContextValue | null>(null)
+
 export interface TabsProps {
 	items: TabItem[]
-	value: string
-	onChange: (key: string) => void
+	/** Controlled selected key. */
+	value?: string
+	/** Initial key for uncontrolled usage. */
+	defaultValue?: string
+	onChange?: (key: string) => void
 	variant?: TabsVariant | `${TabsVariant}`
 	size?: TabsSize | `${TabsSize}`
 	fullWidth?: boolean
+	/**
+	 * 'auto' selects a tab as focus moves to it (default); 'manual' requires
+	 * Enter/Space — better when switching panels is expensive.
+	 */
+	activationMode?: 'auto' | 'manual'
 	className?: string
+	/** Render `<TabPanel>` children to get automatic aria wiring. */
+	children?: React.ReactNode
 }
 
-const sizeClasses = {
-	[TabsSize.Small]: 'text-xs px-3 py-1.5',
-	[TabsSize.Medium]: 'text-sm px-4 py-2',
-	[TabsSize.Large]: 'text-base px-5 py-2.5'
-}
-
-export function Tabs({ 
-	items, 
-	value, 
+/**
+ * Tab list following the WAI-ARIA tabs pattern: roving tabindex, arrow-key
+ * navigation, Home/End, automatic or manual activation, and full
+ * `aria-controls`/`aria-labelledby` wiring when combined with `<TabPanel>`.
+ */
+export function Tabs({
+	items,
+	value: valueProp,
+	defaultValue,
 	onChange,
 	variant = TabsVariant.Default,
 	size = TabsSize.Medium,
 	fullWidth = false,
-	className = ''
+	activationMode = 'auto',
+	className,
+	children,
 }: TabsProps) {
-	const containerClasses = {
-		[TabsVariant.Default]: 'inline-flex gap-0.5 rounded-xl border border-[var(--c-border)] bg-[var(--c-surface)]/50 p-0.5',
-		[TabsVariant.Pills]: 'inline-flex gap-2',
-		[TabsVariant.Underline]: 'flex border-b border-[var(--c-border)]',
-		[TabsVariant.Buttons]: 'inline-flex gap-1',
-		[TabsVariant.Glass]: 'inline-flex gap-1 rounded-xl bg-white/8 dark:bg-black/20 backdrop-blur-xl backdrop-saturate-150 border border-white/10 dark:border-white/5 p-1'
-	}
-	
-	const getItemClasses = (item: TabItem) => {
-		const isActive = value === item.key
-		const baseClasses = `
-			relative flex items-center gap-2 font-medium transition-all duration-200
-			${sizeClasses[size as TabsSize]}
-			${item.disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
-			${fullWidth ? 'flex-1 justify-center' : ''}
-		`
-		
-		switch (variant as TabsVariant) {
-			case TabsVariant.Pills:
-				return `${baseClasses} rounded-xl ${
-					isActive 
-						? 'bg-[var(--c-primary)] text-white shadow-md' 
-						: 'text-[var(--c-text-secondary)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)]/40'
-				}`
-			
-			case TabsVariant.Underline:
-				return `${baseClasses} rounded-none border-b-2 ${
-					isActive
-						? 'border-[var(--c-primary)] text-[var(--c-primary)]'
-						: 'border-transparent text-[var(--c-text-secondary)] hover:text-[var(--c-text)] hover:border-[var(--c-border-strong)]'
-				}`
-			
-			case TabsVariant.Buttons:
-				return `${baseClasses} rounded-xl border ${
-					isActive
-						? 'bg-[var(--c-primary)] text-white border-[var(--c-primary)] shadow-sm'
-						: 'border-[var(--c-border)] text-[var(--c-text-secondary)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)]/30 hover:border-[var(--c-border-strong)]'
-				}`
-			
-			case TabsVariant.Glass:
-				return `${baseClasses} rounded-lg ${
-					isActive
-						? 'bg-white/15 dark:bg-white/10 text-[var(--c-text)] shadow-sm'
-						: 'text-[var(--c-text-secondary)] hover:text-[var(--c-text)] hover:bg-white/10 dark:hover:bg-white/5'
-				}`
-			
-			default: // default
-				return `${baseClasses} rounded-lg ${
-					isActive
-						? 'bg-[var(--c-hover)]/60 text-[var(--c-text)]'
-						: 'text-[var(--c-text-secondary)] hover:text-[var(--c-text)] hover:bg-[var(--c-hover)]/20'
-				}`
+	const baseId = React.useId()
+	const [value, setValue] = useControllableState({
+		value: valueProp,
+		defaultValue: defaultValue ?? items.find(item => !item.disabled)?.key ?? '',
+		onChange,
+	})
+	const tabRefs = React.useRef(new Map<string, HTMLButtonElement>())
+
+	const enabledItems = items.filter(item => !item.disabled)
+
+	const handleKeyDown = (event: React.KeyboardEvent, currentKey: string) => {
+		const currentIndex = enabledItems.findIndex(item => item.key === currentKey)
+		if (currentIndex === -1) return
+		let nextIndex: number | null = null
+
+		switch (event.key) {
+			case 'ArrowRight':
+				nextIndex = (currentIndex + 1) % enabledItems.length
+				break
+			case 'ArrowLeft':
+				nextIndex = (currentIndex - 1 + enabledItems.length) % enabledItems.length
+				break
+			case 'Home':
+				nextIndex = 0
+				break
+			case 'End':
+				nextIndex = enabledItems.length - 1
+				break
+			case 'Enter':
+			case ' ':
+				if (activationMode === 'manual') {
+					event.preventDefault()
+					setValue(currentKey)
+				}
+				return
+			default:
+				return
 		}
+
+		event.preventDefault()
+		const nextKey = enabledItems[nextIndex].key
+		tabRefs.current.get(nextKey)?.focus()
+		if (activationMode === 'auto') setValue(nextKey)
 	}
-	
-	const containerClass = fullWidth ? 'flex w-full' : containerClasses[variant as TabsVariant]
-	
-	return (
-		<div className={`${containerClass} ${className}`} role="tablist">
-			{items.map(item => (
-				<button
-					key={item.key}
-					onClick={() => !item.disabled && onChange(item.key)}
-					className={getItemClasses(item)}
-					role="tab"
-					aria-selected={value === item.key}
-					aria-disabled={item.disabled}
-					disabled={item.disabled}
-				>
-					{item.icon && (
-						<span className="flex-shrink-0">
-							{item.icon}
-						</span>
-					)}
-					<span>{item.label}</span>
-					{item.badge !== undefined && (
-						<span className="ml-1.5 inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-bold bg-[var(--c-primary)] text-white rounded-full">
-							{item.badge}
-						</span>
-					)}
-					{variant === TabsVariant.Underline && value === item.key && (
-						<span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--c-primary)]" />
-					)}
-				</button>
-			))}
+
+	const tablist = (
+		<div
+			className={cx('bz-tabs', className)}
+			data-variant={variant as string}
+			data-size={size as string}
+			data-full-width={fullWidth || undefined}
+			role="tablist"
+			aria-orientation="horizontal"
+		>
+			{items.map(item => {
+				const selected = value === item.key
+				return (
+					<button
+						key={item.key}
+						ref={el => {
+							if (el) tabRefs.current.set(item.key, el)
+							else tabRefs.current.delete(item.key)
+						}}
+						id={`${baseId}-tab-${item.key}`}
+						type="button"
+						role="tab"
+						aria-selected={selected}
+						aria-controls={`${baseId}-panel-${item.key}`}
+						aria-disabled={item.disabled}
+						disabled={item.disabled}
+						tabIndex={selected ? 0 : -1}
+						className="bz-tabs__tab"
+						data-state={selected ? 'active' : 'inactive'}
+						onClick={() => !item.disabled && setValue(item.key)}
+						onKeyDown={event => handleKeyDown(event, item.key)}
+					>
+						{item.icon != null && <span className="bz-tabs__icon">{item.icon}</span>}
+						<span className="bz-tabs__label">{item.label}</span>
+						{item.badge !== undefined && <span className="bz-tabs__badge">{item.badge}</span>}
+					</button>
+				)
+			})}
 		</div>
+	)
+
+	if (children == null) return tablist
+
+	return (
+		<TabsContext.Provider value={{ baseId, value }}>
+			{tablist}
+			{children}
+		</TabsContext.Provider>
 	)
 }
 
-// TabPanel component for tab content
 export interface TabPanelProps {
 	value: string
-	selectedValue: string
+	/** Optional when rendered inside `<Tabs>` (read from context). */
+	selectedValue?: string
 	children: React.ReactNode
 	className?: string
+	/** Keep the panel mounted (hidden) when inactive. */
+	keepMounted?: boolean
 }
 
-export function TabPanel({ value, selectedValue, children, className = '' }: TabPanelProps) {
-	if (value !== selectedValue) return null
-	
+/** Content panel for a tab. Wire-up is automatic inside `<Tabs>`. */
+export function TabPanel({ value, selectedValue, children, className, keepMounted = false }: TabPanelProps) {
+	const context = React.useContext(TabsContext)
+	const selected = (selectedValue ?? context?.value) === value
+	if (!selected && !keepMounted) return null
+
 	return (
-		<div 
+		<div
 			role="tabpanel"
-			className={`animate-in fade-in-0 slide-in-from-bottom-1 duration-200 ${className}`}
+			id={context ? `${context.baseId}-panel-${value}` : undefined}
+			aria-labelledby={context ? `${context.baseId}-tab-${value}` : undefined}
+			tabIndex={0}
+			hidden={!selected}
+			className={cx('bz-tab-panel', className)}
 		>
 			{children}
 		</div>

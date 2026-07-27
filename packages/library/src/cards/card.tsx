@@ -1,62 +1,59 @@
 import * as React from 'react'
+import { cx } from '../internal/cx.js'
 
 export enum CardVariant {
 	Default = 'default',
 	Elevated = 'elevated',
-	Outlined = 'outlined'
+	Outlined = 'outlined',
 }
 
 export interface CardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'title'> {
 	header?: React.ReactNode
 	actions?: React.ReactNode
+	/** Footer area separated by a divider. */
+	footer?: React.ReactNode
 	variant?: CardVariant | `${CardVariant}`
+	/** Adds hover elevation + pointer affordance for clickable cards. */
+	interactive?: boolean
+	/** Remove the default body padding (edge-to-edge content). */
+	flush?: boolean
 }
 
 /**
- * Card component inspired by Umbro's clean design
- * Provides a flexible container with optional header and actions
+ * Flexible content container with optional header, actions and footer.
+ * Server-component safe — zero client JavaScript.
  */
-export function Card({ 
-	header, 
-	actions, 
+export function Card({
+	header,
+	actions,
+	footer,
 	variant = CardVariant.Default,
-	className = '', 
-	children, 
-	...props 
+	interactive = false,
+	flush = false,
+	className,
+	children,
+	...props
 }: CardProps) {
-	const variantClasses = {
-		[CardVariant.Default]: 'bg-[var(--c-surface)] border border-[var(--c-border)]',
-		[CardVariant.Elevated]: 'bg-[var(--c-surface)] border border-[var(--c-border)] shadow-[var(--shadow-md)]',
-		[CardVariant.Outlined]: 'bg-[var(--c-surface-2)] border border-[var(--c-border-strong)]'
-	}
-
 	return (
-		<div 
-			className={[
-				'rounded-[var(--radius-xl)] p-6 transition-shadow',
-				variantClasses[variant as CardVariant],
-				className
-			].join(' ')} 
+		<div
+			className={cx('bz-card', className)}
+			data-variant={variant as string}
+			data-interactive={interactive || undefined}
+			data-flush={flush || undefined}
 			{...props}
 		>
-			{(header || actions) && (
-				<div className="mb-4 flex items-start justify-between gap-4">
-					{header && (
-						<div className="min-w-0 flex-1">
-							{typeof header === 'string' ? (
-								<h3 className="text-lg font-semibold text-[var(--c-text)]">{header}</h3>
-							) : (
-								header
-							)}
+			{(header != null || actions != null) && (
+				<div className="bz-card__header">
+					{header != null && (
+						<div className="bz-card__header-content">
+							{typeof header === 'string' ? <h3 className="bz-card__title">{header}</h3> : header}
 						</div>
 					)}
-					{actions && <div className="flex-shrink-0">{actions}</div>}
+					{actions != null && <div className="bz-card__actions">{actions}</div>}
 				</div>
 			)}
-			<div className="text-[var(--c-text)]">
-				{children}
-			</div>
+			<div className="bz-card__body">{children}</div>
+			{footer != null && <div className="bz-card__footer">{footer}</div>}
 		</div>
 	)
 }
-

@@ -1,11 +1,15 @@
 "use client"
 import * as React from 'react'
-import { motion, AnimatePresence, type Variants } from 'framer-motion'
-import { type DropdownAnimationVariants, AnimationPresets } from '../types/animations'
+import { Portal } from '../internal/portal.js'
+import { cx } from '../internal/cx.js'
+import { composeRefs } from '../internal/compose-refs.js'
+import { usePosition, type Side, type Align } from '../internal/use-position.js'
+import { useDismissableLayer } from '../internal/use-dismissable-layer.js'
+import { usePresence } from '../internal/use-presence.js'
 
 export enum DropdownItemVariant {
 	Default = 'default',
-	Destructive = 'destructive'
+	Destructive = 'destructive',
 }
 
 export interface DropdownItem {
@@ -21,175 +25,235 @@ export interface DropdownItem {
 export interface DropdownProps {
 	trigger: React.ReactElement
 	items: (DropdownItem | 'separator')[]
-	align?: 'start' | 'center' | 'end'
-	side?: 'top' | 'right' | 'bottom' | 'left'
+	align?: Align
+	side?: Side
 	sideOffset?: number
 	className?: string
-	/** Custom animation variants for dropdown entrance/exit */
-	animationVariants?: DropdownAnimationVariants
+	/** Controlled open state. */
+	open?: boolean
+	onOpenChange?: (open: boolean) => void
 }
 
+/**
+ * Menu attached to a trigger element (WAI-ARIA menu pattern):
+ * - full keyboard support: arrows, Home/End, Enter/Space, Escape, typeahead
+ * - rendered in a portal with collision-aware positioning
+ * - focus returns to the trigger on close
+ */
 export function Dropdown({
 	trigger,
 	items,
 	align = 'start',
 	side = 'bottom',
 	sideOffset = 4,
-	className = '',
-	animationVariants
+	className,
+	open: openProp,
+	onOpenChange,
 }: DropdownProps) {
-	const [isOpen, setIsOpen] = React.useState(false)
-	const dropdownRef = React.useRef<HTMLDivElement>(null)
-	const triggerRef = React.useRef<HTMLElement>(null)
+	const menuId = React.useId()
+	const triggerRef = React.useRef<HTMLElement | null>(null)
+	const menuRef = React.useRef<HTMLDivElement | null>(null)
+	const itemRefs = React.useRef<(HTMLElement | null)[]>([])
+	const typeahead = React.useRef({ buffer: '', at: 0 })
 
-	// Use provided animation variants or elegant default with direction awareness
-	const defaultVariants = {
-		...AnimationPresets.dropdown.subtle,
-		hidden: {
-			...AnimationPresets.dropdown.subtle.hidden,
-			y: side === 'top' ? 10 : side === 'bottom' ? -10 : AnimationPresets.dropdown.subtle.hidden!.y,
-			x: side === 'left' ? 10 : side === 'right' ? -10 : 0
+	const [internalOpen, setInternalOpen] = React.useState(false)
+	const open = openProp ?? internalOpen
+	const setOpen = React.useCallback(
+		(next: boolean) => {
+			setInternalOpen(next)
+			onOpenChange?.(next)
 		},
-		exit: {
-			...AnimationPresets.dropdown.subtle.exit,
-			y: side === 'top' ? 5 : side === 'bottom' ? -5 : 0,
-			x: side === 'left' ? 5 : side === 'right' ? -5 : 0
-		}
-	}
+		[onOpenChange]
+	)
 
-	const variants = animationVariants || defaultVariants
+	const mounted = usePresence(open, 140)
+	const { x, y, side: actualSide, ready } = usePosition(triggerRef, menuRef, {
+		open: mounted,
+		side,
+		align,
+		sideOffset,
+	})
 
+	useDismissableLayer({
+		enabled: open,
+		onDismiss: () => setOpen(false),
+		refs: [menuRef, triggerRef],
+	})
+
+	const enabledItems = items.filter(
+		(item): item is DropdownItem => item !== 'separator' && !item.disabled
+	)
+
+	const focusItem = React.useCallback((index: number) => {
+		const target = itemRefs.current[index]
+		target?.focus()
+	}, [])
+
+	// Focus management on open/close.
+	const openedByKeyboard = React.useRef<'first' | 'last' | null>(null)
 	React.useEffect(() => {
-		const handleClickOutside = (event: MouseEvent) => {
-			if (
-				dropdownRef.current &&
-				!dropdownRef.current.contains(event.target as Node) &&
-				triggerRef.current &&
-				!triggerRef.current.contains(event.target as Node)
-			) {
-				setIsOpen(false)
-			}
+		if (open) {
+			const frame = requestAnimationFrame(() => {
+				if (openedByKeyboard.current === 'last') focusItem(enabledItems.length - 1)
+				else focusItem(0)
+				openedByKeyboard.current = null
+			})
+			return () => cancelAnimationFrame(frame)
 		}
+		triggerRef.current?.focus?.()
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [open])
 
-		const handleEscape = (event: KeyboardEvent) => {
-			if (event.key === 'Escape') {
-				setIsOpen(false)
-			}
-		}
-
-		if (isOpen) {
-			document.addEventListener('mousedown', handleClickOutside)
-			document.addEventListener('keydown', handleEscape)
-		}
-
-		return () => {
-			document.removeEventListener('mousedown', handleClickOutside)
-			document.removeEventListener('keydown', handleEscape)
-		}
-	}, [isOpen])
-
-	const getPositionStyle = (): React.CSSProperties => {
-		const style: React.CSSProperties = { position: 'absolute', zIndex: 50 }
-		
-		// Handle alignment
-		if (align === 'start') {
-			style.left = 0
-		} else if (align === 'center') {
-			style.left = '50%'
-			style.transform = 'translateX(-50%)'
-		} else if (align === 'end') {
-			style.right = 0
-		}
-		
-		// Handle side and offset
-		if (side === 'top') {
-			style.bottom = '100%'
-			style.marginBottom = `${sideOffset}px`
-		} else if (side === 'right') {
-			style.left = '100%'
-			style.marginLeft = `${sideOffset}px`
-		} else if (side === 'bottom') {
-			style.top = '100%'
-			style.marginTop = `${sideOffset}px`
-		} else if (side === 'left') {
-			style.right = '100%'
-			style.marginRight = `${sideOffset}px`
-		}
-		
-		return style
-	}
-
-	const handleItemClick = (item: DropdownItem) => {
+	const activateItem = (item: DropdownItem) => {
 		if (item.disabled) return
-		
 		item.onClick?.()
-		setIsOpen(false)
+		setOpen(false)
 	}
+
+	const handleMenuKeyDown = (event: React.KeyboardEvent) => {
+		const currentIndex = itemRefs.current.findIndex(el => el === document.activeElement)
+		const count = enabledItems.length
+		if (count === 0) return
+
+		switch (event.key) {
+			case 'ArrowDown':
+				event.preventDefault()
+				focusItem(currentIndex < 0 ? 0 : (currentIndex + 1) % count)
+				break
+			case 'ArrowUp':
+				event.preventDefault()
+				focusItem(currentIndex < 0 ? count - 1 : (currentIndex - 1 + count) % count)
+				break
+			case 'Home':
+				event.preventDefault()
+				focusItem(0)
+				break
+			case 'End':
+				event.preventDefault()
+				focusItem(count - 1)
+				break
+			case 'Tab':
+				// Menus close on Tab rather than cycling focus.
+				setOpen(false)
+				break
+			default: {
+				if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+					const now = Date.now()
+					const state = typeahead.current
+					state.buffer = now - state.at > 500 ? event.key : state.buffer + event.key
+					state.at = now
+					const query = state.buffer.toLowerCase()
+					const startAt = currentIndex >= 0 ? currentIndex : 0
+					for (let offset = 0; offset < count; offset++) {
+						const index = (startAt + offset + (state.buffer.length === 1 ? 1 : 0)) % count
+						const label = labelText(enabledItems[index].label)
+						if (label.toLowerCase().startsWith(query)) {
+							focusItem(index)
+							break
+						}
+					}
+				}
+			}
+		}
+	}
+
+	const triggerElement = React.cloneElement(trigger as React.ReactElement<Record<string, unknown>>, {
+		ref: composeRefs(
+			triggerRef,
+			(trigger.props as { ref?: React.Ref<HTMLElement> }).ref ??
+				(trigger as unknown as { ref?: React.Ref<HTMLElement> }).ref
+		),
+		'aria-haspopup': 'menu',
+		'aria-expanded': open,
+		'aria-controls': open ? menuId : undefined,
+		onClick: (event: React.MouseEvent) => {
+			;(trigger.props as { onClick?: (e: React.MouseEvent) => void }).onClick?.(event)
+			setOpen(!open)
+		},
+		onKeyDown: (event: React.KeyboardEvent) => {
+			;(trigger.props as { onKeyDown?: (e: React.KeyboardEvent) => void }).onKeyDown?.(event)
+			if (event.key === 'ArrowDown' || (!open && (event.key === 'Enter' || event.key === ' '))) {
+				event.preventDefault()
+				openedByKeyboard.current = 'first'
+				setOpen(true)
+			} else if (event.key === 'ArrowUp') {
+				event.preventDefault()
+				openedByKeyboard.current = 'last'
+				setOpen(true)
+			}
+		},
+	})
+
+	let enabledIndex = -1
 
 	return (
-		<div className="relative inline-block">
-			{React.cloneElement(trigger, {
-				ref: triggerRef,
-				onClick: () => setIsOpen(!isOpen),
-				'aria-expanded': isOpen,
-				'aria-haspopup': true,
-			})}
-
-			<AnimatePresence>
-				{isOpen && (
-					<motion.div
-						ref={dropdownRef}
-						className={`
-							min-w-[12rem] rounded-lg border border-[var(--c-dropdown-border,var(--c-border))] 
-							bg-[var(--c-dropdown-bg,var(--c-surface))] py-1 shadow-lg backdrop-blur-sm
-							${className}
-						`}
-						style={getPositionStyle()}
-						variants={variants}
-						initial="hidden"
-						animate="visible"
-						exit="exit"
+		<>
+			{triggerElement}
+			{mounted && (
+				<Portal>
+					<div
+						ref={menuRef}
+						id={menuId}
+						role="menu"
+						aria-orientation="vertical"
+						className={cx('bz-menu', className)}
+						data-side={actualSide}
+						data-state={open ? 'open' : 'closed'}
+						style={{ position: 'fixed', left: x, top: y, visibility: ready ? undefined : 'hidden' }}
+						onKeyDown={handleMenuKeyDown}
 					>
-					{items.map((item, index) => {
-						if (item === 'separator') {
-							return (
-								<div
-									key={`separator-${index}`}
-									className="my-1 h-px bg-[var(--c-border)]"
-								/>
+						{items.map((item, index) => {
+							if (item === 'separator') {
+								return <div key={`separator-${index}`} role="separator" className="bz-menu__separator" />
+							}
+							const isDisabled = Boolean(item.disabled)
+							if (!isDisabled) enabledIndex++
+							const refIndex = enabledIndex
+							const commonProps = {
+								role: 'menuitem' as const,
+								tabIndex: -1,
+								className: 'bz-menu__item',
+								'data-variant': (item.variant as string) ?? 'default',
+								'aria-disabled': isDisabled || undefined,
+								'data-disabled': isDisabled || undefined,
+								ref: isDisabled
+									? undefined
+									: (el: HTMLElement | null) => {
+											itemRefs.current[refIndex] = el
+										},
+							}
+							const content = (
+								<>
+									{item.icon != null && <span className="bz-menu__item-icon">{item.icon}</span>}
+									<span className="bz-menu__item-label">{item.label}</span>
+								</>
 							)
-						}
-
-						const ItemComponent = item.href ? 'a' : 'button'
-						const itemClasses = [
-							'flex w-full items-center gap-3 px-3 py-2 text-left text-sm transition-colors',
-							item.disabled
-								? 'cursor-not-allowed text-[var(--c-text-secondary)]/50'
-								: item.variant === DropdownItemVariant.Destructive
-								? 'text-[var(--c-error,#ef4444)] hover:bg-[var(--c-error-light,#fee2e2)] hover:text-[var(--c-error-hover,#dc2626)] dark:text-[var(--c-error,#ef4444)] dark:hover:bg-[var(--c-error-light,#fee2e2)]'
-								: 'text-[var(--c-text)] hover:bg-[var(--c-dropdown-hover,var(--c-hover))]',
-						].join(' ')
-
-						return (
-							<ItemComponent
-								key={item.key}
-								className={itemClasses}
-								onClick={() => handleItemClick(item)}
-								href={item.href}
-								disabled={item.disabled}
-							>
-								{item.icon && (
-									<span className="flex-shrink-0">
-										{item.icon}
-									</span>
-								)}
-								{item.label}
-							</ItemComponent>
-													)
+							return item.href && !isDisabled ? (
+								<a key={item.key} href={item.href} {...commonProps} onClick={() => activateItem(item)}>
+									{content}
+								</a>
+							) : (
+								<button
+									key={item.key}
+									type="button"
+									disabled={isDisabled}
+									{...commonProps}
+									onClick={() => activateItem(item)}
+								>
+									{content}
+								</button>
+							)
 						})}
-					</motion.div>
-				)}
-			</AnimatePresence>
-		</div>
+					</div>
+				</Portal>
+			)}
+		</>
 	)
+}
+
+function labelText(node: React.ReactNode): string {
+	if (typeof node === 'string' || typeof node === 'number') return String(node)
+	if (Array.isArray(node)) return node.map(labelText).join('')
+	if (React.isValidElement(node)) return labelText((node.props as { children?: React.ReactNode }).children)
+	return ''
 }

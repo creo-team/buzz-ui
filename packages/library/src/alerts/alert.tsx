@@ -1,72 +1,61 @@
 import * as React from 'react'
+import { cx } from '../internal/cx.js'
+import { IconInfo, IconSuccess, IconWarning, IconDanger } from '../internal/icons.js'
 
 export enum AlertVariant {
 	Info = 'info',
 	Success = 'success',
 	Warning = 'warning',
-	Danger = 'danger'
+	Danger = 'danger',
 }
 
 // Accept both enum and its string literal values for DX
 type AlertVariantInput = AlertVariant | `${AlertVariant}`
 
-const styles: Record<AlertVariant, string> = {
-	[AlertVariant.Danger]: 'border-[var(--c-danger)]/20 bg-[var(--c-danger-light)] text-[var(--c-danger)]',
-	[AlertVariant.Info]: 'border-[var(--c-info)]/20 bg-[var(--c-info-light)] text-[var(--c-info)]',
-	[AlertVariant.Success]: 'border-[var(--c-success)]/20 bg-[var(--c-success-light)] text-[var(--c-success)]',
-	[AlertVariant.Warning]: 'border-[var(--c-warning)]/20 bg-[var(--c-warning-light)] text-[var(--c-warning)]',
-}
-
-const icons: Record<AlertVariant, React.ReactNode> = {
-	[AlertVariant.Danger]: (
-		<svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-			<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-		</svg>
-	),
-	[AlertVariant.Info]: (
-		<svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-			<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-		</svg>
-	),
-	[AlertVariant.Success]: (
-		<svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-			<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-		</svg>
-	),
-	[AlertVariant.Warning]: (
-		<svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-			<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-		</svg>
-	),
+const ICONS: Record<AlertVariant, React.ReactNode> = {
+	[AlertVariant.Info]: <IconInfo className="bz-alert__icon-svg" />,
+	[AlertVariant.Success]: <IconSuccess className="bz-alert__icon-svg" />,
+	[AlertVariant.Warning]: <IconWarning className="bz-alert__icon-svg" />,
+	[AlertVariant.Danger]: <IconDanger className="bz-alert__icon-svg" />,
 }
 
 export interface AlertProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'title'> {
 	variant?: AlertVariantInput
 	header?: React.ReactNode
+	/** Replace the variant icon; pass `null` to hide it. */
+	icon?: React.ReactNode
+	/** Action buttons/links rendered under the content. */
+	actions?: React.ReactNode
 }
 
-export function Alert({ variant = AlertVariant.Info, header, className = '', children, ...props }: AlertProps) {
+/**
+ * Inline callout for contextual feedback. Danger renders as `role="alert"`
+ * (interrupting), others as polite status. Server-component safe.
+ */
+export function Alert({
+	variant = AlertVariant.Info,
+	header,
+	icon,
+	actions,
+	className,
+	children,
+	...props
+}: AlertProps) {
 	const resolvedVariant = variant as AlertVariant
+	const displayIcon = icon !== undefined ? icon : ICONS[resolvedVariant]
 	return (
-		<div 
-			className={[
-				'rounded-[var(--radius-lg)] border p-4 text-sm', 
-				styles[resolvedVariant], 
-				className
-			].join(' ')} 
+		<div
+			className={cx('bz-alert', className)}
+			data-variant={resolvedVariant}
 			role={resolvedVariant === AlertVariant.Danger ? 'alert' : 'status'}
 			{...props}
 		>
-			<div className="flex gap-3">
-				<div className="flex-shrink-0 mt-0.5">
-					{icons[resolvedVariant]}
-				</div>
-				<div className="flex-1">
-					{header && <div className="mb-2 font-semibold">{header}</div>}
-					<div>{children}</div>
-				</div>
+			{displayIcon != null && <div className="bz-alert__icon">{displayIcon}</div>}
+			<div className="bz-alert__content">
+				{header != null && <div className="bz-alert__header">{header}</div>}
+				<div className="bz-alert__body">{children}</div>
+				{actions != null && <div className="bz-alert__actions">{actions}</div>}
 			</div>
 		</div>
 	)
 }
-

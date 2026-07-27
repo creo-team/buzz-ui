@@ -1,28 +1,48 @@
 import * as React from 'react'
+import { cx } from '../internal/cx.js'
+import { Field, fieldDescribedBy } from './field.js'
 
 export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-	label?: string
+	label?: React.ReactNode
 	error?: string
+	helpText?: React.ReactNode
+	/**
+	 * Grow with content via CSS `field-sizing: content` — zero JavaScript.
+	 * Browsers without support keep the fixed size (progressive enhancement).
+	 */
+	autoResize?: boolean
+	/** className for the outer field wrapper. */
+	wrapperClassName?: string
 }
 
+/** Multiline text input with label and validation states. Server-component safe. */
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea(
-	{ label, error, className = '', ...props },
+	{ label, error, helpText, autoResize, className, wrapperClassName, id, required, ...props },
 	ref
 ) {
+	const autoId = React.useId()
+	const textareaId = id ?? autoId
+
 	return (
-		<label className="block text-sm text-[var(--c-text)]">
-			{label && <span className="mb-1 block text-[var(--c-text-secondary)]">{label}</span>}
+		<Field
+			htmlFor={textareaId}
+			label={label}
+			required={required}
+			error={error}
+			helpText={helpText}
+			className={wrapperClassName}
+		>
 			<textarea
 				ref={ref}
-				className={[
-					'block w-full rounded-xl border bg-[var(--c-surface)] px-3 py-2 text-[var(--c-text)] placeholder:text-[var(--c-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--c-primary-ring)]',
-					error ? 'border-[var(--c-danger)]' : 'border-[var(--c-border)]',
-					className,
-				].join(' ')}
+				id={textareaId}
+				className={cx('bz-textarea', className)}
+				data-tone={error ? 'error' : undefined}
+				data-auto-resize={autoResize || undefined}
+				aria-invalid={error ? true : undefined}
+				aria-describedby={fieldDescribedBy(textareaId, { error, helpText })}
+				required={required}
 				{...props}
 			/>
-			{error && <span className="mt-1 block text-xs text-[var(--c-danger)]">{error}</span>}
-		</label>
+		</Field>
 	)
 })
-

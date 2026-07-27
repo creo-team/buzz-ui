@@ -1,25 +1,84 @@
 # Theming System
 
-The Buzz UI library includes a comprehensive theming system with extensive CSS variable support for complete customization of all components.
+Buzz UI is themed entirely through CSS custom properties. The shipped
+stylesheet (`@creo-team/buzz-ui/styles.css`) defines every token for six
+built-in themes — `light`, `dark`, `midnight`, `forest`, `ocean`, `umbro` —
+selected via `data-theme` on `<html>` (a matching class is also applied).
 
 ## Quick Start
 
 ```tsx
-import { ThemeProvider } from '@creo-team/buzz-ui/client'
-import { createThemeConfig, ThemePreset } from '@creo-team/buzz-ui'
+// 1. Import the stylesheet once (tokens + component styles)
+import '@creo-team/buzz-ui/styles.css'
 
-const themes = [
-  createThemeConfig(ThemePreset.Light),
-  createThemeConfig(ThemePreset.Dark),
-]
+// 2. Add a switcher anywhere
+import { ThemeSwitcher } from '@creo-team/buzz-ui/client'
 
-function App() {
-  return (
-    <ThemeProvider themes={themes} defaultTheme="light">
-      {/* Your app */}
-    </ThemeProvider>
-  )
+<ThemeSwitcher />
+```
+
+Theme choice persists in a cookie, so the server can render the right theme on
+the next request.
+
+## Flicker-free SSR
+
+Render the persisted theme on the server and guard against stale cached HTML
+with a tiny inline script:
+
+```tsx
+// app/layout.tsx (Next.js App Router)
+import { cookies } from 'next/headers'
+import { getServerTheme, themeInitScript } from '@creo-team/buzz-ui/server'
+
+export default function RootLayout({ children }) {
+	const theme = getServerTheme(cookies(), 'light')
+	return (
+		<html lang="en" data-theme={theme} className={theme}>
+			<head>
+				<script dangerouslySetInnerHTML={{ __html: themeInitScript(theme) }} />
+			</head>
+			<body>{children}</body>
+		</html>
+	)
 }
+```
+
+`getServerTheme` also accepts a raw `Cookie` header string, so it works in any
+framework: `getServerTheme(request.headers.get('cookie') ?? '')`.
+
+Pass the value to any switcher as `initialTheme` to skip its mount fallback:
+
+```tsx
+<ThemeSwitcher initialTheme={theme} />
+```
+
+## Switcher components
+
+| Component | UI |
+| --- | --- |
+| `ThemeSwitcher` | Segmented pills (up to 3 themes) |
+| `EnhancedThemeSwitcher` | Pills + dropdown for the rest |
+| `CycleThemeSwitcher` | One button that cycles |
+
+All share one engine (`useThemeSwitcher`) — cookie persistence, DOM
+application, Alt+T cycling, and a toast announcement. Build your own switcher
+on the same hook:
+
+```tsx
+import { useThemeSwitcher } from '@creo-team/buzz-ui/client'
+
+const { theme, setTheme, cycle } = useThemeSwitcher({
+	themes: [{ value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }],
+})
+```
+
+## App-level context (optional)
+
+```tsx
+import { ThemeProvider, useTheme } from '@creo-team/buzz-ui/client'
+
+<ThemeProvider defaultTheme="light">…</ThemeProvider>
+const { theme, setTheme } = useTheme()
 ```
 
 ## Complete CSS Variable Reference

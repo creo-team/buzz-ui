@@ -1,29 +1,27 @@
 import './globals.css'
-import { TopNav, getServerTheme, Banner } from '@creo-team/buzz-ui/server'
-import { ThemeSwitcher } from '@creo-team/buzz-ui/client'
-import { Toaster } from 'react-hot-toast'
+// The site consumes the library's workspace source (see tsconfig paths), so
+// import the stylesheet source too — npm consumers use '@creo-team/buzz-ui/styles.css'.
+import '../../../packages/library/src/styles/buzz.css'
+import { cookies } from 'next/headers'
+import { TopNav, getServerTheme } from '@creo-team/buzz-ui/server'
+import { ThemeSwitcher, ToastProvider } from '@creo-team/buzz-ui/client'
+import { themeInitScript } from '@creo-team/buzz-ui/server'
 import { DevBanner } from '../components/dev-banner'
-import { ToastProvider } from '@creo-team/buzz-ui/client'
 import { Logo } from '../components/logo'
 import { BuzzTextLogo } from '../components/buzz-text-logo'
 import { SiteFooter } from '../components/site-footer'
- 
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-	const initialTheme = getServerTheme('light')
-	
+	const initialTheme = getServerTheme(cookies(), 'light')
+
 	return (
 		<html lang="en" data-theme={initialTheme} className={initialTheme}>
 			<head>
-				<script
-					dangerouslySetInnerHTML={{
-						__html: `try{var t=document.cookie.match(/theme=([^;]+)/)?.[1]||'${initialTheme}';if(t!=='${initialTheme}'){document.documentElement.setAttribute('data-theme',t);document.documentElement.className=t}}catch(e){}`,
-					}}
-				/>
+				<script dangerouslySetInnerHTML={{ __html: themeInitScript(initialTheme) }} />
 			</head>
 			<body>
 				<div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--c-background)', color: 'var(--c-text)' }}>
-					<ToastProvider>
+					<ToastProvider position="top-center">
 						<TopNav
 							before={<DevBanner />}
 							brand={
@@ -55,21 +53,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 						<main className="flex-1 pt-[104px]">
 							{children}
 						</main>
-						<Toaster
-							position="top-center"
-							toastOptions={{
-								duration: 1500,
-								style: {
-									background: 'var(--c-surface)',
-									color: 'var(--c-text)',
-									border: '1px solid var(--c-border)',
-									fontSize: '0.875rem',
-									maxWidth: '260px',
-									padding: '0.625rem 0.75rem',
-									borderRadius: '8px',
-								},
-							}}
-						/>
 						<SiteFooter />
 					</ToastProvider>
 				</div>
@@ -77,4 +60,3 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 		</html>
 	)
 }
-
