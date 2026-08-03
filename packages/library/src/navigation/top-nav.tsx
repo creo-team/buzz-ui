@@ -49,11 +49,16 @@ export function TopNav({
 }: TopNavProps) {
 	const menuId = React.useId()
 	const [mobileOpen, setMobileOpen] = React.useState(false)
+	const menuButtonRef = React.useRef<HTMLButtonElement>(null)
 
 	React.useEffect(() => {
 		if (!mobileOpen) return
 		const onKeydown = (event: KeyboardEvent) => {
-			if (event.key === 'Escape') setMobileOpen(false)
+			if (event.key === 'Escape') {
+				setMobileOpen(false)
+				// Keyboard users keep their place instead of dropping to <body>.
+				menuButtonRef.current?.focus()
+			}
 		}
 		document.addEventListener('keydown', onKeydown)
 		return () => document.removeEventListener('keydown', onKeydown)
@@ -97,6 +102,7 @@ export function TopNav({
 						<div className="bz-top-nav__right">
 							{right}
 							<button
+								ref={menuButtonRef}
 								type="button"
 								className="bz-top-nav__menu-button"
 								aria-expanded={mobileOpen}

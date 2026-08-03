@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, act, within } from '@testing-library/react'
 import React from 'react'
 import { toast, Toaster, useToast } from '../../src/overlays/toast'
 import { describe, it, expect, afterEach } from 'vitest'
@@ -15,7 +15,9 @@ describe('toast', () => {
 		act(() => {
 			toast('Saved successfully')
 		})
-		await waitFor(() => expect(screen.getByText('Saved successfully')).toBeInTheDocument())
+		await waitFor(() =>
+			expect(within(screen.getByRole('region', { name: 'Notifications' })).getByText('Saved successfully')).toBeInTheDocument()
+		)
 	})
 
 	it('renders variant icon and description', async () => {
@@ -23,8 +25,10 @@ describe('toast', () => {
 		act(() => {
 			toast.success('Profile updated', { description: 'Changes are live.' })
 		})
-		await waitFor(() => expect(screen.getByText('Profile updated')).toBeInTheDocument())
-		expect(screen.getByText('Changes are live.')).toBeInTheDocument()
+		await waitFor(() =>
+			expect(within(screen.getByRole('region', { name: 'Notifications' })).getByText('Profile updated')).toBeInTheDocument()
+		)
+		expect(within(screen.getByRole('region', { name: 'Notifications' })).getByText('Changes are live.')).toBeInTheDocument()
 	})
 
 	it('dismisses by id', async () => {
@@ -33,11 +37,13 @@ describe('toast', () => {
 		act(() => {
 			id = toast('Going away', { duration: Infinity })
 		})
-		await waitFor(() => expect(screen.getByText('Going away')).toBeInTheDocument())
+		await waitFor(() =>
+			expect(within(screen.getByRole('region', { name: 'Notifications' })).getByText('Going away')).toBeInTheDocument()
+		)
 		act(() => {
 			toast.dismiss(id)
 		})
-		await waitFor(() => expect(screen.queryByText('Going away')).not.toBeInTheDocument())
+		await waitFor(() => expect(screen.queryByRole('region', { name: 'Notifications' })).not.toBeInTheDocument())
 	})
 
 	it('shows a close button for persistent toasts and dismisses on click', async () => {
@@ -45,9 +51,11 @@ describe('toast', () => {
 		act(() => {
 			toast('Sticky note', { duration: Infinity })
 		})
-		await waitFor(() => expect(screen.getByText('Sticky note')).toBeInTheDocument())
+		await waitFor(() =>
+			expect(within(screen.getByRole('region', { name: 'Notifications' })).getByText('Sticky note')).toBeInTheDocument()
+		)
 		fireEvent.click(screen.getByLabelText('Dismiss notification'))
-		await waitFor(() => expect(screen.queryByText('Sticky note')).not.toBeInTheDocument())
+		await waitFor(() => expect(screen.queryByRole('region', { name: 'Notifications' })).not.toBeInTheDocument())
 	})
 
 	it('tracks promises through loading → success', async () => {
@@ -63,12 +71,16 @@ describe('toast', () => {
 				error: 'Failed',
 			})
 		})
-		await waitFor(() => expect(screen.getByText('Saving…')).toBeInTheDocument())
+		await waitFor(() =>
+			expect(within(screen.getByRole('region', { name: 'Notifications' })).getByText('Saving…')).toBeInTheDocument()
+		)
 		await act(async () => {
 			resolvePromise('draft')
 			await pending
 		})
-		await waitFor(() => expect(screen.getByText('Saved draft')).toBeInTheDocument())
+		await waitFor(() =>
+			expect(within(screen.getByRole('region', { name: 'Notifications' })).getByText('Saved draft')).toBeInTheDocument()
+		)
 	})
 
 	it('supports the legacy useToast push API', async () => {
@@ -87,6 +99,8 @@ describe('toast', () => {
 			</>
 		)
 		fireEvent.click(screen.getByText('push'))
-		await waitFor(() => expect(screen.getByText('From legacy push')).toBeInTheDocument())
+		await waitFor(() =>
+			expect(within(screen.getByRole('region', { name: 'Notifications' })).getByText('From legacy push')).toBeInTheDocument()
+		)
 	})
 })

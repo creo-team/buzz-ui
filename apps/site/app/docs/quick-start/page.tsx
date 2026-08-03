@@ -54,7 +54,7 @@ export default function Example() {
 		<Card className="p-6">
 			<h2 className="text-xl font-semibold mb-4">Hello Buzz UI</h2>
 			<div className="flex items-center gap-3">
-				<Button variant="primary">Click me</Button>
+				<Button variant="bold">Click me</Button>
 				<Badge variant="success">Ready</Badge>
 			</div>
 		</Card>

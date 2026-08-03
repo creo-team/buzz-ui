@@ -36,6 +36,7 @@ export * from './theme/theme-utils.js'
 export * from './theme/theme-types.js'
 
 // Interactive components
+export * from './forms/slider.js'
 export * from './primitives/button.js'
 export * from './alerts/banner.js'
 export * from './navigation/top-nav.js'
@@ -72,7 +73,7 @@ export {
 export { HotToastProvider } from './overlays/toast-provider.js'
 
 // Theme system (client side)
-export { ThemeProvider, useTheme } from './theme/theme-provider.js'
+export { ThemeProvider, useTheme, type ThemeProviderProps } from './theme/theme-provider.js'
 export { ThemeSwitcher, type ThemeSwitcherProps } from './theme/theme-switcher.js'
 export { EnhancedThemeSwitcher, type EnhancedThemeConfig, type EnhancedThemeSwitcherProps } from './theme/enhanced-theme-switcher.js'
 export { CycleThemeSwitcher, type CycleThemeConfig, type CycleThemeSwitcherProps } from './theme/cycle-theme-switcher.js'
@@ -94,4 +95,5 @@ export * from './hooks/use-hotkey.js'
 export * from './hooks/use-modal-query.js'
 export { useReducedMotion } from './internal/use-reduced-motion.js'
 export { Portal, type PortalProps } from './internal/portal.js'
+export type { Side, Align } from './internal/use-position.js'
 export { cx } from './internal/cx.js'

@@ -32,11 +32,13 @@ export * from './primitives/separator.js'
 export * from './primitives/visually-hidden.js'
 export { Slot, type SlotProps } from './internal/slot.js'
 
-// Server-side theme helpers
+// Server-side theme helpers + shared theme types/constants
 export * from './theme/theme-utils.js'
+export * from './theme/theme-types.js'
 
 // Interactive components (client islands) kept here for compatibility —
 // importing them from a Server Component creates a client boundary.
+export * from './forms/slider.js'
 export * from './primitives/button.js'
 export * from './alerts/banner.js'
 export { Tabs, TabPanel, TabsVariant, TabsSize, type TabItem, type TabsProps, type TabPanelProps } from './navigation/tabs.js'

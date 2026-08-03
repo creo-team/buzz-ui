@@ -71,6 +71,7 @@ export function RadioGroup({
 									name={name}
 									value={opt.value}
 									disabled={opt.disabled}
+									aria-describedby={opt.description != null ? `${optionId}-description` : undefined}
 									{...(value !== undefined && onChange
 										? { checked: value === opt.value, onChange: () => onChange(opt.value) }
 										: { defaultChecked: (defaultValue ?? value) === opt.value })}
@@ -82,7 +83,9 @@ export function RadioGroup({
 									{opt.label}
 								</label>
 								{opt.description != null && (
-									<span className="bz-radio__description">{opt.description}</span>
+									<span id={`${optionId}-description`} className="bz-radio__description">
+										{opt.description}
+									</span>
 								)}
 							</span>
 						</div>

@@ -61,7 +61,6 @@ export function CommandPalette({
 		enabled: open,
 		onDismiss: requestClose,
 		refs: [panelRef],
-		outsidePress: false,
 	})
 	useHotkey(hotkeys.map(h => ({ ...h, enabled: open && (h.enabled ?? true) })))
 
@@ -85,8 +84,9 @@ export function CommandPalette({
 		})
 	}, [items, search])
 
-	// Group while preserving a flat, navigable order.
-	const { groups, flat } = React.useMemo(() => {
+	// Group while preserving a flat, navigable order (with an index map so
+	// per-option lookups stay O(1)).
+	const { groups, flat, indexOf } = React.useMemo(() => {
 		const map = new Map<string, CommandItem[]>()
 		for (const item of filtered) {
 			const group = item.group ?? 'Commands'
@@ -96,7 +96,9 @@ export function CommandPalette({
 		}
 		const flatOrder: CommandItem[] = []
 		for (const list of map.values()) flatOrder.push(...list)
-		return { groups: map, flat: flatOrder }
+		const indexMap = new Map<CommandItem, number>()
+		flatOrder.forEach((item, index) => indexMap.set(item, index))
+		return { groups: map, flat: flatOrder, indexOf: indexMap }
 	}, [filtered])
 
 	React.useEffect(() => {
@@ -147,7 +149,7 @@ export function CommandPalette({
 	return (
 		<Portal>
 			<div className="bz-command" data-state={state}>
-				<div className="bz-command__backdrop" data-state={state} onClick={requestClose} />
+				<div className="bz-command__backdrop" data-state={state} />
 				<div
 					ref={panelRef}
 					role="dialog"
@@ -173,6 +175,11 @@ export function CommandPalette({
 							data-autofocus
 						/>
 					</div>
+					<div className="bz-visually-hidden" role="status" aria-live="polite">
+						{flat.length === 0
+							? emptyMessage
+							: `${flat.length} result${flat.length === 1 ? '' : 's'}`}
+					</div>
 					<div id={listId} role="listbox" aria-label="Commands" className="bz-command__list">
 						{flat.length === 0 ? (
 							<div className="bz-command__empty">{emptyMessage}</div>
@@ -183,7 +190,7 @@ export function CommandPalette({
 										{group}
 									</div>
 									{groupItems.map(item => {
-										const index = flat.indexOf(item)
+										const index = indexOf.get(item) ?? 0
 										const isActive = index === activeIndex
 										return (
 											<div

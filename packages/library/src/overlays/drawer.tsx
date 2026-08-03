@@ -23,6 +23,8 @@ export interface DrawerProps {
 	showCloseButton?: boolean
 	/** Additional hotkeys active while the drawer is open. */
 	hotkeys?: HotkeyConfig[]
+	/** Accessible name when no `title` is rendered. */
+	'aria-label'?: string
 	className?: string
 }
 
@@ -41,6 +43,7 @@ export function Drawer({
 	description,
 	showCloseButton = true,
 	hotkeys = [],
+	'aria-label': ariaLabel,
 	className,
 }: DrawerProps) {
 	const titleId = React.useId()
@@ -56,7 +59,6 @@ export function Drawer({
 		enabled: open,
 		onDismiss: requestClose,
 		refs: [panelRef],
-		outsidePress: false,
 	})
 
 	useHotkey(
@@ -72,12 +74,13 @@ export function Drawer({
 	return (
 		<Portal>
 			<div className="bz-drawer" data-state={state}>
-				<div className="bz-drawer__backdrop" data-state={state} onClick={requestClose} />
+				<div className="bz-drawer__backdrop" data-state={state} />
 				<div
 					ref={panelRef}
 					role="dialog"
 					aria-modal="true"
 					aria-labelledby={title != null ? titleId : undefined}
+					aria-label={title == null ? ariaLabel : undefined}
 					aria-describedby={description != null ? descriptionId : undefined}
 					className={cx('bz-drawer__panel', className)}
 					data-side={side}

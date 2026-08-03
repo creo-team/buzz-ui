@@ -40,7 +40,14 @@ export function Stepper({ steps, current, orientation = 'horizontal', className 
 							{state === 'complete' ? <IconCheck className="bz-stepper__check" /> : index + 1}
 						</span>
 						<span className="bz-stepper__text">
-							<span className="bz-stepper__label">{step.label}</span>
+							<span className="bz-stepper__label">
+								{step.label}
+								{state !== 'active' && (
+									<span className="bz-visually-hidden">
+										{state === 'complete' ? ' (completed)' : ' (upcoming)'}
+									</span>
+								)}
+							</span>
 							{step.description != null && (
 								<span className="bz-stepper__description">{step.description}</span>
 							)}

@@ -5,7 +5,7 @@
  *  - "use client" directives are preserved exactly per module (RSC-correct)
  *  - tree-shaking works at file granularity
  *  - output is valid native ESM (source imports carry explicit .js extensions)
- * Then copies the stylesheet and verifies the RSC boundary.
+ * Then copies the stylesheet and verifies the invariants below.
  */
 import { execSync } from 'node:child_process'
 import { cpSync, existsSync, readFileSync, rmSync, readdirSync, statSync } from 'node:fs'
@@ -14,6 +14,34 @@ import { fileURLToPath } from 'node:url'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const dist = join(root, 'dist')
+const src = join(root, 'src')
+
+const walk = (dir, ext) =>
+	readdirSync(dir).flatMap(name => {
+		const p = join(dir, name)
+		return statSync(p).isDirectory() ? walk(p, ext) : ext.some(e => p.endsWith(e)) ? [p] : []
+	})
+
+const fail = (title, items) => {
+	console.error(`\n${title}`)
+	for (const item of items) console.error('  - ' + item)
+	process.exit(1)
+}
+
+// 0. Verify the native-ESM invariant at the source: every relative import
+//    must carry an explicit .js extension (tsc emits specifiers verbatim).
+const extensionless = []
+for (const file of walk(src, ['.ts', '.tsx'])) {
+	const text = readFileSync(file, 'utf8')
+	for (const match of text.matchAll(/from\s+['"](\.[^'"]*)['"]/g)) {
+		if (!match[1].endsWith('.js') && !match[1].endsWith('.css')) {
+			extensionless.push(`${file.replace(src + '/', 'src/')} → '${match[1]}'`)
+		}
+	}
+}
+if (extensionless.length) {
+	fail('Relative imports must use explicit .js extensions (native ESM):', extensionless)
+}
 
 // 1. Clean
 rmSync(dist, { recursive: true, force: true })
@@ -22,35 +50,26 @@ rmSync(dist, { recursive: true, force: true })
 execSync('npx tsc -p tsconfig.build.json', { cwd: root, stdio: 'inherit' })
 
 // 3. Ship the stylesheet
-cpSync(join(root, 'src/styles/buzz.css'), join(dist, 'styles.css'))
+cpSync(join(src, 'styles/buzz.css'), join(dist, 'styles.css'))
 
 // 4. Verify the RSC boundary: every emitted file that uses client-only React
 //    APIs must begin with "use client".
-const CLIENT_APIS = /\buse(State|Effect|LayoutEffect|Reducer|Ref|SyncExternalStore|Transition|ImperativeHandle|OptimisticState)?\s*\(/
-const walk = dir =>
-	readdirSync(dir).flatMap(name => {
-		const p = join(dir, name)
-		return statSync(p).isDirectory() ? walk(p) : p.endsWith('.js') ? [p] : []
-	})
-
+const CLIENT_ONLY_APIS =
+	/\b(useState|useEffect|useLayoutEffect|useReducer|useRef|useSyncExternalStore|useTransition|useDeferredValue|useImperativeHandle|useInsertionEffect|useOptimistic|useActionState|useFormStatus|createPortal)\s*\(/
 const problems = []
-for (const file of walk(dist)) {
-	const src = readFileSync(file, 'utf8')
-	const hasDirective = /^["']use client["']/.test(src.trimStart())
-	const usesClientApis = /\b(useState|useEffect|useLayoutEffect|useReducer|useSyncExternalStore|useTransition|useImperativeHandle|createPortal)\s*\(/.test(src)
-	if (usesClientApis && !hasDirective) {
-		problems.push(file.replace(dist + '/', ''))
+for (const file of walk(dist, ['.js'])) {
+	const text = readFileSync(file, 'utf8')
+	const hasDirective = /^["']use client["']/.test(text.trimStart())
+	if (!hasDirective && CLIENT_ONLY_APIS.test(text)) {
+		problems.push(file.replace(dist + '/', 'dist/'))
 	}
 }
 if (problems.length) {
-	console.error('\nRSC boundary violation — client APIs without "use client":')
-	for (const p of problems) console.error('  - ' + p)
-	process.exit(1)
+	fail('RSC boundary violation — client APIs without "use client":', problems)
 }
 
 if (!existsSync(join(dist, 'index.js'))) {
-	console.error('Build did not produce dist/index.js')
-	process.exit(1)
+	fail('Build incomplete', ['dist/index.js was not produced'])
 }
 
-console.log('\n✓ build complete (per-file ESM, directives preserved, styles.css shipped)')
+console.log('\n✓ build complete (per-file ESM, directives verified, styles.css shipped)')

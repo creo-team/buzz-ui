@@ -48,7 +48,7 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(functi
 					<path d="M5 12h14" />
 				</svg>
 			</span>
-			{(label != null || description != null) && (
+			{(label != null || description != null || error != null) && (
 				<span className="bz-checkbox__text">
 					{label != null && (
 						<label htmlFor={inputId} className="bz-checkbox__label">

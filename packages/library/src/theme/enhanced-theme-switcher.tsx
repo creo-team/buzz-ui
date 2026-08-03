@@ -73,7 +73,12 @@ export function EnhancedThemeSwitcher({
 			label: (
 				<span className="bz-theme-menu-item" data-active={theme === option.value || undefined}>
 					<span>{option.label}</span>
-					{theme === option.value && <IconCheck className="bz-theme-menu-item__check" />}
+					{theme === option.value && (
+						<>
+							<IconCheck className="bz-theme-menu-item__check" />
+							<span className="bz-visually-hidden">(current theme)</span>
+						</>
+					)}
 				</span>
 			),
 			icon: <Icon className="bz-theme-switcher__icon" />,

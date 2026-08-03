@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.3.0
+
+Quality pass driven by a full multi-lens audit (correctness, accessibility,
+API consistency, performance, CSS, RSC/build, tests, docs accuracy).
+
+### New
+
+- **Slider** — range input built on the native platform control: themed
+  filled track and thumb, marks with active states, value display with
+  `formatValue`, `onChangeEnd` commit events, sizes, controlled/uncontrolled,
+  form submission via `name`.
+- **CI** — pull requests now run typecheck, tests, the library build (with
+  its RSC-boundary verification) and the site build.
+
+### Fixed
+
+- Popover now returns focus to its trigger on close (APG popover pattern)
+  instead of the previously focused element, unless focus moved elsewhere.
+- Audit-driven fixes across the library (see the PR for the itemized list).
+
+### Docs
+
+- Toast docs page rewritten for the built-in system (the old page still
+  documented react-hot-toast).
+- Tooltip docs page updated — removed framer-motion animation samples that no
+  longer exist; documented `title`, `onOpenChange` and the focus/Escape
+  behavior.
+- New docs pages: Popover, Slider.
+- The showcase site no longer depends on framer-motion or react-hot-toast.
+
 ## 0.2.0
 
 Ground-up architecture pass: zero dependencies, shipped stylesheet, RSC-first
@@ -77,9 +107,10 @@ module graph, and real accessibility across every component.
 - **Import the stylesheet**: add `import '@creo-team/buzz-ui/styles.css'`
   once. Tailwind is no longer required (nor scanned).
 - **ESM-only** package (`"type": "module"`, no CJS build).
-- `AnimationPresets` and the `types/animations` module are removed;
-  `animationVariants` props are accepted but ignored (animations are CSS —
-  override the `bz-*` keyframes/classes instead).
+- `AnimationPresets` and the `types/animations` module are removed. Tooltip
+  still accepts (and ignores) `animationVariants`; Modal and Dropdown no
+  longer take the prop. Animations are CSS — override the `bz-*`
+  keyframes/classes instead.
 - The demo components `HotkeyDemo` and `TooltipSizesDemo` are no longer
   exported.
 - `client` no longer re-exports react-hot-toast; `toast`/`Toaster` now refer

@@ -29,7 +29,7 @@ npm install @creo-team/buzz-ui
 
 ## Setup
 
-Import the stylesheet once (tokens + all component styles, ~8 kB gzipped):
+Import the stylesheet once (tokens + all component styles, ~12 kB gzipped):
 
 ```tsx
 // app/layout.tsx (or your app entry)
@@ -100,11 +100,11 @@ useHotkey({ key: 'mod+k', action: openPalette })
 ### SSR theming without flashes
 
 ```tsx
-// Server layout
+// Server layout (await is required on Next 15, harmless on Next 14)
 import { cookies } from 'next/headers'
 import { getServerTheme, themeInitScript } from '@creo-team/buzz-ui/server'
 
-const theme = getServerTheme(cookies())
+const theme = getServerTheme(await cookies())
 <html data-theme={theme}>
 	<head><script dangerouslySetInnerHTML={{ __html: themeInitScript(theme) }} /></head>
 ```

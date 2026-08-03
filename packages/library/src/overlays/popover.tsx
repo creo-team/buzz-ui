@@ -138,16 +138,28 @@ export const PopoverContent = React.forwardRef<HTMLDivElement, PopoverContentPro
 			refs: [floatingRef, anchorRef],
 		})
 
-		// Move focus into the panel on open; restore on close.
+		// Move focus into the panel on open; on close return it to the trigger
+		// (APG popover pattern) — unless the user moved focus elsewhere, e.g.
+		// by clicking outside. `wasOpen` guards the close branch so the initial
+		// mount never steals focus from the page.
 		const previouslyFocused = React.useRef<HTMLElement | null>(null)
+		const wasOpen = React.useRef(false)
 		React.useEffect(() => {
 			if (open) {
+				wasOpen.current = true
 				previouslyFocused.current = document.activeElement as HTMLElement
 				const frame = requestAnimationFrame(() => floatingRef.current?.focus({ preventScroll: true }))
 				return () => cancelAnimationFrame(frame)
 			}
-			previouslyFocused.current?.focus?.({ preventScroll: true })
-		}, [open, floatingRef])
+			if (!wasOpen.current) return
+			wasOpen.current = false
+			const active = document.activeElement
+			const focusIsLost = !active || active === document.body || floatingRef.current?.contains(active)
+			if (focusIsLost) {
+				const target = (context.anchorRef.current as HTMLElement | null) ?? previouslyFocused.current
+				target?.focus?.({ preventScroll: true })
+			}
+		}, [open, floatingRef, context.anchorRef])
 
 		if (!mounted) return null
 

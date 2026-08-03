@@ -32,10 +32,13 @@ export interface ModalProps {
 	hotkeys?: HotkeyConfig[]
 	/** Show an ✕ button in the top-right corner. */
 	showCloseButton?: boolean
-	/** Prevent closing via Escape / backdrop (confirmation flows). */
+	/** Prevent closing via Escape / backdrop (confirmation flows). The ✕
+	 * button and programmatic closing keep working. */
 	dismissible?: boolean
 	/** Use `alertdialog` semantics for destructive confirmations. */
 	role?: 'dialog' | 'alertdialog'
+	/** Accessible name when no `header` is rendered. */
+	'aria-label'?: string
 	className?: string
 }
 
@@ -63,6 +66,7 @@ export function Modal({
 	showCloseButton = false,
 	dismissible = true,
 	role = 'dialog',
+	'aria-label': ariaLabel,
 	className,
 }: ModalProps) {
 	const open = openProp ?? isOpen ?? false
@@ -70,20 +74,22 @@ export function Modal({
 	const panelRef = React.useRef<HTMLDivElement>(null)
 	const mounted = usePresence(open)
 
-	const requestClose = React.useCallback(() => {
-		if (!dismissible) return
+	// Explicit closes (✕ button, consumer code) always work; `dismissible`
+	// only gates light dismissal (Escape / outside press).
+	const close = React.useCallback(() => {
 		onClose?.()
 		onOpenChange?.(false)
-	}, [dismissible, onClose, onOpenChange])
+	}, [onClose, onOpenChange])
 
 	useScrollLock(mounted)
 	useFocusTrap(panelRef, open)
 	useDismissableLayer({
 		enabled: open,
-		onDismiss: requestClose,
+		onDismiss: close,
 		refs: [panelRef],
-		// The backdrop handles outside clicks precisely; the layer handles Escape.
-		outsidePress: false,
+		// Layer-based outside press is stack-aware: with a menu or popover
+		// open above this modal, the first press closes only that layer.
+		outsidePress: dismissible,
 		escapeKey: dismissible,
 	})
 
@@ -114,18 +120,14 @@ export function Modal({
 	return (
 		<Portal>
 			<div className="bz-modal" data-state={state}>
-				<div
-					className="bz-modal__backdrop"
-					data-state={state}
-					data-testid="modal-backdrop"
-					onClick={requestClose}
-				/>
+				<div className="bz-modal__backdrop" data-state={state} data-testid="modal-backdrop" />
 				<div className="bz-modal__positioner">
 					<div
 						ref={panelRef}
 						role={role}
 						aria-modal="true"
 						aria-labelledby={header != null ? titleId : undefined}
+						aria-label={header == null ? ariaLabel : undefined}
 						className={cx('bz-modal__panel', maxWidthClassName, className)}
 						data-size={size}
 						data-state={state}
@@ -136,7 +138,7 @@ export function Modal({
 								type="button"
 								className="bz-modal__close"
 								aria-label="Close dialog"
-								onClick={requestClose}
+								onClick={close}
 							>
 								<IconX />
 							</button>

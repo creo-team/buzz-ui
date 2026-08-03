@@ -125,6 +125,10 @@ export function Tabs({
 		>
 			{items.map(item => {
 				const selected = value === item.key
+				// If `value` matches no enabled tab, the first enabled tab stays
+				// reachable so the tablist never becomes keyboard-inaccessible.
+				const hasSelection = enabledItems.some(enabled => enabled.key === value)
+				const focusable = selected || (!hasSelection && enabledItems[0]?.key === item.key)
 				return (
 					<button
 						key={item.key}
@@ -136,10 +140,10 @@ export function Tabs({
 						type="button"
 						role="tab"
 						aria-selected={selected}
-						aria-controls={`${baseId}-panel-${item.key}`}
+						aria-controls={children != null ? `${baseId}-panel-${item.key}` : undefined}
 						aria-disabled={item.disabled}
 						disabled={item.disabled}
-						tabIndex={selected ? 0 : -1}
+						tabIndex={focusable ? 0 : -1}
 						className="bz-tabs__tab"
 						data-state={selected ? 'active' : 'inactive'}
 						onClick={() => !item.disabled && setValue(item.key)}

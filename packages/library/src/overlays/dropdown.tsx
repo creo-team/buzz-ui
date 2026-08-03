@@ -31,6 +31,8 @@ export interface DropdownProps {
 	className?: string
 	/** Controlled open state. */
 	open?: boolean
+	/** Initial open state for uncontrolled usage. */
+	defaultOpen?: boolean
 	onOpenChange?: (open: boolean) => void
 }
 
@@ -48,6 +50,7 @@ export function Dropdown({
 	sideOffset = 4,
 	className,
 	open: openProp,
+	defaultOpen = false,
 	onOpenChange,
 }: DropdownProps) {
 	const menuId = React.useId()
@@ -56,7 +59,7 @@ export function Dropdown({
 	const itemRefs = React.useRef<(HTMLElement | null)[]>([])
 	const typeahead = React.useRef({ buffer: '', at: 0 })
 
-	const [internalOpen, setInternalOpen] = React.useState(false)
+	const [internalOpen, setInternalOpen] = React.useState(defaultOpen)
 	const open = openProp ?? internalOpen
 	const setOpen = React.useCallback(
 		(next: boolean) => {
@@ -89,10 +92,13 @@ export function Dropdown({
 		target?.focus()
 	}, [])
 
-	// Focus management on open/close.
+	// Focus management on open/close. `wasOpen` guards the close branch so the
+	// initial mount never steals focus from the page.
 	const openedByKeyboard = React.useRef<'first' | 'last' | null>(null)
+	const wasOpen = React.useRef(false)
 	React.useEffect(() => {
 		if (open) {
+			wasOpen.current = true
 			const frame = requestAnimationFrame(() => {
 				if (openedByKeyboard.current === 'last') focusItem(enabledItems.length - 1)
 				else focusItem(0)
@@ -100,7 +106,10 @@ export function Dropdown({
 			})
 			return () => cancelAnimationFrame(frame)
 		}
-		triggerRef.current?.focus?.()
+		if (wasOpen.current) {
+			wasOpen.current = false
+			triggerRef.current?.focus?.()
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [open])
 
