@@ -38,6 +38,10 @@ let lastPointerDownAt = 0
 function handleOutsidePress(event: PointerEvent | MouseEvent) {
 	const layer = topLayer()
 	if (!layer || !layer.outsidePress) return
+	// Branches (e.g. the toast viewport) float above every layer without
+	// belonging to any — pressing them dismisses nothing.
+	const target = event.target as Element | null
+	if (target?.closest?.('[data-bz-layer-branch]')) return
 	const path = event.composedPath()
 	const inside = layer.refs.some(ref => {
 		const el = ref.current

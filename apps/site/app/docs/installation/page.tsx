@@ -45,43 +45,20 @@ export default function InstallationPage() {
 			</section>
 
 			<section>
-				<h2 className="text-2xl font-semibold text-[var(--c-text)] mb-4">Setup CSS Variables</h2>
+				<h2 className="text-2xl font-semibold text-[var(--c-text)] mb-4">Import the Stylesheet</h2>
 				<p className="text-[var(--c-text-secondary)] mb-4">
-					Add the Buzz UI CSS variables to your global stylesheet:
+					One import gives you every design token (all six themes) and all component styles —
+					no Tailwind configuration, no manual CSS variables:
 				</p>
 				<CodeBlock 
-					code={`:root {
-  /* Base colors */
-  --c-background: #ffffff;
-  --c-text: #1f2937;
-  --c-text-secondary: #6b7280;
-  --c-surface: #ffffff;
-  --c-surface-2: #f9fafb;
-  --c-border: #e5e7eb;
-  
-  /* Primary colors */
-  --c-primary: #dc2626;
-  --c-primary-hover: #b91c1c;
-  
-  /* Radius system */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 10px;
-}
-
-/* Dark theme */
-.dark {
-  --c-background: #111827;
-  --c-text: #f9fafb;
-  --c-text-secondary: #d1d5db;
-  --c-surface: #1f2937;
-  --c-surface-2: #374151;
-  --c-border: #4b5563;
-  --c-primary: #ef4444;
-  --c-primary-hover: #dc2626;
-}`}
-					label="globals.css"
+					code={`// app/layout.tsx (or your app entry)
+import '@creo-team/buzz-ui/styles.css'`}
+					label="Required, once"
 				/>
+				<p className="text-[var(--c-text-secondary)] mt-4">
+					Themes are selected with <code>data-theme</code> on <code>&lt;html&gt;</code> — see the
+					theming docs for switchers, SSR and custom themes.
+				</p>
 			</section>
 
 			<section>
@@ -101,7 +78,7 @@ export default function App() {
           Start building with our component library.
         </p>
         <div className="flex gap-2">
-          <Button variant="primary">Get Started</Button>
+          <Button variant="bold">Get Started</Button>
           <Badge variant="success">New</Badge>
         </div>
       </Card>

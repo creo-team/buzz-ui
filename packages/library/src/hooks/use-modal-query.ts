@@ -1,23 +1,66 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useCallback, useSyncExternalStore } from 'react'
 
 /**
- * Hook for managing modal state via query parameters
- * Provides SSR-safe modal state management with URL persistence
- * 
- * @param modalKey - The query parameter value to identify this modal
- * @returns Object with isOpen state and open/close functions
- * 
+ * Shared URL-search store so every hook instance stays in sync: history
+ * navigation (popstate) and programmatic open/close both notify all
+ * subscribers — opening modal B closes modal A everywhere.
+ */
+const SYNC_EVENT = 'bz:modal-query'
+const listeners = new Set<() => void>()
+let attached = false
+
+function notifyAll() {
+	for (const listener of listeners) listener()
+}
+
+function subscribe(listener: () => void) {
+	listeners.add(listener)
+	if (!attached && typeof window !== 'undefined') {
+		window.addEventListener('popstate', notifyAll)
+		window.addEventListener(SYNC_EVENT, notifyAll)
+		attached = true
+	}
+	return () => {
+		listeners.delete(listener)
+		if (listeners.size === 0 && attached) {
+			window.removeEventListener('popstate', notifyAll)
+			window.removeEventListener(SYNC_EVENT, notifyAll)
+			attached = false
+		}
+	}
+}
+
+function getCurrentModal(): string | null {
+	return new URLSearchParams(window.location.search).get('modal')
+}
+
+function getServerModal(): null {
+	return null
+}
+
+function setModalParam(modalKey: string | null) {
+	const params = new URLSearchParams(window.location.search)
+	if (modalKey == null) params.delete('modal')
+	else params.set('modal', modalKey)
+	const query = params.toString()
+	window.history.pushState({}, '', query ? `?${query}` : window.location.pathname)
+	window.dispatchEvent(new Event(SYNC_EVENT))
+}
+
+/**
+ * Modal state persisted in the `?modal=` query parameter — shareable URLs,
+ * back-button closes the modal, SSR-safe (closed on the server render).
+ *
  * @example
  * ```tsx
  * function MyComponent() {
- *   const settingsModal = useModalQuery('settings')
- *   
+ *   const settings = useModalQuery('settings')
  *   return (
  *     <>
- *       <Button onClick={settingsModal.open}>Open Settings</Button>
- *       <Modal isOpen={settingsModal.isOpen} onClose={settingsModal.close}>
+ *       <Button onClick={settings.open}>Open Settings</Button>
+ *       <Modal open={settings.isOpen} onClose={settings.close}>
  *         Settings content
  *       </Modal>
  *     </>
@@ -26,109 +69,38 @@ import { useState, useEffect } from 'react'
  * ```
  */
 export function useModalQuery(modalKey: string) {
-	const [isClient, setIsClient] = useState(false)
-	const [search, setSearch] = useState('')
+	const currentModal = useSyncExternalStore(subscribe, getCurrentModal, getServerModal)
 
-	useEffect(() => {
-		setIsClient(true)
-		setSearch(window.location.search)
+	const open = useCallback(() => setModalParam(modalKey), [modalKey])
+	const close = useCallback(() => setModalParam(null), [])
 
-		const onPopState = () => setSearch(window.location.search)
-		window.addEventListener('popstate', onPopState)
-		return () => window.removeEventListener('popstate', onPopState)
-	}, [])
-
-	const isOpen = isClient && new URLSearchParams(search).get('modal') === modalKey
-
-	const open = () => {
-		if (!isClient) return
-		const params = new URLSearchParams(window.location.search)
-		params.set('modal', modalKey)
-		const nextUrl = `?${params.toString()}`
-		window.history.pushState({}, '', nextUrl)
-		setSearch(nextUrl)
-	}
-
-	const close = () => {
-		if (!isClient) return
-		const params = new URLSearchParams(window.location.search)
-		params.delete('modal')
-		const nextUrl = `?${params.toString()}`
-		window.history.pushState({}, '', nextUrl)
-		setSearch(nextUrl)
-	}
-
-	return { isOpen, open, close }
+	return { isOpen: currentModal === modalKey, open, close }
 }
 
 /**
- * Hook for managing multiple modals via query parameters
- * Allows only one modal to be open at a time
- * 
- * @param modalKeys - Array of modal identifiers
- * @returns Object with current modal state and management functions
- * 
+ * Manage multiple query-parameter modals — only one can be open at a time.
+ *
  * @example
  * ```tsx
- * function MyComponent() {
- *   const modals = useModals(['settings', 'create', 'edit'])
- *   
- *   return (
- *     <>
- *       <Button onClick={() => modals.open('settings')}>Settings</Button>
- *       <Button onClick={() => modals.open('create')}>Create</Button>
- *       
- *       <Modal isOpen={modals.isOpen('settings')} onClose={modals.close}>
- *         Settings
- *       </Modal>
- *       <Modal isOpen={modals.isOpen('create')} onClose={modals.close}>
- *         Create form
- *       </Modal>
- *     </>
- *   )
- * }
+ * const modals = useModals(['settings', 'create'])
+ *
+ * <Button onClick={() => modals.open('settings')}>Settings</Button>
+ * <Modal open={modals.isOpen('settings')} onClose={modals.close}>…</Modal>
+ * <Modal open={modals.isOpen('create')} onClose={modals.close}>…</Modal>
  * ```
  */
 export function useModals(modalKeys: string[] = []) {
-	const [isClient, setIsClient] = useState(false)
-	const [search, setSearch] = useState('')
+	const currentModal = useSyncExternalStore(subscribe, getCurrentModal, getServerModal)
 
-	useEffect(() => {
-		setIsClient(true)
-		setSearch(window.location.search)
-
-		const onPopState = () => setSearch(window.location.search)
-		window.addEventListener('popstate', onPopState)
-		return () => window.removeEventListener('popstate', onPopState)
-	}, [])
-
-	const currentModal = isClient ? new URLSearchParams(search).get('modal') : null
-
-	const open = (modalKey: string) => {
-		if (!isClient) return
-		const params = new URLSearchParams(window.location.search)
-		params.set('modal', modalKey)
-		const nextUrl = `?${params.toString()}`
-		window.history.pushState({}, '', nextUrl)
-		setSearch(nextUrl)
-	}
-
-	const close = () => {
-		if (!isClient) return
-		const params = new URLSearchParams(window.location.search)
-		params.delete('modal')
-		const nextUrl = `?${params.toString()}`
-		window.history.pushState({}, '', nextUrl)
-		setSearch(nextUrl)
-	}
-
-	const isOpen = (modalKey: string) => currentModal === modalKey
+	const open = useCallback((modalKey: string) => setModalParam(modalKey), [])
+	const close = useCallback(() => setModalParam(null), [])
+	const isOpen = useCallback((modalKey: string) => currentModal === modalKey, [currentModal])
 
 	return {
 		currentModal,
 		open,
 		close,
 		isOpen,
-		availableModals: modalKeys
+		availableModals: modalKeys,
 	}
 }

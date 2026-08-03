@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { cx } from '../internal/cx.js'
-import { NewsletterForm } from './newsletter-form.js'
+import { NewsletterForm, type NewsletterFormProps } from './newsletter-form.js'
 
 export enum FooterVariant {
 	Simple = 'simple',
@@ -33,11 +33,12 @@ export interface FooterProps {
 	/** Short blurb rendered near the logo in rich variants. */
 	tagline?: React.ReactNode
 	social?: FooterLink[]
-	newsletter?: {
-		title: string
-		description: string
-		onSubmit: (email: string) => void
-	}
+	/**
+	 * Newsletter signup. From client components pass `onSubmit`; from Server
+	 * Components pass `action` (a URL or server action) — functions that are
+	 * not server actions cannot cross the RSC boundary.
+	 */
+	newsletter?: NewsletterFormProps
 	className?: string
 }
 

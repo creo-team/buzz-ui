@@ -8,10 +8,11 @@ export type Theme = string
 export interface ThemeConfig {
 	value: string
 	label: string
-	icon: React.ComponentType<{ className?: string }>
+	/** Component or built-in icon name ('sun', 'moon', 'palette', …). */
+	icon: React.ComponentType<{ className?: string }> | string
 }
 
-interface ThemeProviderProps {
+export interface ThemeProviderProps {
 	children: React.ReactNode
 	defaultTheme?: string
 	themes?: ThemeConfig[]
@@ -47,10 +48,14 @@ export function ThemeProvider({
 	const [theme, setThemeState] = React.useState<Theme>(defaultTheme)
 	const [resolvedTheme, setResolvedTheme] = React.useState<Theme>()
 
-	// A stable signature avoids re-running the effect when the caller passes a
-	// new array identity each render.
+	// A stable signature avoids re-running the effect (or recreating the
+	// context value below) when the caller passes a new array identity each
+	// render with equivalent content. Icons may be components, so identity
+	// is used for them rather than stringification.
 	const themeValues = themes.map(t => t.value)
 	const themeSignature = themeValues.join('|')
+	const themesFingerprint = themes.map(t => `${t.value}:${t.label}:${typeof t.icon === 'string' ? t.icon : '#'}`).join('|')
+	const iconIdentities = themes.map(t => (typeof t.icon === 'string' ? null : t.icon))
 
 	React.useEffect(() => {
 		applyTheme(theme, themeSignature ? themeSignature.split('|') : ['light', 'dark'])
@@ -73,9 +78,26 @@ export function ThemeProvider({
 		[disableTransitionOnChange]
 	)
 
+	// Keep the context value stable across renders even when the caller passes
+	// a fresh `themes` array literal each time — but still pick up real
+	// changes to labels or icons (a relabel or icon swap must not be dropped
+	// forever just because the theme `value`s are unchanged).
+	const themesRef = React.useRef(themes)
+	const fingerprintRef = React.useRef(themesFingerprint)
+	const iconIdentitiesRef = React.useRef(iconIdentities)
+	const iconsChanged =
+		iconIdentitiesRef.current.length !== iconIdentities.length ||
+		iconIdentitiesRef.current.some((icon, i) => icon !== iconIdentities[i])
+	if (fingerprintRef.current !== themesFingerprint || iconsChanged) {
+		themesRef.current = themes
+		fingerprintRef.current = themesFingerprint
+		iconIdentitiesRef.current = iconIdentities
+	}
+	const stableThemes = themesRef.current
+
 	const value = React.useMemo(
-		() => ({ theme, setTheme, resolvedTheme: resolvedTheme ?? theme, themes }),
-		[theme, setTheme, resolvedTheme, themes]
+		() => ({ theme, setTheme, resolvedTheme: resolvedTheme ?? theme, themes: stableThemes }),
+		[theme, setTheme, resolvedTheme, stableThemes]
 	)
 
 	return <ThemeProviderContext.Provider value={value}>{children}</ThemeProviderContext.Provider>

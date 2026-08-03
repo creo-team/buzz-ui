@@ -3,21 +3,6 @@ import React from 'react'
 import { EnhancedThemeSwitcher } from '../../src/theme/enhanced-theme-switcher'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 
-// Mock react-hot-toast
-vi.mock('react-hot-toast', () => ({
-	default: {
-		success: vi.fn(),
-	},
-}))
-
-// Mock framer-motion to avoid animation issues in tests
-vi.mock('framer-motion', () => ({
-	motion: {
-		div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-	},
-	AnimatePresence: ({ children }: any) => children,
-}))
-
 // Mock document.cookie
 Object.defineProperty(document, 'cookie', {
 	writable: true,

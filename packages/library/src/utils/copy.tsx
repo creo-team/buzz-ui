@@ -6,7 +6,7 @@ import { IconCheck, IconCopy } from '../internal/icons.js'
 export interface CopyButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'value'> {
 	/** Text written to the clipboard. */
 	value: string
-	/** Used in the tooltip/title, e.g. "Copy link". */
+	/** What is being copied — used in the tooltip/label, e.g. "link" → "Copy link". */
 	label?: string
 	/** Feedback duration in ms. Default 1500. */
 	timeout?: number
@@ -17,7 +17,7 @@ export interface CopyButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLBut
 /** Icon button that copies `value` to the clipboard with themed feedback. */
 export function CopyButton({
 	value,
-	label = 'Copy',
+	label = 'content',
 	timeout = 1500,
 	onCopied,
 	className,
@@ -47,14 +47,20 @@ export function CopyButton({
 	return (
 		<button
 			type="button"
-			onClick={onCopy}
 			title={copied ? 'Copied!' : `Copy ${label.toLowerCase()}`}
-			aria-label={copied ? 'Copied' : `Copy ${label.toLowerCase()}`}
+			aria-label={`Copy ${label.toLowerCase()}`}
 			className={cx('bz-copy-button', className)}
 			data-copied={copied || undefined}
 			{...props}
+			onClick={event => {
+				props.onClick?.(event)
+				if (!event.defaultPrevented) void onCopy()
+			}}
 		>
 			{copied ? <IconCheck className="bz-copy-button__icon" /> : <IconCopy className="bz-copy-button__icon" />}
+			<span className="bz-visually-hidden" role="status" aria-live="polite">
+				{copied ? 'Copied to clipboard' : ''}
+			</span>
 		</button>
 	)
 }

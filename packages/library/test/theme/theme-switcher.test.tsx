@@ -3,13 +3,6 @@ import React from 'react'
 import { ThemeSwitcher } from '../../src/theme/theme-switcher'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 
-// Mock react-hot-toast
-vi.mock('react-hot-toast', () => ({
-	default: {
-		success: vi.fn(),
-	},
-}))
-
 // Mock document.cookie
 Object.defineProperty(document, 'cookie', {
 	writable: true,

@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { ThemeProvider, useTheme } from '../src/theme/theme-provider'
+import { THEME_PRESETS } from '../src/theme/theme-presets'
 
 // Mock document.cookie
 Object.defineProperty(document, 'cookie', {
@@ -126,119 +129,76 @@ describe('Buzz UI Theme System', () => {
 	})
 })
 
-describe('Buzz UI Design Tokens', () => {
-	const expectedCSSVariables = [
-		// Core colors
+describe('Design tokens (parsed from the shipped stylesheet)', () => {
+	const css = readFileSync(join(__dirname, '../src/styles/buzz.css'), 'utf8')
+
+	const themeBlock = (name: string) => {
+		const match = css.match(new RegExp(`html\\[data-theme='${name}'\\][^{]*\\{([^}]*)\\}`))
+		expect(match, `theme block for '${name}'`).toBeTruthy()
+		return match![1]
+	}
+
+	const CORE_TOKENS = [
 		'--c-background',
 		'--c-text',
 		'--c-text-secondary',
+		'--c-text-muted',
 		'--c-surface',
 		'--c-surface-2',
 		'--c-surface-3',
 		'--c-border',
-		
-		// Primary colors
+		'--c-border-strong',
+		'--c-hover',
+		'--c-active',
 		'--c-primary',
 		'--c-primary-hover',
 		'--c-primary-light',
-		
-		// Semantic colors
+		'--c-on-primary',
+		'--c-primary-ring',
 		'--c-success',
+		'--c-success-light',
 		'--c-warning',
+		'--c-warning-light',
 		'--c-danger',
+		'--c-danger-light',
 		'--c-info',
-		
-		// Layout tokens
-		'--radius-sm',
-		'--radius-md',
-		'--radius-lg',
-		'--radius-xl',
-		'--radius-2xl',
-		
-		// Shadow tokens
-		'--shadow-sm',
-		'--shadow-md',
-		'--shadow-lg',
-		'--shadow-xl',
+		'--c-info-light',
 	]
 
-	it('should have centralized design token naming convention', () => {
-		expectedCSSVariables.forEach(variable => {
-			// Should follow buzz-ui naming convention with --c- prefix for colors
-			if (variable.startsWith('--c-')) {
-				expect(variable).toMatch(/^--c-[a-z0-9-]+$/)
+	it.each(['light', 'dark', 'midnight', 'forest', 'ocean', 'umbro'])(
+		"defines every core token for the '%s' theme",
+		theme => {
+			const block = themeBlock(theme)
+			for (const token of CORE_TOKENS) {
+				expect(block, `${theme} must define ${token}`).toContain(`${token}:`)
 			}
-			// Should follow standard naming for layout tokens
-			if (variable.startsWith('--radius-') || variable.startsWith('--shadow-')) {
-				expect(variable).toMatch(/^--(radius|shadow)-[a-z0-9]+$/)
+		}
+	)
+
+	it('defines the radius and shadow scales at :root', () => {
+		for (const token of ['--radius-sm', '--radius-md', '--radius-lg', '--radius-xl', '--radius-2xl', '--shadow-sm', '--shadow-md', '--shadow-lg', '--shadow-xl']) {
+			expect(css).toContain(`${token}:`)
+		}
+	})
+
+	it('keeps THEME_PRESETS core values in sync with the stylesheet', () => {
+		const KEY_TO_VAR: Record<string, string> = {
+			text: '--c-text',
+			background: '--c-background',
+			surface: '--c-surface',
+			border: '--c-border',
+			primary: '--c-primary',
+			success: '--c-success',
+			danger: '--c-danger',
+			info: '--c-info',
+		}
+		for (const [themeName, preset] of Object.entries(THEME_PRESETS)) {
+			const block = themeBlock(themeName)
+			for (const [key, cssVar] of Object.entries(KEY_TO_VAR)) {
+				const cssValue = block.match(new RegExp(`${cssVar}:\\s*([^;]+);`))?.[1].trim()
+				const presetValue = (preset.colors as Record<string, string>)[key]
+				expect(presetValue, `${themeName}.${key} should match ${cssVar}`).toBe(cssValue)
 			}
-		})
-	})
-
-	it('should have consistent radius system', () => {
-		const radiusTokens = expectedCSSVariables.filter(v => v.startsWith('--radius-'))
-		const expectedRadiusTokens = ['--radius-sm', '--radius-md', '--radius-lg', '--radius-xl', '--radius-2xl']
-		
-		expect(radiusTokens).toEqual(expectedRadiusTokens)
-	})
-
-	it('should have consistent shadow system', () => {
-		const shadowTokens = expectedCSSVariables.filter(v => v.startsWith('--shadow-'))
-		const expectedShadowTokens = ['--shadow-sm', '--shadow-md', '--shadow-lg', '--shadow-xl']
-		
-		expect(shadowTokens).toEqual(expectedShadowTokens)
-	})
-
-	it('should have semantic color variants', () => {
-		const semanticColors = ['success', 'warning', 'danger', 'info']
-		
-		semanticColors.forEach(color => {
-			expect(expectedCSSVariables).toContain(`--c-${color}`)
-		})
-	})
-
-	it('should have surface hierarchy', () => {
-		const surfaceTokens = expectedCSSVariables.filter(v => v.includes('surface'))
-		
-		expect(surfaceTokens).toContain('--c-surface')
-		expect(surfaceTokens).toContain('--c-surface-2')
-		expect(surfaceTokens).toContain('--c-surface-3')
-	})
-})
-
-describe('Theme Customization', () => {
-	it('should support corner roundness customization', () => {
-		// Test that radius tokens can be customized
-		const radiusTokens = ['--radius-sm', '--radius-md', '--radius-lg', '--radius-xl', '--radius-2xl']
-		
-		radiusTokens.forEach(token => {
-			expect(token).toMatch(/^--radius-/)
-		})
-	})
-
-	it('should support color palette customization', () => {
-		// Test that all color tokens follow the --c- convention
-		const colorTokens = [
-			'--c-primary',
-			'--c-primary-hover', 
-			'--c-primary-light',
-			'--c-success',
-			'--c-warning',
-			'--c-danger',
-			'--c-info'
-		]
-		
-		colorTokens.forEach(token => {
-			expect(token).toMatch(/^--c-/)
-		})
-	})
-
-	it('should support shadow system customization', () => {
-		// Test shadow token structure
-		const shadowTokens = ['--shadow-sm', '--shadow-md', '--shadow-lg', '--shadow-xl']
-		
-		shadowTokens.forEach(token => {
-			expect(token).toMatch(/^--shadow-/)
-		})
+		}
 	})
 })

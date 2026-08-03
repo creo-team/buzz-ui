@@ -145,12 +145,36 @@ export function useThemeSwitcher({
 		if (next) setTheme(next)
 	}, [theme, setTheme])
 
+	// Alt+T is global — when several switchers are mounted (e.g. header +
+	// footer), only the first-registered instance owns the hotkey so a single
+	// keypress cycles exactly once.
+	const instanceId = React.useId()
+	const [ownsHotkey, setOwnsHotkey] = React.useState(false)
+	React.useEffect(() => {
+		if (!enableHotkey) return
+		hotkeyOwners.add(instanceId)
+		const update = () => setOwnsHotkey(firstOwner() === instanceId)
+		update()
+		ownerListeners.add(update)
+		return () => {
+			hotkeyOwners.delete(instanceId)
+			ownerListeners.delete(update)
+			for (const listener of ownerListeners) listener()
+		}
+	}, [enableHotkey, instanceId])
+
 	useHotkey({
 		key: 'alt+t',
 		action: cycle,
-		enabled: enableHotkey && mounted,
+		enabled: enableHotkey && mounted && ownsHotkey,
 		description: 'Cycle theme',
 	})
 
 	return { theme, mounted, setTheme, cycle }
+}
+
+const hotkeyOwners = new Set<string>()
+const ownerListeners = new Set<() => void>()
+function firstOwner(): string | undefined {
+	return hotkeyOwners.values().next().value
 }

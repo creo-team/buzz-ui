@@ -26,7 +26,7 @@ export default function ThemeTestPage() {
 					<ul className="list-disc list-inside space-y-1 text-[var(--c-text-secondary)]">
 						<li>6 beautiful built-in themes with unique personalities</li>
 						<li>Primary themes as pills, additional themes in dropdown</li>
-						<li>Smooth animations with framer-motion</li>
+						<li>Smooth CSS-driven animations (zero dependencies)</li>
 						<li>Toast notifications when switching themes</li>
 						<li>Keyboard shortcut: Option+T (Alt+T)</li>
 						<li>Tooltips showing keyboard shortcuts</li>

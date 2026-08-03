@@ -32,7 +32,7 @@ export {
 export { HotToastProvider } from './overlays/toast-provider.js'
 
 // Theme system
-export { ThemeProvider, useTheme, type ThemeConfig } from './theme/theme-provider.js'
+export { ThemeProvider, useTheme, type ThemeConfig, type ThemeProviderProps } from './theme/theme-provider.js'
 export { ThemeSwitcher, type ThemeConfig as SwitcherThemeConfig, type ThemeSwitcherProps } from './theme/theme-switcher.js'
 export { EnhancedThemeSwitcher, type EnhancedThemeConfig, type EnhancedThemeSwitcherProps } from './theme/enhanced-theme-switcher.js'
 export { CycleThemeSwitcher, type CycleThemeConfig, type CycleThemeSwitcherProps } from './theme/cycle-theme-switcher.js'
@@ -60,18 +60,30 @@ export {
 } from './theme/theme-presets.js'
 
 // Interactive controls
+export * from './forms/slider.js'
 export * from './inputs/switch.js'
 export * from './primitives/button.js'
 export * from './disclosure/accordion.js'
+export * from './alerts/banner.js'
 export * from './navigation/menu.js'
 export * from './navigation/pagination.js'
 export * from './navigation/sidebar-nav.js'
 export * from './navigation/tabs.js'
+export * from './navigation/top-nav.js'
 export * from './utils/copy.js'
 export * from './feedback/circular-progress.js'
+
+// Server-safe primitives, re-exported here so client-focused imports (Kbd
+// next to useHotkey, Field around a custom control) work from one entry.
+export * from './primitives/kbd.js'
+export * from './primitives/spinner.js'
+export * from './primitives/separator.js'
+export * from './primitives/visually-hidden.js'
+export * from './forms/field.js'
 
 // Hooks
 export * from './hooks/use-hotkey.js'
 export * from './hooks/use-modal-query.js'
 export { useReducedMotion } from './internal/use-reduced-motion.js'
 export { Portal, type PortalProps } from './internal/portal.js'
+export type { Side, Align } from './internal/use-position.js'

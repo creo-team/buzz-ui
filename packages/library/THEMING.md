@@ -30,8 +30,9 @@ with a tiny inline script:
 import { cookies } from 'next/headers'
 import { getServerTheme, themeInitScript } from '@creo-team/buzz-ui/server'
 
-export default function RootLayout({ children }) {
-	const theme = getServerTheme(cookies(), 'light')
+export default async function RootLayout({ children }) {
+	// `await` is required on Next 15 (async cookies) and harmless on Next 14.
+	const theme = getServerTheme(await cookies(), 'light')
 	return (
 		<html lang="en" data-theme={theme} className={theme}>
 			<head>
@@ -81,112 +82,56 @@ import { ThemeProvider, useTheme } from '@creo-team/buzz-ui/client'
 const { theme, setTheme } = useTheme()
 ```
 
-## Complete CSS Variable Reference
+## CSS Variable Reference
 
-All components use CSS variables for theming. You can override any of these variables to customize the appearance of your application.
+These are the tokens the shipped stylesheet defines per theme and that every
+component consumes. Override any of them under your own theme selector.
 
-### Core Color Variables
+### Core
 
-#### Text Colors
-- `--c-text` - Primary text color
-- `--c-text-secondary` - Secondary/muted text  
-- `--c-text-muted` - Even more muted text
-- `--c-text-inverse` - Inverse text (for dark backgrounds)
+| Token | Purpose |
+| --- | --- |
+| `--c-background` | Page background |
+| `--c-text` / `--c-text-secondary` / `--c-text-muted` | Text hierarchy |
+| `--c-surface` / `--c-surface-2` / `--c-surface-3` | Surface hierarchy (cards → nested → code) |
+| `--c-border` / `--c-border-strong` | Borders |
+| `--c-hover` / `--c-active` | Interactive state backgrounds |
+| `--c-focus` | Focus outline color (page-level `:focus-visible`) |
 
-#### Surface Hierarchy
-- `--c-background` - Page background
-- `--c-surface` - Card/panel background
-- `--c-surface-2` - Secondary surfaces (nested cards, etc.)
-- `--c-surface-3` - Tertiary surfaces (code blocks, etc.)
-- `--c-surface-overlay` - Modal/dropdown overlay backgrounds
+### Brand
 
-#### Borders and Dividers
-- `--c-border` - Default borders
-- `--c-border-strong` - Emphasized borders
-- `--c-border-subtle` - Subtle borders
-- `--c-divider` - Divider lines
+| Token | Purpose |
+| --- | --- |
+| `--c-primary` / `--c-primary-hover` | Primary color + hover |
+| `--c-primary-light` | Light primary background (badges, active nav) |
+| `--c-on-primary` | Text on primary backgrounds |
+| `--c-primary-ring` | Focus rings |
 
-#### Interactive States
-- `--c-hover` - Hover state backgrounds
-- `--c-hover-border` - Hover state borders
-- `--c-active` - Active/pressed states
-- `--c-selected` - Selected item backgrounds
-- `--c-focus` - Focus ring color
+### Semantic
 
-### Brand Colors
+| Token | Purpose |
+| --- | --- |
+| `--c-success` / `--c-success-light` | Success + light background |
+| `--c-warning` / `--c-warning-light` | Warning + light background |
+| `--c-danger` / `--c-danger-light` | Danger/error + light background |
+| `--c-info` / `--c-info-light` | Info + light background |
+| `--c-on-success` / `--c-on-danger` | Text on success/danger buttons (default `#fff`) |
 
-#### Primary
-- `--c-primary` - Primary brand color
-- `--c-primary-light` - Light primary background
-- `--c-primary-hover` - Primary hover state
-- `--c-primary-foreground` - Text on primary backgrounds
-- `--c-on-primary` - Alias for primary-foreground
-- `--c-primary-ring` - Focus rings for primary elements
+### Component overrides (optional, with fallbacks)
 
-### Semantic Colors
+| Token | Falls back to |
+| --- | --- |
+| `--c-tooltip-bg` / `--c-tooltip-text` / `--c-tooltip-border` | surface / text / border |
+| `--c-modal-bg` / `--c-modal-overlay` / `--c-modal-border` | surface / `rgba(0,0,0,.6)` / border |
+| `--c-dropdown-bg` / `--c-dropdown-border` / `--c-dropdown-hover` | surface / border / hover |
 
-#### Success
-- `--c-success` - Success color
-- `--c-success-light` - Light success background
-- `--c-success-hover` - Success hover state
-- `--c-success-foreground` - Text on success backgrounds
+### Shape & elevation
 
-#### Warning
-- `--c-warning` - Warning color
-- `--c-warning-light` - Light warning background
-- `--c-warning-hover` - Warning hover state
-- `--c-warning-foreground` - Text on warning backgrounds
-
-#### Error/Danger
-- `--c-error` - Error color
-- `--c-error-light` - Light error background
-- `--c-error-hover` - Error hover state
-- `--c-error-foreground` - Text on error backgrounds
-- `--c-danger` - Alias for error
-- `--c-danger-hover` - Alias for error-hover
-
-#### Info
-- `--c-info` - Info color
-- `--c-info-light` - Light info background
-- `--c-info-hover` - Info hover state
-- `--c-info-foreground` - Text on info backgrounds
-
-### Component-Specific Variables
-
-#### Tooltips
-- `--c-tooltip-bg` - Tooltip background
-- `--c-tooltip-text` - Tooltip text color
-- `--c-tooltip-border` - Tooltip border
-
-#### Modals
-- `--c-modal-bg` - Modal background
-- `--c-modal-overlay` - Modal overlay/backdrop
-- `--c-modal-border` - Modal border
-
-#### Dropdowns
-- `--c-dropdown-bg` - Dropdown background
-- `--c-dropdown-border` - Dropdown border
-- `--c-dropdown-hover` - Dropdown item hover
-
-#### Code Blocks
-- `--c-code-block-bg` - Code block background
-- `--c-code-block-border` - Code block border
-- `--c-code-block-text` - Code block text
-- `--c-code-block-line-number` - Line number color
-
-### Layout Variables
-
-#### Shadows
-- `--c-shadow-sm` - Small shadow
-- `--c-shadow-md` - Medium shadow
-- `--c-shadow-lg` - Large shadow
-- `--c-shadow-xl` - Extra large shadow
-
-#### Border Radius
-- `--c-radius-sm` - Small radius (0.25rem)
-- `--c-radius-md` - Medium radius (0.375rem)
-- `--c-radius-lg` - Large radius (0.5rem)
-- `--c-radius-xl` - Extra large radius (0.75rem)
+| Token | Purpose |
+| --- | --- |
+| `--radius-sm` … `--radius-2xl` | Radius scale (6–16px) |
+| `--shadow-sm` … `--shadow-xl` | Elevation scale |
+| `--bz-ease` / `--bz-duration` | Motion timing |
 
 ## Creating Custom Themes
 
@@ -383,7 +328,8 @@ Each theme provides a complete set of CSS variables for consistent styling acros
 
 ## Toast Notifications
 
-The library uses `react-hot-toast` directly for toast notifications, which automatically adapts to your theme colors. The toasts will use the CSS variables for consistent styling:
+Toasts are built in (zero dependencies) and consume the same tokens, so they
+adapt to every theme automatically:
 
 ```tsx
 import { toast } from '@creo-team/buzz-ui/client'

@@ -63,11 +63,11 @@ export const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(function 
 			className={cx('bz-switch', label == null ? className : undefined)}
 			data-size={size}
 			data-state={isChecked ? 'checked' : 'unchecked'}
+			{...props}
 			onClick={event => {
 				props.onClick?.(event)
 				if (!event.defaultPrevented) setChecked(!isChecked)
 			}}
-			{...props}
 		>
 			<span className="bz-switch__thumb" aria-hidden="true" />
 			{name && isChecked && <input type="hidden" name={name} value={value} />}

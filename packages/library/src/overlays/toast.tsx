@@ -52,6 +52,8 @@ export interface ToastItem extends ToastOptions {
 	duration: number
 	/** false while the exit animation plays. */
 	open: boolean
+	/** Bumped when a toast is updated in place so timers reschedule. */
+	revision: number
 }
 
 const DEFAULT_DURATION = 4000
@@ -89,8 +91,16 @@ function addToast(message: React.ReactNode, variant: ToastVariant, options: Toas
 		clearTimeout(pendingRemove)
 		removeTimers.delete(id)
 	}
+	// Same-variant updates keep their configured duration (a persistent toast
+	// stays persistent); variant changes (loading → success) reset it so
+	// promise flows never inherit Infinity.
 	const duration =
-		options.duration ?? (variant === 'loading' ? Infinity : existing?.duration ?? DEFAULT_DURATION)
+		options.duration ??
+		(variant === 'loading'
+			? Infinity
+			: existing && existing.variant === variant
+				? existing.duration
+				: DEFAULT_DURATION)
 	items.delete(id) // re-insert so updated toasts move to the end
 	items.set(id, {
 		...existing,
@@ -100,6 +110,7 @@ function addToast(message: React.ReactNode, variant: ToastVariant, options: Toas
 		variant,
 		duration,
 		open: true,
+		revision: (existing?.revision ?? 0) + 1,
 	})
 	emit()
 	return id
@@ -206,50 +217,77 @@ export interface ToasterProps {
 /** Renders toasts. Mount once near the root of the app. */
 export function Toaster({ position = 'bottom-right', maxVisible = 5, offset = 16, className }: ToasterProps) {
 	const toasts = React.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
-	const timers = React.useRef(new Map<string, { timeout: ReturnType<typeof setTimeout>; endAt: number; remaining: number }>())
-	const [paused, setPaused] = React.useState(false)
+	const timers = React.useRef(
+		new Map<string, { timeout: ReturnType<typeof setTimeout>; endAt: number; remaining: number; revision: number }>()
+	)
+	// Hover and keyboard focus pause independently; either suspends timers.
+	const [hoverPaused, setHoverPaused] = React.useState(false)
+	const [focusPaused, setFocusPaused] = React.useState(false)
+	const paused = hoverPaused || focusPaused
 
-	// Auto-dismiss scheduling
+	// Auto-dismiss scheduling. Keyed by id + revision so in-place updates
+	// (e.g. loading → success, or a new duration) reschedule correctly.
 	React.useEffect(() => {
 		const active = timers.current
-		for (const item of toasts) {
-			if (!item.open || !Number.isFinite(item.duration)) continue
-			if (active.has(item.id)) continue
-			if (paused) continue
-			const timeout = setTimeout(() => {
-				active.delete(item.id)
-				dismissToast(item.id)
-			}, item.duration)
-			active.set(item.id, { timeout, endAt: Date.now() + item.duration, remaining: item.duration })
-		}
-		// Clear timers for toasts that no longer exist or were re-shown
 		for (const [id, entry] of active) {
 			const item = toasts.find(t => t.id === id)
-			if (!item || !item.open) {
+			if (!item || !item.open || item.revision !== entry.revision) {
 				clearTimeout(entry.timeout)
 				active.delete(id)
 			}
 		}
+		if (!paused) {
+			for (const item of toasts) {
+				if (!item.open || !Number.isFinite(item.duration)) continue
+				if (active.has(item.id)) continue
+				const timeout = setTimeout(() => {
+					active.delete(item.id)
+					dismissToast(item.id)
+				}, item.duration)
+				active.set(item.id, {
+					timeout,
+					endAt: Date.now() + item.duration,
+					remaining: item.duration,
+					revision: item.revision,
+				})
+			}
+		}
 	}, [toasts, paused])
 
-	const pause = React.useCallback(() => {
-		setPaused(true)
-		for (const entry of timers.current.values()) {
-			clearTimeout(entry.timeout)
-			entry.remaining = Math.max(0, entry.endAt - Date.now())
+	// Suspend/restart timers exactly once per paused transition — repeated
+	// pause events (hover + focus overlapping) must not erode remaining time.
+	const pausedRef = React.useRef(false)
+	React.useEffect(() => {
+		if (pausedRef.current === paused) return
+		pausedRef.current = paused
+		if (paused) {
+			for (const entry of timers.current.values()) {
+				clearTimeout(entry.timeout)
+				entry.remaining = Math.max(0, entry.endAt - Date.now())
+			}
+		} else {
+			for (const [id, entry] of timers.current) {
+				entry.endAt = Date.now() + entry.remaining
+				entry.timeout = setTimeout(() => {
+					timers.current.delete(id)
+					dismissToast(id)
+				}, entry.remaining)
+			}
 		}
-	}, [])
+	}, [paused])
 
-	const resume = React.useCallback(() => {
-		setPaused(false)
-		for (const [id, entry] of timers.current) {
-			entry.endAt = Date.now() + entry.remaining
-			entry.timeout = setTimeout(() => {
-				timers.current.delete(id)
-				dismissToast(id)
-			}, entry.remaining)
+	// Safety nets: browsers fire no blur when a focused toast unmounts, and a
+	// hovered list can empty under the cursor — clear stuck pause reasons.
+	React.useEffect(() => {
+		if (toasts.length === 0) {
+			setHoverPaused(false)
+			setFocusPaused(false)
+			return
 		}
-	}, [])
+		if (focusPaused && !document.activeElement?.closest('.bz-toaster')) {
+			setFocusPaused(false)
+		}
+	}, [toasts, focusPaused])
 
 	React.useEffect(() => {
 		const active = timers.current
@@ -259,8 +297,6 @@ export function Toaster({ position = 'bottom-right', maxVisible = 5, offset = 16
 		}
 	}, [])
 
-	if (toasts.length === 0) return null
-
 	const groups = new Map<ToastPosition, ToastItem[]>()
 	for (const item of toasts) {
 		const pos = item.position ?? position
@@ -269,18 +305,39 @@ export function Toaster({ position = 'bottom-right', maxVisible = 5, offset = 16
 		groups.set(pos, group)
 	}
 
+	// Latest polite announcement (errors announce assertively on their card).
+	const lastPolite = [...toasts].reverse().find(t => t.open && t.variant !== 'error')
+
 	return (
 		<Portal>
+			{/* Persistent live region: announcements work even though toast
+			    cards mount and unmount. */}
+			<div className="bz-visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+				{lastPolite && (
+					<React.Fragment key={`${lastPolite.id}-${lastPolite.revision}`}>
+						{lastPolite.message} {lastPolite.description}
+					</React.Fragment>
+				)}
+			</div>
 			{Array.from(groups.entries()).map(([pos, group]) => (
 				<ol
 					key={pos}
 					className={cx('bz-toaster', className)}
 					data-position={pos}
+					data-bz-layer-branch=""
 					style={{ '--bz-toaster-offset': `${offset}px` } as React.CSSProperties}
 					role="region"
 					aria-label="Notifications"
-					onMouseEnter={pause}
-					onMouseLeave={resume}
+					onMouseEnter={() => setHoverPaused(true)}
+					onMouseLeave={() => setHoverPaused(false)}
+					onFocusCapture={() => setFocusPaused(true)}
+					onBlurCapture={event => {
+						// Only resume when focus actually leaves the viewport, not
+						// when it moves between toasts inside it.
+						if (!event.currentTarget.contains(event.relatedTarget as Node)) {
+							setFocusPaused(false)
+						}
+					}}
 				>
 					{group.slice(-maxVisible).map(item => (
 						<ToastCard key={item.id} item={item} />
@@ -294,6 +351,7 @@ export function Toaster({ position = 'bottom-right', maxVisible = 5, offset = 16
 function ToastCard({ item }: { item: ToastItem }) {
 	const icon = item.icon !== undefined ? item.icon : VARIANT_ICONS[item.variant]
 	const dismissible = item.dismissible ?? !Number.isFinite(item.duration)
+	const isError = item.variant === 'error'
 
 	return (
 		<li
@@ -301,9 +359,8 @@ function ToastCard({ item }: { item: ToastItem }) {
 			data-variant={item.variant}
 			data-state={item.open ? 'open' : 'closed'}
 			style={item.style}
-			role={item.variant === 'error' ? 'alert' : 'status'}
-			aria-live={item.variant === 'error' ? 'assertive' : 'polite'}
-			aria-atomic="true"
+			role={isError ? 'alert' : undefined}
+			aria-atomic={isError ? 'true' : undefined}
 		>
 			{icon != null && <span className="bz-toast__icon">{icon}</span>}
 			<div className="bz-toast__body">

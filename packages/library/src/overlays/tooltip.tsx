@@ -4,6 +4,7 @@ import * as React from 'react'
 import { Portal } from '../internal/portal.js'
 import { cx } from '../internal/cx.js'
 import { usePosition, type Side } from '../internal/use-position.js'
+import { usePresence } from '../internal/use-presence.js'
 
 export enum TooltipDirection {
 	Top = 'TOP',
@@ -42,7 +43,8 @@ const SIZE_TO_DATA: Record<string, string> = {
 export interface TooltipProps {
 	children: React.ReactNode
 	content: React.ReactNode
-	direction?: TooltipDirection
+	/** Preferred side — enum or plain 'top' | 'bottom' | 'left' | 'right'. */
+	direction?: TooltipDirection | Side
 	size?: TooltipSize | LegacySize
 	/** Hover delay before showing, in ms. Default 400. */
 	delayMs?: number
@@ -100,9 +102,11 @@ export function Tooltip({
 		[isControlled, onOpenChange]
 	)
 
-	const preferredSide: Side = placement ?? DIRECTION_TO_SIDE[direction]
+	const preferredSide: Side =
+		placement ?? DIRECTION_TO_SIDE[direction as TooltipDirection] ?? (direction as Side)
+	const mounted = usePresence(Boolean(open), 120)
 	const { x, y, side, ready, arrowX, arrowY } = usePosition(anchorRef, floatingRef, {
-		open: Boolean(open),
+		open: mounted,
 		side: preferredSide,
 		sideOffset: 8,
 	})
@@ -158,7 +162,7 @@ export function Tooltip({
 			>
 				{trigger}
 			</span>
-			{open && (
+			{mounted && (
 				<Portal>
 					<div
 						ref={floatingRef}
@@ -167,7 +171,11 @@ export function Tooltip({
 						className={cx('bz-tooltip', widthClassName, contentClassName)}
 						data-side={side}
 						data-size={SIZE_TO_DATA[size as string] ?? 'compact'}
-						data-state="open"
+						data-state={open ? 'open' : 'closed'}
+						// Tooltips float above every overlay without belonging to any
+						// dismissal layer — pressing inside one must not close the
+						// modal/drawer underneath.
+						data-bz-layer-branch=""
 						style={{
 							position: 'fixed',
 							left: x,

@@ -1,0 +1,37 @@
+name: CI
+run-name: CI [${{ github.ref_name }}] triggered by [${{ github.event_name }}/${{ github.actor }}]
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Typecheck, test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Typecheck (library + site)
+        run: npm run typecheck
+
+      - name: Test (library)
+        run: npm test
+
+      - name: Build library (includes RSC boundary verification)
+        run: npm run -w @creo-team/buzz-ui build
+
+      - name: Build site
+        run: npm run -w @buzz-ui/site build

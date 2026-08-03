@@ -20,7 +20,7 @@ This roadmap outlines the planned features and components for the Buzz UI compon
 - [x] **Switch Toggle** — sizes, labels, forms integration, controlled/uncontrolled
 - [x] **Popover** — composable anchored panel (trigger/content)
 - [x] **Field** — shared label/help/error wiring for custom controls
-- [ ] **Slider** — range input with marks and keyboard steps
+- [x] **Slider** — native-range based: marks, keyboard steps, commit events, forms
 - [ ] **Floating Action Button (FAB)**
 
 ### Phase 2: Navigation & Layout

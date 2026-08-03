@@ -146,13 +146,15 @@ export function usePosition(
 		}
 		let disposed = false
 		let observer: ResizeObserver | undefined
+		let attempts = 0
 
 		// The floating element often mounts a frame after `open` flips (portals
-		// defer to a client effect), so retry measuring until it exists.
+		// defer to a client effect), so retry measuring until it exists —
+		// bounded so a never-mounting ref can't spin rAF forever.
 		const start = () => {
 			if (disposed) return
 			if (!floatingRef.current || !anchorRef.current) {
-				requestAnimationFrame(start)
+				if (++attempts <= 150) requestAnimationFrame(start)
 				return
 			}
 			compute()
