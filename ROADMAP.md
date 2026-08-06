@@ -21,13 +21,13 @@ This roadmap outlines the planned features and components for the Buzz UI compon
 - [x] **Popover** — composable anchored panel (trigger/content)
 - [x] **Field** — shared label/help/error wiring for custom controls
 - [x] **Slider** — native-range based: marks, keyboard steps, commit events, forms
-- [ ] **Floating Action Button (FAB)**
+- [x] **Floating Action Button (FAB)** — `Fab` wraps Button (variants, hotkeys, asChild) pinned to a screen corner
 
 ### Phase 2: Navigation & Layout
 - [x] **Pagination** — numbered pages, ellipsis collapsing, compact mode
 - [x] **Stepper** — completed states, descriptions, vertical orientation
 - [x] **Breadcrumb improvements** — `maxItems` collapsing, custom separators, aria-current
-- [ ] **Combobox / Autocomplete** — filterable select built on the overlay engine
+- [x] **Combobox / Autocomplete** — filterable select built on the overlay engine (ARIA combobox pattern, controlled/uncontrolled, async-ready)
 
 ### Phase 3: Advanced Components
 - [ ] **Date Picker** — full-featured calendar with range selection
@@ -91,5 +91,5 @@ Have suggestions for the roadmap? We'd love to hear from you:
 
 ---
 
-*Last updated: July 2026*
+*Last updated: August 2026*
 *This roadmap is subject to change based on community feedback and priorities.*

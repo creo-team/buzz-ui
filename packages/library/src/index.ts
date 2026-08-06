@@ -39,7 +39,9 @@ export { Shape, ALL_SHAPES, SHAPE_COOKIE_NAME, setShapeCookie, getShapeFromCooki
 
 // Interactive components
 export * from './forms/slider.js'
+export * from './forms/combobox.js'
 export * from './primitives/button.js'
+export * from './primitives/fab.js'
 export * from './alerts/banner.js'
 export * from './navigation/top-nav.js'
 export * from './navigation/tabs.js'

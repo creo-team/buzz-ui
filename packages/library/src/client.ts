@@ -72,8 +72,10 @@ export {
 
 // Interactive controls
 export * from './forms/slider.js'
+export * from './forms/combobox.js'
 export * from './inputs/switch.js'
 export * from './primitives/button.js'
+export * from './primitives/fab.js'
 export * from './disclosure/accordion.js'
 export * from './alerts/banner.js'
 export * from './navigation/menu.js'

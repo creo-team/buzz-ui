@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.5.0
+
+Two roadmap components, closing out Phase 1 and Phase 2 of the component
+roadmap.
+
+### New
+
+- **Fab** — a Button pinned to a screen corner via `position: fixed`. Same
+  variants, sizes, hotkeys and `asChild` polymorphism as Button; add
+  `position` (`bottom-right` default, plus the other three corners and both
+  centers) and `offset`. Sits at z-index 40, below every overlay, so an open
+  modal/popover/tooltip/toast always wins visually. Centered positions avoid
+  `transform` for centering specifically so they don't fight Button's own
+  hover-lift/press-scale animations.
+- **Combobox** — filterable single-select input implementing the WAI-ARIA
+  combobox + listbox pattern, built on the same overlay engine as Dropdown
+  (portal, collision-aware positioning, shared layer-stack dismissal).
+  Focusing shows every option; typing filters (case-insensitive substring by
+  default, or pass `filter` for server-side search); `onInputChange` fires
+  per keystroke for your own debounced async fetch; `loading` swaps the
+  chevron for a spinner. Controlled (`value`/`onChange`) or uncontrolled
+  (`defaultValue`); `name` renders a hidden input so the selection
+  participates in native form submission; `clearable` shows a (×) button.
+  Closing without selecting (Escape, outside-press, Tab) reverts the typed
+  text to the current selection instead of leaving a dangling string.
+  Keyboard navigation skips disabled options entirely, matching Dropdown's
+  existing precedent, rather than landing on one Enter can't select.
+
 ## 0.4.0
 
 Elegance pass: a second, independent design dimension, plus a round of

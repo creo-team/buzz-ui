@@ -126,11 +126,12 @@ custom shapes, and [HOTKEYS.md](./HOTKEYS.md) for the shortcut system.
 
 ## Components
 
-**Primitives** Button (9 variants, loading, hotkeys, asChild) · Spinner · Kbd ·
-Separator · VisuallyHidden · Slot
+**Primitives** Button (9 variants, loading, hotkeys, asChild) · Fab (Button,
+pinned to a corner) · Spinner · Kbd · Separator · VisuallyHidden · Slot
 
-**Forms** TextInput/Input · Textarea (CSS auto-resize) · Select · Checkbox
-(indeterminate) · RadioGroup · Switch · Field
+**Forms** TextInput/Input · Textarea (CSS auto-resize) · Select · Combobox
+(filterable, ARIA combobox pattern) · Checkbox (indeterminate) · RadioGroup ·
+Switch · Field
 
 **Display** Card · Badge · Chip (removable) · Alert · Banner · Avatar +
 AvatarGroup · Skeleton · Table · CodeBox · Progress · CircularProgress ·

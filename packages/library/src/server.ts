@@ -42,6 +42,7 @@ export { Shape, ALL_SHAPES, SHAPE_COOKIE_NAME, setShapeCookie, getShapeFromCooki
 // importing them from a Server Component creates a client boundary.
 export * from './forms/slider.js'
 export * from './primitives/button.js'
+export * from './primitives/fab.js'
 export * from './alerts/banner.js'
 export { Tabs, TabPanel, TabsVariant, TabsSize, type TabItem, type TabsProps, type TabPanelProps } from './navigation/tabs.js'
 export * from './navigation/top-nav.js'
