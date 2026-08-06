@@ -34,6 +34,17 @@ export { HotToastProvider } from './overlays/toast-provider.js'
 // Theme system
 export { ThemeProvider, useTheme, type ThemeConfig, type ThemeProviderProps } from './theme/theme-provider.js'
 export { ThemeSwitcher, type ThemeConfig as SwitcherThemeConfig, type ThemeSwitcherProps } from './theme/theme-switcher.js'
+export { ShapeSwitcher, type ShapeSwitcherProps } from './theme/shape-switcher.js'
+export { useShapeSwitcher, type UseShapeSwitcherOptions } from './theme/use-shape-switcher.js'
+export {
+	Shape,
+	ALL_SHAPES,
+	SHAPE_COOKIE_NAME,
+	setShapeCookie,
+	getShapeFromCookie,
+	type ShapeConfig,
+} from './theme/shape-types.js'
+export { getServerShape, shapeInitScript } from './theme/shape-utils.js'
 export { EnhancedThemeSwitcher, type EnhancedThemeConfig, type EnhancedThemeSwitcherProps } from './theme/enhanced-theme-switcher.js'
 export { CycleThemeSwitcher, type CycleThemeConfig, type CycleThemeSwitcherProps } from './theme/cycle-theme-switcher.js'
 export { useThemeSwitcher, resolveThemeIcon, smartThemeIcon, type AnyThemeConfig } from './theme/use-theme-switcher.js'

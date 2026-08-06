@@ -64,6 +64,43 @@
 	--c-on-danger: #ffffff;
 }
 
+/*
+ * Shape — corner radius, elevation and motion, kept independent of color
+ * theme. `[data-shape]` on <html> overrides these on top of any `data-theme`.
+ * Unset (or 'soft') falls through to the :root values above, so upgrading
+ * consumers see no change until they opt in.
+ */
+
+[data-shape='sharp'] {
+	/* Architectural and precise: tight corners, flat shadows, snappy motion. */
+	--radius-sm: 3px;
+	--radius-md: 4px;
+	--radius-lg: 6px;
+	--radius-xl: 8px;
+	--radius-2xl: 10px;
+	--shadow-sm: 0 1px 1px 0 rgb(0 0 0 / 0.06);
+	--shadow-md: 0 1px 2px 0 rgb(0 0 0 / 0.08), 0 1px 1px -1px rgb(0 0 0 / 0.06);
+	--shadow-lg: 0 2px 4px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+	--shadow-xl: 0 4px 8px 0 rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.08);
+	--bz-ease: cubic-bezier(0.4, 0, 0.2, 1);
+	--bz-duration: 120ms;
+}
+
+[data-shape='round'] {
+	/* Warm and plush: generous corners, soft glow shadows, gentle overshoot. */
+	--radius-sm: 10px;
+	--radius-md: 14px;
+	--radius-lg: 18px;
+	--radius-xl: 22px;
+	--radius-2xl: 28px;
+	--shadow-sm: 0 2px 4px 0 rgb(0 0 0 / 0.04);
+	--shadow-md: 0 8px 16px -4px rgb(0 0 0 / 0.08), 0 4px 8px -4px rgb(0 0 0 / 0.06);
+	--shadow-lg: 0 16px 32px -8px rgb(0 0 0 / 0.1), 0 8px 16px -8px rgb(0 0 0 / 0.08);
+	--shadow-xl: 0 24px 48px -12px rgb(0 0 0 / 0.12), 0 12px 24px -12px rgb(0 0 0 / 0.1);
+	--bz-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--bz-duration: 220ms;
+}
+
 html[data-theme='light'], .light {
 	--c-background: #ffffff;
 	--c-text: #1f2937;
@@ -428,6 +465,7 @@ html[data-theme='umbro'] {
 .bz-button[data-variant='bold']:hover:not(:disabled) {
 	background: var(--c-primary-hover);
 	box-shadow: var(--shadow-lg);
+	transform: translateY(-1px);
 }
 .bz-button[data-variant='bold'][data-selected] {
 	box-shadow: var(--shadow-lg), 0 0 0 2px var(--c-primary-ring);
@@ -516,14 +554,24 @@ html[data-theme='umbro'] {
 	color: var(--c-on-success, #ffffff);
 	box-shadow: var(--shadow-sm);
 }
-.bz-button[data-variant='success']:hover:not(:disabled) { filter: brightness(1.1); box-shadow: var(--shadow-md); }
+.bz-button[data-variant='success']:hover:not(:disabled) { filter: brightness(1.1); box-shadow: var(--shadow-md); transform: translateY(-1px); }
 
 .bz-button[data-variant='danger'] {
 	background: var(--c-danger);
 	color: var(--c-on-danger, #ffffff);
 	box-shadow: var(--shadow-sm);
 }
-.bz-button[data-variant='danger']:hover:not(:disabled) { filter: brightness(1.1); box-shadow: var(--shadow-md); }
+.bz-button[data-variant='danger']:hover:not(:disabled) { filter: brightness(1.1); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+
+/* The hover-lift rules above are more specific (attribute-qualified) than
+   the base :active press-scale rule, so pressing while still hovering would
+   otherwise keep the lift instead of scaling down. Re-assert the press with
+   equal specificity, after the lift rules, so tap feedback still wins. */
+.bz-button[data-variant='bold']:active:not(:disabled),
+.bz-button[data-variant='success']:active:not(:disabled),
+.bz-button[data-variant='danger']:active:not(:disabled) {
+	transform: scale(0.97);
+}
 
 /* ========================================================================
    4. Forms
@@ -900,7 +948,8 @@ html[data-theme='umbro'] {
 	border-radius: var(--radius-xl);
 	padding: 1.5rem;
 	color: var(--c-text);
-	transition: box-shadow var(--bz-duration) var(--bz-ease), border-color var(--bz-duration) var(--bz-ease);
+	transition: box-shadow var(--bz-duration) var(--bz-ease), border-color var(--bz-duration) var(--bz-ease),
+		transform var(--bz-duration) var(--bz-ease);
 }
 .bz-card[data-variant='elevated'] { box-shadow: var(--shadow-md); }
 .bz-card[data-variant='outlined'] {
@@ -911,6 +960,11 @@ html[data-theme='umbro'] {
 .bz-card[data-interactive]:hover {
 	box-shadow: var(--shadow-lg);
 	border-color: var(--c-border-strong);
+	transform: translateY(-2px);
+}
+.bz-card[data-interactive]:active {
+	transform: translateY(-1px);
+	transition-duration: 80ms;
 }
 .bz-card[data-flush] { padding: 0; }
 .bz-card[data-flush] .bz-card__header { padding: 1.25rem 1.5rem 0; }
@@ -2444,6 +2498,18 @@ html[data-theme='umbro'] {
 	transition: background-color var(--bz-duration) var(--bz-ease);
 }
 .bz-cycle-theme-switcher:hover { background: color-mix(in srgb, var(--c-surface) 40%, transparent); }
+
+/* Shape switcher — the option glyph literally previews its corner radius. */
+.bz-shape-switcher__swatch {
+	display: block;
+	width: 1.05rem;
+	height: 0.75rem;
+	border: 1.5px solid currentColor;
+	transition: border-radius var(--bz-duration) var(--bz-ease);
+}
+.bz-shape-switcher__swatch[data-shape-preview='sharp'] { border-radius: 1px; }
+.bz-shape-switcher__swatch[data-shape-preview='soft'] { border-radius: 4px; }
+.bz-shape-switcher__swatch[data-shape-preview='round'] { border-radius: 7px; }
 
 /* Accordion -------------------------------------------------------------- */
 

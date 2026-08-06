@@ -194,7 +194,7 @@ export default function App({ children }) {
 				</div>
 			</section>
 
-			<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 				<div className="bg-[var(--c-surface)] border border-[var(--c-border)] rounded-[var(--radius-lg)] p-6">
 					<h3 className="text-lg font-semibold text-[var(--c-text)] mb-3">🎨 Custom Colors</h3>
 					<p className="text-[var(--c-text-secondary)] mb-4">
@@ -222,6 +222,16 @@ export default function App({ children }) {
 					</p>
 					<a href="/docs/theme/dark-mode" className="text-[var(--c-primary)] hover:underline font-medium">
 						Dark Mode Guide →
+					</a>
+				</div>
+
+				<div className="bg-[var(--c-surface)] border border-[var(--c-border)] rounded-[var(--radius-lg)] p-6">
+					<h3 className="text-lg font-semibold text-[var(--c-text)] mb-3">◆ Shape</h3>
+					<p className="text-[var(--c-text-secondary)] mb-4">
+						A second dimension — corners, elevation and motion, independent of color.
+					</p>
+					<a href="/docs/theme/shape" className="text-[var(--c-primary)] hover:underline font-medium">
+						Shape Guide →
 					</a>
 				</div>
 			</div>

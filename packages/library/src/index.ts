@@ -34,6 +34,8 @@ export * from './primitives/visually-hidden.js'
 export { Slot, type SlotProps } from './internal/slot.js'
 export * from './theme/theme-utils.js'
 export * from './theme/theme-types.js'
+export * from './theme/shape-utils.js'
+export { Shape, ALL_SHAPES, SHAPE_COOKIE_NAME, setShapeCookie, getShapeFromCookie, type ShapeConfig } from './theme/shape-types.js'
 
 // Interactive components
 export * from './forms/slider.js'
@@ -75,6 +77,8 @@ export { HotToastProvider } from './overlays/toast-provider.js'
 // Theme system (client side)
 export { ThemeProvider, useTheme, type ThemeProviderProps } from './theme/theme-provider.js'
 export { ThemeSwitcher, type ThemeSwitcherProps } from './theme/theme-switcher.js'
+export { ShapeSwitcher, type ShapeSwitcherProps } from './theme/shape-switcher.js'
+export { useShapeSwitcher, type UseShapeSwitcherOptions } from './theme/use-shape-switcher.js'
 export { EnhancedThemeSwitcher, type EnhancedThemeConfig, type EnhancedThemeSwitcherProps } from './theme/enhanced-theme-switcher.js'
 export { CycleThemeSwitcher, type CycleThemeConfig, type CycleThemeSwitcherProps } from './theme/cycle-theme-switcher.js'
 export { useThemeSwitcher, resolveThemeIcon, smartThemeIcon, type AnyThemeConfig } from './theme/use-theme-switcher.js'

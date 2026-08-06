@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.4.0
+
+Elegance pass: a second, independent design dimension, plus a round of
+motion/interaction polish.
+
+### New
+
+- **Shape system** — `data-shape` (`sharp` / `soft` / `round`) covering
+  corner radius, shadow weight and motion timing, completely orthogonal to
+  color theme: any shape combines with any of the six built-in themes (18
+  looks, one stylesheet, zero extra CSS). Ships `ShapeSwitcher`,
+  `useShapeSwitcher`, `getServerShape`, `shapeInitScript`, and the `Shape`
+  enum / `ALL_SHAPES` / cookie helpers — mirroring the color-theme SSR
+  pattern exactly (own cookie, flicker-free hard loads, `initialShape` to
+  skip the mount fallback). `soft` is the unmodified `:root` default, so
+  existing consumers see no visual change unless they opt in.
+
+### Improved
+
+- Subtle hover-lift (`translateY`) on filled button variants
+  (`bold`/`success`/`danger`) and interactive `Card`s. Press feedback
+  (`:active` scale) still wins over the lift when both are true at once —
+  hovering while pressing scales down rather than staying lifted.
+
+### Fixed
+
+- Cookie-writer strings (`setThemeCookie`, `setShapeCookie`,
+  `ThemeProvider`'s internal cookie write) now include a space after each
+  `;` separator, matching standard `Set-Cookie` formatting and fixing naive
+  substring-based cookie parsers that split on `'; '`.
+
 ## 0.3.0
 
 Quality pass driven by a full multi-lens audit (correctness, accessibility,

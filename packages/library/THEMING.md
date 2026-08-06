@@ -318,6 +318,79 @@ The library includes 6 built-in themes:
 
 Each theme provides a complete set of CSS variables for consistent styling across all components.
 
+## Shape: a second, independent dimension
+
+Color theme answers *light or dark, which brand color*. **Shape** answers a
+completely different question — *how tight are the corners, how heavy are
+the shadows, how snappy is the motion* — and the two combine freely. Six
+color themes × three shapes is eighteen distinct looks from one stylesheet,
+with zero extra CSS to write.
+
+Shape is selected via `data-shape` on `<html>`, exactly like color theme is
+selected via `data-theme` — a separate attribute, a separate cookie, zero
+coupling. It overrides only the radius, shadow and motion tokens; it never
+touches color.
+
+| Preset | Feel |
+| --- | --- |
+| `sharp` | Tight corners, flat shadows, snappy 120ms motion. Architectural, dashboard-dense — a Linear or Vercel-console feel. |
+| `soft` | The shipped default — unmodified `:root` values. Upgrading consumers see no change unless they opt in. |
+| `round` | Generous corners, soft glow shadows, a gentle 220ms overshoot. Warm and consumer-friendly — an Arc or Craft feel. |
+
+```tsx
+import { ShapeSwitcher } from '@creo-team/buzz-ui/client'
+
+<ShapeSwitcher />
+```
+
+It persists to its own `shape` cookie and reads it back with `getServerShape`
+for the same flicker-free SSR pattern as the color theme:
+
+```tsx
+// app/layout.tsx
+import { cookies } from 'next/headers'
+import { getServerShape, shapeInitScript } from '@creo-team/buzz-ui/server'
+import { ShapeSwitcher } from '@creo-team/buzz-ui/client'
+
+export default async function RootLayout({ children }) {
+	const shape = getServerShape(await cookies(), 'soft')
+	return (
+		<html data-shape={shape}>
+			<head>
+				<script dangerouslySetInnerHTML={{ __html: shapeInitScript(shape) }} />
+			</head>
+			<body>
+				<ShapeSwitcher initialShape={shape} />
+				{children}
+			</body>
+		</html>
+	)
+}
+```
+
+The switcher is a convenience — the mechanism underneath is three plain
+attribute selectors, so a fourth preset is just more CSS:
+
+```css
+[data-shape='brutalist'] {
+	--radius-sm: 0;
+	--radius-md: 0;
+	--radius-lg: 0;
+	--radius-xl: 0;
+	--shadow-md: none;
+	--bz-duration: 0ms;
+}
+```
+
+Build a custom switcher on the same engine `ThemeSwitcher` uses, minus the
+color-palette application:
+
+```tsx
+import { useShapeSwitcher, ALL_SHAPES } from '@creo-team/buzz-ui/client'
+
+const { shape, setShape, cycle } = useShapeSwitcher({ shapes: ALL_SHAPES })
+```
+
 ## Best Practices
 
 1. **Use CSS Variables** - Always use CSS variables instead of hard-coded colors

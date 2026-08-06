@@ -56,7 +56,7 @@ export const ALL_THEMES: ThemeConfig[] = [
 export const THEME_COOKIE_NAME = 'theme'
 
 export function setThemeCookie(theme: Theme | string): void {
-	document.cookie = `${THEME_COOKIE_NAME}=${theme};path=/;max-age=31536000;SameSite=Lax`
+	document.cookie = `${THEME_COOKIE_NAME}=${theme}; path=/; max-age=31536000; SameSite=Lax`
 }
 
 export function getThemeFromCookie(defaultTheme: Theme | string = "light"): string {

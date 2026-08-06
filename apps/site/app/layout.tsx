@@ -3,9 +3,9 @@ import './globals.css'
 // import the stylesheet source too — npm consumers use '@creo-team/buzz-ui/styles.css'.
 import '../../../packages/library/src/styles/buzz.css'
 import { cookies } from 'next/headers'
-import { TopNav, getServerTheme } from '@creo-team/buzz-ui/server'
-import { ThemeSwitcher, ToastProvider } from '@creo-team/buzz-ui/client'
-import { themeInitScript } from '@creo-team/buzz-ui/server'
+import { TopNav, getServerTheme, getServerShape } from '@creo-team/buzz-ui/server'
+import { ThemeSwitcher, ShapeSwitcher, ToastProvider } from '@creo-team/buzz-ui/client'
+import { themeInitScript, shapeInitScript } from '@creo-team/buzz-ui/server'
 import { DevBanner } from '../components/dev-banner'
 import { Logo } from '../components/logo'
 import { BuzzTextLogo } from '../components/buzz-text-logo'
@@ -13,11 +13,13 @@ import { SiteFooter } from '../components/site-footer'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	const initialTheme = getServerTheme(cookies(), 'light')
+	const initialShape = getServerShape(cookies(), 'soft')
 
 	return (
-		<html lang="en" data-theme={initialTheme} className={initialTheme}>
+		<html lang="en" data-theme={initialTheme} data-shape={initialShape} className={initialTheme}>
 			<head>
 				<script dangerouslySetInnerHTML={{ __html: themeInitScript(initialTheme) }} />
+				<script dangerouslySetInnerHTML={{ __html: shapeInitScript(initialShape) }} />
 			</head>
 			<body>
 				<div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--c-background)', color: 'var(--c-text)' }}>
@@ -36,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 							}
 							right={
 								<div className="flex items-center gap-3">
+									<ShapeSwitcher initialShape={initialShape} />
 									<ThemeSwitcher initialTheme={initialTheme} />
 									<a href="https://github.com/creo-team/buzz-ui" className="no-underline">
 										<button className="rounded-[var(--radius-md)] border border-[var(--c-border)] bg-[var(--c-surface-2)] px-3 py-2 text-sm text-[var(--c-text)] hover:bg-[var(--c-hover)] transition-colors">
