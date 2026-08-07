@@ -20,8 +20,8 @@ export interface FabProps extends ButtonProps {
  * floating above page content instead of sitting in flow.
  *
  * Pair with `iconOnly` for the classic circular FAB, or icon + label
- * children for an extended pill. Composes with the Shape system (radius,
- * shadow and motion follow `data-shape` like every other surface) and sits
+ * children for an extended pill. Composes with the Style system (radius,
+ * shadow and motion follow `data-style` like every other surface) and sits
  * below every overlay (modal, popover, tooltip, toast) in the z-index scale,
  * so it never floats over content that should take priority.
  */

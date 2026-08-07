@@ -226,12 +226,12 @@ export default function App({ children }) {
 				</div>
 
 				<div className="bg-[var(--c-surface)] border border-[var(--c-border)] rounded-[var(--radius-lg)] p-6">
-					<h3 className="text-lg font-semibold text-[var(--c-text)] mb-3">◆ Shape</h3>
+					<h3 className="text-lg font-semibold text-[var(--c-text)] mb-3">◆ Styles</h3>
 					<p className="text-[var(--c-text-secondary)] mb-4">
-						A second dimension — corners, elevation and motion, independent of color.
+						Ten looks-and-feels — corners, elevation, glass, density, motion — independent of color.
 					</p>
-					<a href="/docs/theme/shape" className="text-[var(--c-primary)] hover:underline font-medium">
-						Shape Guide →
+					<a href="/docs/theme/style" className="text-[var(--c-primary)] hover:underline font-medium">
+						Style Guide →
 					</a>
 				</div>
 			</div>

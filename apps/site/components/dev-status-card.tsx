@@ -4,7 +4,7 @@ const stats = [
 	{ key: 'components', value: '35+', label: 'Components' },
 	{ key: 'tests', value: '238', label: 'Tests passing' },
 	{ key: 'deps', value: '0', label: 'Dependencies' },
-	{ key: 'themes', value: '6', label: 'Built-in themes' },
+	{ key: 'looks', value: '6×10', label: 'Themes × styles' },
 ]
 
 export function DevStatusCard() {
@@ -19,7 +19,7 @@ export function DevStatusCard() {
 					<h3 className="text-base font-semibold text-[var(--c-text)]">Active development</h3>
 				</div>
 				<div className="flex items-center gap-2">
-					<Badge variant="outline">v0.5.0</Badge>
+					<Badge variant="outline">v0.6.0</Badge>
 					<Badge variant="warning">Pre-1.0</Badge>
 				</div>
 			</div>

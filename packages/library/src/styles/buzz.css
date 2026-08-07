@@ -34,6 +34,17 @@
 	--bz-ease: cubic-bezier(0.16, 1, 0.3, 1);
 	--bz-duration: 180ms;
 
+	/* Style-axis tokens — defaults equal today's shipped values; [data-style]
+	   presets override subsets. Never set any --c-* here (theme-owned). */
+	--bz-border-w: 1px;
+	--bz-border-c: var(--c-border);
+	--bz-border-c-strong: var(--c-border-strong);
+	--bz-density: 1; /* multiplies base whitespace only, never font-size */
+	--bz-anim: 1; /* multiplies entrance/exit animation durations */
+	--bz-surface-bg: var(--c-surface); /* floating/raised surfaces */
+	--bz-surface-filter: none; /* backdrop-filter hook on floating surfaces */
+	--bz-glass-mix: 70%; /* glass knob; read on the [data-style='glass'] element */
+
 	/* Light theme (default) */
 	--c-background: #ffffff;
 	--c-text: #1f2937;
@@ -65,29 +76,86 @@
 }
 
 /*
- * Shape — corner radius, elevation and motion, kept independent of color
- * theme. `[data-shape]` on <html> overrides these on top of any `data-theme`.
- * Unset (or 'soft') falls through to the :root values above, so upgrading
- * consumers see no change until they opt in.
+ * Theme-derived style tokens re-derive wherever a theme applies, so a
+ * scoped theme container (`<div class="dark">`) resolves them against its
+ * own colors instead of inheriting the outer theme's frozen values.
+ * Kept BEFORE the [data-style] blocks: when both land on one element the
+ * style block wins the equal-specificity tie by source order.
+ */
+[data-theme], .light, .dark, .midnight, .forest, .ocean, .umbro {
+	--bz-surface-bg: var(--c-surface);
+	--bz-border-c: var(--c-border);
+	--bz-border-c-strong: var(--c-border-strong);
+	--bz-nu-hi: color-mix(in srgb, var(--c-background) 60%, white);
+	--bz-nu-lo: color-mix(in srgb, var(--c-background) 70%, black);
+}
+
+/*
+ * Style — a holistic look-and-feel axis, independent of color theme:
+ * corner radius, elevation character, border weight, surface treatment,
+ * spacing density and motion, as one coherent personality per preset.
+ * `[data-style]` works on <html> (whole app) or on any container (scoped
+ * preview) — every trait is an inherited custom property. Unset (or
+ * 'soft') falls through to the :root values above, so consumers see no
+ * change until they opt in. 6 themes x 10 styles compose freely.
+ *
+ * Token ownership: [data-style] blocks write only --radius-*, --shadow-*
+ * and --bz-* — never any --c-* (those belong to themes). A shadow token
+ * must never be `none` (it would void composed shadow lists); use the
+ * list-safe no-op `0 0 0 0 transparent`.
  */
 
-[data-shape='sharp'] {
-	/* Architectural and precise: tight corners, flat shadows, snappy motion. */
+[data-style='soft'] {
+	/* The default, restated in full: a scoped soft preview inside any other
+	   active preset must reset every style-axis token to the :root values.
+	   (`initial` on a custom property is invalid-at-computed-value time, so
+	   optional-override consumers fall back to their per-site defaults.) */
+	--radius-sm: 6px;
+	--radius-md: 8px;
+	--radius-lg: 10px;
+	--radius-xl: 12px;
+	--radius-2xl: 16px;
+	--bz-control-radius: initial;
+	--shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+	--shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+	--shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+	--shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+	--bz-border-w: 1px;
+	--bz-border-c: var(--c-border);
+	--bz-border-c-strong: var(--c-border-strong);
+	--bz-surface-bg: var(--c-surface);
+	--bz-surface-filter: none;
+	--bz-density: 1;
+	--bz-duration: 180ms;
+	--bz-ease: cubic-bezier(0.16, 1, 0.3, 1);
+	--bz-anim: 1;
+}
+
+[data-style='sharp'] {
+	/* Architectural precision — elevation is a hairline ring, not a glow. */
 	--radius-sm: 3px;
 	--radius-md: 4px;
 	--radius-lg: 6px;
 	--radius-xl: 8px;
 	--radius-2xl: 10px;
+	--bz-control-radius: var(--radius-sm);
 	--shadow-sm: 0 1px 1px 0 rgb(0 0 0 / 0.06);
-	--shadow-md: 0 1px 2px 0 rgb(0 0 0 / 0.08), 0 1px 1px -1px rgb(0 0 0 / 0.06);
-	--shadow-lg: 0 2px 4px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.06);
-	--shadow-xl: 0 4px 8px 0 rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.08);
-	--bz-ease: cubic-bezier(0.4, 0, 0.2, 1);
+	--shadow-md: 0 0 0 1px rgb(0 0 0 / 0.05), 0 1px 2px 0 rgb(0 0 0 / 0.08), inset 0 1px 0 rgb(255 255 255 / 0.06);
+	--shadow-lg: 0 0 0 1px rgb(0 0 0 / 0.05), 0 2px 4px 0 rgb(0 0 0 / 0.08), inset 0 1px 0 rgb(255 255 255 / 0.06);
+	--shadow-xl: 0 0 0 1px rgb(0 0 0 / 0.06), 0 4px 8px 0 rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.08), inset 0 1px 0 rgb(255 255 255 / 0.06);
+	--bz-density: 0.92;
 	--bz-duration: 120ms;
+	--bz-ease: cubic-bezier(0.4, 0, 0.2, 1);
+	--bz-anim: 0.75;
+	--bz-border-w: 1px;
+	--bz-border-c: var(--c-border);
+	--bz-border-c-strong: var(--c-border-strong);
+	--bz-surface-bg: var(--c-surface);
+	--bz-surface-filter: none;
 }
 
-[data-shape='round'] {
-	/* Warm and plush: generous corners, soft glow shadows, gentle overshoot. */
+[data-style='round'] {
+	/* Warm and plush — generous corners, diffuse glow, gentle overshoot. */
 	--radius-sm: 10px;
 	--radius-md: 14px;
 	--radius-lg: 18px;
@@ -97,8 +165,182 @@
 	--shadow-md: 0 8px 16px -4px rgb(0 0 0 / 0.08), 0 4px 8px -4px rgb(0 0 0 / 0.06);
 	--shadow-lg: 0 16px 32px -8px rgb(0 0 0 / 0.1), 0 8px 16px -8px rgb(0 0 0 / 0.08);
 	--shadow-xl: 0 24px 48px -12px rgb(0 0 0 / 0.12), 0 12px 24px -12px rgb(0 0 0 / 0.1);
-	--bz-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--bz-density: 1.05;
 	--bz-duration: 220ms;
+	--bz-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--bz-anim: 1.15;
+	--bz-control-radius: initial;
+	--bz-border-w: 1px;
+	--bz-border-c: var(--c-border);
+	--bz-border-c-strong: var(--c-border-strong);
+	--bz-surface-bg: var(--c-surface);
+	--bz-surface-filter: none;
+}
+
+[data-style='glass'] {
+	/* Luminous translucency — liquid-glass surfaces. The translucent
+	   background + blur pair is gated together in the @supports block at
+	   the end of this file; these are the always-safe traits. */
+	--radius-sm: 12px;
+	--radius-md: 16px;
+	--radius-lg: 20px;
+	--radius-xl: 26px;
+	--radius-2xl: 32px;
+	--bz-control-radius: 999px; /* capsule buttons; inputs keep their radius */
+	--bz-border-c: color-mix(in srgb, var(--c-border) 55%, transparent);
+	--bz-border-c-strong: color-mix(in srgb, var(--c-border-strong) 70%, transparent);
+	--shadow-sm: 0 1px 2px rgb(0 0 0 / 0.06), inset 0 1px 0 rgb(255 255 255 / 0.15);
+	--shadow-md: 0 8px 24px -6px rgb(0 0 0 / 0.12), inset 0 1px 0 rgb(255 255 255 / 0.2);
+	--shadow-lg: 0 16px 40px -8px rgb(0 0 0 / 0.16), inset 0 1px 0 rgb(255 255 255 / 0.25);
+	--shadow-xl: 0 24px 64px -12px rgb(0 0 0 / 0.2), inset 0 1px 0 rgb(255 255 255 / 0.3);
+	--bz-density: 1.05;
+	--bz-duration: 240ms;
+	--bz-ease: cubic-bezier(0.32, 0.72, 0, 1);
+	--bz-anim: 1.2;
+	--bz-border-w: 1px;
+	--bz-surface-bg: var(--c-surface);
+	--bz-surface-filter: none; /* translucency arrives via the @supports gate below */
+}
+
+[data-style='flat'] {
+	/* Quiet utility — hairlines and ink, shadows almost abolished. */
+	--radius-sm: 4px;
+	--radius-md: 6px;
+	--radius-lg: 8px;
+	--radius-xl: 10px;
+	--radius-2xl: 12px;
+	--bz-control-radius: var(--radius-sm);
+	--shadow-sm: 0 0 0 0 transparent;
+	--shadow-md: 0 0 0 0 transparent;
+	--shadow-lg: 0 0 0 1px var(--c-border), 0 4px 12px rgb(0 0 0 / 0.06);
+	--shadow-xl: 0 0 0 1px var(--c-border), 0 8px 24px rgb(0 0 0 / 0.08);
+	--bz-density: 0.95;
+	--bz-duration: 120ms;
+	--bz-ease: cubic-bezier(0, 0, 0.2, 1);
+	--bz-anim: 0.7;
+	--bz-border-w: 1px;
+	--bz-border-c: var(--c-border);
+	--bz-border-c-strong: var(--c-border-strong);
+	--bz-surface-bg: var(--c-surface);
+	--bz-surface-filter: none;
+}
+
+[data-style='crisp'] {
+	/* Enterprise instrument panel — dense, conservative, keyboard-first. */
+	--radius-sm: 2px;
+	--radius-md: 3px;
+	--radius-lg: 4px;
+	--radius-xl: 6px;
+	--radius-2xl: 8px;
+	--bz-control-radius: var(--radius-sm);
+	--bz-border-c: var(--c-border-strong);
+	--shadow-sm: 0 0 0 0 transparent;
+	--shadow-md: 0 1px 2px rgb(0 0 0 / 0.1);
+	--shadow-lg: 0 2px 6px rgb(0 0 0 / 0.2);
+	--shadow-xl: 0 4px 8px rgb(0 0 0 / 0.24);
+	--bz-density: 0.85;
+	--bz-duration: 110ms;
+	--bz-ease: cubic-bezier(0.2, 0, 0.38, 0.9);
+	--bz-anim: 0.7;
+	--bz-border-w: 1px;
+	--bz-border-c-strong: var(--c-border-strong);
+	--bz-surface-bg: var(--c-surface);
+	--bz-surface-filter: none;
+}
+
+[data-style='depth'] {
+	/* Cinematic layered elevation — surfaces float on stacked shadows. */
+	--radius-sm: 6px;
+	--radius-md: 8px;
+	--radius-lg: 12px;
+	--radius-xl: 16px;
+	--radius-2xl: 20px;
+	--bz-control-radius: var(--radius-md);
+	--shadow-sm: 0 1px 1px rgb(0 0 0 / 0.03), 0 2px 4px -1px rgb(0 0 0 / 0.06);
+	--shadow-md: 0 2px 2px -1px rgb(0 0 0 / 0.04), 0 5px 10px -2px rgb(0 0 0 / 0.08), 0 12px 24px -6px rgb(0 0 0 / 0.1);
+	--shadow-lg: 0 3px 6px -2px rgb(0 0 0 / 0.05), 0 12px 24px -4px rgb(0 0 0 / 0.1), 0 30px 60px -12px rgb(0 0 0 / 0.18);
+	--shadow-xl: 0 6px 12px -2px rgb(0 0 0 / 0.06), 0 24px 48px -8px rgb(0 0 0 / 0.14), 0 50px 100px -20px rgb(0 0 0 / 0.25);
+	--bz-duration: 200ms;
+	--bz-ease: cubic-bezier(0.215, 0.61, 0.355, 1);
+	--bz-anim: 1.1;
+	--bz-border-w: 1px;
+	--bz-border-c: var(--c-border);
+	--bz-border-c-strong: var(--c-border-strong);
+	--bz-surface-bg: var(--c-surface);
+	--bz-surface-filter: none;
+	--bz-density: 1;
+}
+
+[data-style='puff'] {
+	/* Soft-extruded — controls pressed out of the page itself. Both shadow
+	   poles derive from --c-background, so it survives every theme. */
+	--radius-sm: 12px;
+	--radius-md: 16px;
+	--radius-lg: 20px;
+	--radius-xl: 26px;
+	--radius-2xl: 32px;
+	--bz-control-radius: var(--radius-lg);
+	--bz-border-c: color-mix(in srgb, var(--c-border) 50%, transparent);
+	--bz-nu-hi: color-mix(in srgb, var(--c-background) 60%, white);
+	--bz-nu-lo: color-mix(in srgb, var(--c-background) 70%, black);
+	--shadow-sm: -2px -2px 4px var(--bz-nu-hi), 2px 2px 4px var(--bz-nu-lo);
+	--shadow-md: -4px -4px 8px var(--bz-nu-hi), 4px 4px 8px var(--bz-nu-lo);
+	--shadow-lg: -6px -6px 14px var(--bz-nu-hi), 6px 6px 14px var(--bz-nu-lo);
+	--shadow-xl: -10px -10px 24px var(--bz-nu-hi), 10px 10px 24px var(--bz-nu-lo);
+	--bz-surface-bg: var(--c-background); /* background-matched surfaces */
+	--bz-density: 1.08;
+	--bz-duration: 200ms;
+	--bz-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+	--bz-anim: 1.1;
+	--bz-border-c-strong: var(--c-border-strong);
+	--bz-border-w: 1px;
+	--bz-surface-filter: none;
+}
+
+[data-style='brutal'] {
+	/* Neo-brutalism — zero radius, ink borders, hard solid shadows. */
+	--radius-sm: 0;
+	--radius-md: 0;
+	--radius-lg: 0;
+	--radius-xl: 0;
+	--radius-2xl: 0;
+	--bz-control-radius: 0;
+	--bz-border-w: 2px;
+	--bz-border-c: var(--c-text);
+	--bz-border-c-strong: var(--c-text);
+	--shadow-sm: 2px 2px 0 0 var(--c-text);
+	--shadow-md: 4px 4px 0 0 var(--c-text);
+	--shadow-lg: 6px 6px 0 0 var(--c-text);
+	--shadow-xl: 8px 8px 0 0 var(--c-text);
+	--bz-duration: 90ms;
+	--bz-ease: cubic-bezier(0, 0, 1, 1);
+	--bz-anim: 0.5;
+	--bz-surface-bg: var(--c-surface);
+	--bz-surface-filter: none;
+	--bz-density: 1;
+}
+
+[data-style='toy'] {
+	/* Chunky and bouncy — pills with a physical 3D bottom edge. */
+	--radius-sm: 12px;
+	--radius-md: 16px;
+	--radius-lg: 20px;
+	--radius-xl: 24px;
+	--radius-2xl: 32px;
+	--bz-control-radius: 999px;
+	--bz-border-w: 2px;
+	--bz-border-c: var(--c-border-strong);
+	--shadow-sm: 0 2px 0 0 var(--c-border-strong);
+	--shadow-md: 0 4px 0 0 var(--c-border-strong);
+	--shadow-lg: 0 6px 0 0 var(--c-border-strong), 0 12px 24px -8px rgb(0 0 0 / 0.1);
+	--shadow-xl: 0 8px 0 0 var(--c-border-strong), 0 20px 32px -8px rgb(0 0 0 / 0.12);
+	--bz-density: 1.12;
+	--bz-duration: 250ms;
+	--bz-ease: cubic-bezier(0.34, 1.8, 0.64, 1);
+	--bz-anim: 1.25;
+	--bz-border-c-strong: var(--c-border-strong);
+	--bz-surface-bg: var(--c-surface);
+	--bz-surface-filter: none;
 }
 
 html[data-theme='light'], .light {
@@ -427,7 +669,7 @@ html[data-theme='umbro'] {
 	gap: 0.5rem;
 	font-family: inherit;
 	font-weight: 500;
-	border: 1px solid transparent;
+	border: var(--bz-border-w) solid transparent;
 	cursor: pointer;
 	user-select: none;
 	text-decoration: none;
@@ -448,9 +690,9 @@ html[data-theme='umbro'] {
 .bz-button[data-full-width] { width: 100%; }
 .bz-button__spinner { margin-right: 0.125rem; }
 
-.bz-button[data-size='sm'] { padding: 0.375rem 0.75rem; font-size: 0.75rem; border-radius: var(--radius-lg); }
-.bz-button[data-size='md'] { padding: 0.5rem 1rem; font-size: 0.875rem; border-radius: var(--radius-xl); }
-.bz-button[data-size='lg'] { padding: 0.75rem 1.5rem; font-size: 1rem; border-radius: var(--radius-2xl); }
+.bz-button[data-size='sm'] { padding: calc(0.375rem * var(--bz-density)) calc(0.75rem * var(--bz-density)); font-size: 0.75rem; border-radius: var(--bz-control-radius, var(--radius-lg)); }
+.bz-button[data-size='md'] { padding: calc(0.5rem * var(--bz-density)) calc(1rem * var(--bz-density)); font-size: 0.875rem; border-radius: var(--bz-control-radius, var(--radius-xl)); }
+.bz-button[data-size='lg'] { padding: calc(0.75rem * var(--bz-density)) calc(1.5rem * var(--bz-density)); font-size: 1rem; border-radius: var(--bz-control-radius, var(--radius-2xl)); }
 
 .bz-button[data-icon-only] { padding: 0; border-radius: 9999px; }
 .bz-button[data-icon-only][data-size='sm'] { width: 2rem; height: 2rem; }
@@ -631,9 +873,9 @@ html[data-theme='umbro'] {
 	font-size: 0.875rem;
 	color: var(--c-text);
 	background: var(--c-surface);
-	border: 1px solid var(--c-border-strong);
+	border: var(--bz-border-w) solid var(--bz-border-c-strong);
 	border-radius: var(--radius-lg);
-	padding: 0.5rem 0.75rem;
+	padding: calc(0.5rem * var(--bz-density)) calc(0.75rem * var(--bz-density));
 	transition: border-color var(--bz-duration) var(--bz-ease), box-shadow var(--bz-duration) var(--bz-ease);
 }
 .bz-input::placeholder,
@@ -711,9 +953,9 @@ html[data-theme='umbro'] {
 	font-size: 0.875rem;
 	color: var(--c-text);
 	background: var(--c-surface);
-	border: 1px solid var(--c-border-strong);
+	border: var(--bz-border-w) solid var(--bz-border-c-strong);
 	border-radius: var(--radius-lg);
-	padding: 0.5rem 2.25rem 0.5rem 0.75rem;
+	padding: calc(0.5rem * var(--bz-density)) 2.25rem calc(0.5rem * var(--bz-density)) calc(0.75rem * var(--bz-density));
 	transition: border-color var(--bz-duration) var(--bz-ease), box-shadow var(--bz-duration) var(--bz-ease);
 }
 .bz-combobox__input::placeholder { color: var(--c-text-muted); }
@@ -773,19 +1015,21 @@ html[data-theme='umbro'] {
 	z-index: 110;
 	max-height: 16rem;
 	overflow-y: auto;
-	padding: 0.25rem;
-	background: var(--c-dropdown-bg, var(--c-surface));
-	border: 1px solid var(--c-dropdown-border, var(--c-border));
+	padding: calc(0.25rem * var(--bz-density));
+	background: var(--c-dropdown-bg, var(--bz-surface-bg));
+	-webkit-backdrop-filter: var(--bz-surface-filter);
+	backdrop-filter: var(--bz-surface-filter);
+	border: var(--bz-border-w) solid var(--c-dropdown-border, var(--bz-border-c));
 	border-radius: var(--radius-lg);
 	box-shadow: var(--shadow-lg);
-	animation: bz-pop-in 140ms var(--bz-ease);
+	animation: bz-pop-in calc(140ms * var(--bz-anim)) var(--bz-ease);
 }
 .bz-combobox__empty { padding: 1rem 0.75rem; text-align: center; color: var(--c-text-muted); font-size: 0.875rem; }
 .bz-combobox__option {
 	display: flex;
 	align-items: center;
 	gap: 0.75rem;
-	padding: 0.55rem 0.75rem;
+	padding: calc(0.55rem * var(--bz-density)) calc(0.75rem * var(--bz-density));
 	border-radius: var(--radius-md);
 	cursor: pointer;
 }
@@ -1066,10 +1310,12 @@ html[data-theme='umbro'] {
    ===================================================================== */
 
 .bz-card {
-	background: var(--c-surface);
-	border: 1px solid var(--c-border);
+	background: var(--bz-surface-bg);
+	-webkit-backdrop-filter: var(--bz-surface-filter);
+	backdrop-filter: var(--bz-surface-filter);
+	border: var(--bz-border-w) solid var(--bz-border-c);
 	border-radius: var(--radius-xl);
-	padding: 1.5rem;
+	padding: calc(1.5rem * var(--bz-density));
 	color: var(--c-text);
 	transition: box-shadow var(--bz-duration) var(--bz-ease), border-color var(--bz-duration) var(--bz-ease),
 		transform var(--bz-duration) var(--bz-ease);
@@ -1090,8 +1336,8 @@ html[data-theme='umbro'] {
 	transition-duration: 80ms;
 }
 .bz-card[data-flush] { padding: 0; }
-.bz-card[data-flush] .bz-card__header { padding: 1.25rem 1.5rem 0; }
-.bz-card[data-flush] .bz-card__footer { padding: 0 1.5rem 1.25rem; }
+.bz-card[data-flush] .bz-card__header { padding: calc(1.25rem * var(--bz-density)) calc(1.5rem * var(--bz-density)) 0; }
+.bz-card[data-flush] .bz-card__footer { padding: 0 calc(1.5rem * var(--bz-density)) calc(1.25rem * var(--bz-density)); }
 .bz-card__header {
 	display: flex;
 	align-items: flex-start;
@@ -1110,7 +1356,7 @@ html[data-theme='umbro'] {
 .bz-card__footer {
 	margin-top: 1rem;
 	padding-top: 1rem;
-	border-top: 1px solid var(--c-border);
+	border-top: var(--bz-border-w) solid var(--bz-border-c);
 }
 
 /* Badge + Chip ----------------------------------------------------------- */
@@ -1189,7 +1435,7 @@ html[data-theme='umbro'] {
 .bz-alert {
 	display: flex;
 	gap: 0.75rem;
-	border: 1px solid;
+	border: var(--bz-border-w) solid;
 	border-radius: var(--radius-lg);
 	padding: 1rem;
 	font-size: 0.875rem;
@@ -1225,7 +1471,7 @@ html[data-theme='umbro'] {
 .bz-banner {
 	position: relative;
 	width: 100%;
-	border-bottom: 1px solid;
+	border-bottom: var(--bz-border-w) solid;
 	box-shadow: var(--shadow-lg);
 	-webkit-backdrop-filter: blur(4px);
 	backdrop-filter: blur(4px);
@@ -1573,14 +1819,14 @@ html[data-theme='umbro'] {
 	max-width: min(20rem, 90vw);
 	background: var(--c-tooltip-bg, var(--c-surface));
 	color: var(--c-tooltip-text, var(--c-text));
-	border: 1px solid var(--c-tooltip-border, var(--c-border));
+	border: var(--bz-border-w) solid var(--c-tooltip-border, var(--bz-border-c));
 	border-radius: var(--radius-lg);
 	box-shadow: var(--shadow-xl);
 	-webkit-backdrop-filter: blur(16px);
 	backdrop-filter: blur(16px);
-	animation: bz-pop-in 140ms var(--bz-ease);
+	animation: bz-pop-in calc(140ms * var(--bz-anim)) var(--bz-ease);
 }
-.bz-tooltip[data-state='closed'] { animation: bz-pop-out 120ms var(--bz-ease) forwards; }
+.bz-tooltip[data-state='closed'] { animation: bz-pop-out calc(120ms * var(--bz-anim)) var(--bz-ease) forwards; }
 .bz-tooltip[data-size='compact'] { font-size: 0.75rem; }
 .bz-tooltip[data-size='compact'] .bz-tooltip__content { padding: 0.375rem 0.75rem; }
 .bz-tooltip[data-size='comfortable'] { font-size: 0.875rem; max-width: min(36rem, 90vw); }
@@ -1609,26 +1855,26 @@ html[data-theme='umbro'] {
 }
 .bz-tooltip__arrow[data-side='top'] {
 	bottom: -4px;
-	border-right: 1px solid var(--c-tooltip-border, var(--c-border));
-	border-bottom: 1px solid var(--c-tooltip-border, var(--c-border));
+	border-right: var(--bz-border-w) solid var(--c-tooltip-border, var(--bz-border-c));
+	border-bottom: var(--bz-border-w) solid var(--c-tooltip-border, var(--bz-border-c));
 	margin-left: -4px;
 }
 .bz-tooltip__arrow[data-side='bottom'] {
 	top: -4px;
-	border-left: 1px solid var(--c-tooltip-border, var(--c-border));
-	border-top: 1px solid var(--c-tooltip-border, var(--c-border));
+	border-left: var(--bz-border-w) solid var(--c-tooltip-border, var(--bz-border-c));
+	border-top: var(--bz-border-w) solid var(--c-tooltip-border, var(--bz-border-c));
 	margin-left: -4px;
 }
 .bz-tooltip__arrow[data-side='left'] {
 	right: -4px;
-	border-right: 1px solid var(--c-tooltip-border, var(--c-border));
-	border-top: 1px solid var(--c-tooltip-border, var(--c-border));
+	border-right: var(--bz-border-w) solid var(--c-tooltip-border, var(--bz-border-c));
+	border-top: var(--bz-border-w) solid var(--c-tooltip-border, var(--bz-border-c));
 	margin-top: -4px;
 }
 .bz-tooltip__arrow[data-side='right'] {
 	left: -4px;
-	border-left: 1px solid var(--c-tooltip-border, var(--c-border));
-	border-bottom: 1px solid var(--c-tooltip-border, var(--c-border));
+	border-left: var(--bz-border-w) solid var(--c-tooltip-border, var(--bz-border-c));
+	border-bottom: var(--bz-border-w) solid var(--c-tooltip-border, var(--bz-border-c));
 	margin-top: -4px;
 }
 
@@ -1657,16 +1903,18 @@ html[data-theme='umbro'] {
 .bz-popover {
 	z-index: 110;
 	min-width: 10rem;
-	background: var(--c-surface);
+	background: var(--bz-surface-bg);
+	-webkit-backdrop-filter: var(--bz-surface-filter);
+	backdrop-filter: var(--bz-surface-filter);
 	color: var(--c-text);
-	border: 1px solid var(--c-border);
+	border: var(--bz-border-w) solid var(--bz-border-c);
 	border-radius: var(--radius-lg);
 	box-shadow: var(--shadow-lg);
 	padding: 1rem;
-	animation: bz-pop-in 140ms var(--bz-ease);
+	animation: bz-pop-in calc(140ms * var(--bz-anim)) var(--bz-ease);
 	outline: none;
 }
-.bz-popover[data-state='closed'] { animation: bz-pop-out 140ms var(--bz-ease) forwards; }
+.bz-popover[data-state='closed'] { animation: bz-pop-out calc(140ms * var(--bz-anim)) var(--bz-ease) forwards; }
 
 /* Modal ------------------------------------------------------------------ */
 
@@ -1674,12 +1922,12 @@ html[data-theme='umbro'] {
 .bz-modal__backdrop {
 	position: fixed;
 	inset: 0;
-	background: var(--c-modal-overlay, rgba(0, 0, 0, 0.6));
+	background: var(--c-modal-overlay, var(--bz-overlay-bg, rgba(0, 0, 0, 0.6)));
 	-webkit-backdrop-filter: blur(4px) saturate(1.5);
 	backdrop-filter: blur(4px) saturate(1.5);
-	animation: bz-fade-in 180ms ease;
+	animation: bz-fade-in calc(180ms * var(--bz-anim)) ease;
 }
-.bz-modal__backdrop[data-state='closed'] { animation: bz-fade-out 180ms ease forwards; }
+.bz-modal__backdrop[data-state='closed'] { animation: bz-fade-out calc(180ms * var(--bz-anim)) ease forwards; }
 .bz-modal__positioner {
 	position: fixed;
 	inset: 0;
@@ -1695,14 +1943,16 @@ html[data-theme='umbro'] {
 	max-height: calc(100vh - 2rem);
 	max-height: calc(100dvh - 2rem);
 	overflow-y: auto;
-	background: var(--c-modal-bg, var(--c-surface));
+	background: var(--c-modal-bg, var(--bz-surface-bg));
+	-webkit-backdrop-filter: var(--bz-surface-filter);
+	backdrop-filter: var(--bz-surface-filter);
 	color: var(--c-text);
-	border: 1px solid var(--c-modal-border, var(--c-border));
+	border: var(--bz-border-w) solid var(--c-modal-border, var(--bz-border-c));
 	border-radius: var(--radius-xl);
 	box-shadow: var(--shadow-xl);
-	animation: bz-pop-in 200ms var(--bz-ease);
+	animation: bz-pop-in calc(200ms * var(--bz-anim)) var(--bz-ease);
 }
-.bz-modal__panel[data-state='closed'] { animation: bz-pop-out 160ms var(--bz-ease) forwards; }
+.bz-modal__panel[data-state='closed'] { animation: bz-pop-out calc(160ms * var(--bz-anim)) var(--bz-ease) forwards; }
 .bz-modal__panel[data-size='sm'] { max-width: 24rem; }
 .bz-modal__panel[data-size='md'] { max-width: 36rem; }
 .bz-modal__panel[data-size='lg'] { max-width: 48rem; }
@@ -1723,8 +1973,8 @@ html[data-theme='umbro'] {
 .bz-modal__close:hover { background: var(--c-hover); color: var(--c-text); }
 .bz-modal__close svg { width: 1.1rem; height: 1.1rem; }
 .bz-modal__header {
-	border-bottom: 1px solid var(--c-border);
-	padding: 1rem 1.5rem;
+	border-bottom: var(--bz-border-w) solid var(--bz-border-c);
+	padding: calc(1rem * var(--bz-density)) calc(1.5rem * var(--bz-density));
 }
 .bz-modal__title {
 	margin: 0;
@@ -1732,10 +1982,10 @@ html[data-theme='umbro'] {
 	font-weight: 600;
 	color: var(--c-text);
 }
-.bz-modal__body { padding: 1rem 1.5rem; }
+.bz-modal__body { padding: calc(1rem * var(--bz-density)) calc(1.5rem * var(--bz-density)); }
 .bz-modal__footer {
-	border-top: 1px solid var(--c-border);
-	padding: 1rem 1.5rem;
+	border-top: var(--bz-border-w) solid var(--bz-border-c);
+	padding: calc(1rem * var(--bz-density)) calc(1.5rem * var(--bz-density));
 }
 .bz-modal__actions {
 	display: flex;
@@ -1749,30 +1999,32 @@ html[data-theme='umbro'] {
 .bz-drawer__backdrop {
 	position: fixed;
 	inset: 0;
-	background: var(--c-modal-overlay, rgba(0, 0, 0, 0.5));
+	background: var(--c-modal-overlay, var(--bz-overlay-bg, rgba(0, 0, 0, 0.5)));
 	-webkit-backdrop-filter: blur(4px);
 	backdrop-filter: blur(4px);
-	animation: bz-fade-in 200ms ease;
+	animation: bz-fade-in calc(200ms * var(--bz-anim)) ease;
 }
-.bz-drawer__backdrop[data-state='closed'] { animation: bz-fade-out 200ms ease forwards; }
+.bz-drawer__backdrop[data-state='closed'] { animation: bz-fade-out calc(200ms * var(--bz-anim)) ease forwards; }
 .bz-drawer__panel {
 	position: fixed;
 	display: flex;
 	flex-direction: column;
 	max-height: 100vh;
 	max-height: 100dvh;
-	background: var(--c-surface);
+	background: var(--bz-surface-bg);
+	-webkit-backdrop-filter: var(--bz-surface-filter);
+	backdrop-filter: var(--bz-surface-filter);
 	color: var(--c-text);
 	box-shadow: var(--shadow-xl);
 }
-.bz-drawer__panel[data-side='left'] { left: 0; top: 0; height: 100%; border-right: 1px solid var(--c-border); animation: bz-slide-in-left 240ms var(--bz-ease); }
-.bz-drawer__panel[data-side='left'][data-state='closed'] { animation: bz-slide-out-left 240ms var(--bz-ease) forwards; }
-.bz-drawer__panel[data-side='right'] { right: 0; top: 0; height: 100%; border-left: 1px solid var(--c-border); animation: bz-slide-in-right 240ms var(--bz-ease); }
-.bz-drawer__panel[data-side='right'][data-state='closed'] { animation: bz-slide-out-right 240ms var(--bz-ease) forwards; }
-.bz-drawer__panel[data-side='top'] { top: 0; left: 0; width: 100%; border-bottom: 1px solid var(--c-border); animation: bz-slide-in-top 240ms var(--bz-ease); }
-.bz-drawer__panel[data-side='top'][data-state='closed'] { animation: bz-slide-out-top 240ms var(--bz-ease) forwards; }
-.bz-drawer__panel[data-side='bottom'] { bottom: 0; left: 0; width: 100%; border-top: 1px solid var(--c-border); animation: bz-slide-in-bottom 240ms var(--bz-ease); }
-.bz-drawer__panel[data-side='bottom'][data-state='closed'] { animation: bz-slide-out-bottom 240ms var(--bz-ease) forwards; }
+.bz-drawer__panel[data-side='left'] { left: 0; top: 0; height: 100%; border-right: var(--bz-border-w) solid var(--bz-border-c); animation: bz-slide-in-left calc(240ms * var(--bz-anim)) var(--bz-ease); }
+.bz-drawer__panel[data-side='left'][data-state='closed'] { animation: bz-slide-out-left calc(240ms * var(--bz-anim)) var(--bz-ease) forwards; }
+.bz-drawer__panel[data-side='right'] { right: 0; top: 0; height: 100%; border-left: var(--bz-border-w) solid var(--bz-border-c); animation: bz-slide-in-right calc(240ms * var(--bz-anim)) var(--bz-ease); }
+.bz-drawer__panel[data-side='right'][data-state='closed'] { animation: bz-slide-out-right calc(240ms * var(--bz-anim)) var(--bz-ease) forwards; }
+.bz-drawer__panel[data-side='top'] { top: 0; left: 0; width: 100%; border-bottom: var(--bz-border-w) solid var(--bz-border-c); animation: bz-slide-in-top calc(240ms * var(--bz-anim)) var(--bz-ease); }
+.bz-drawer__panel[data-side='top'][data-state='closed'] { animation: bz-slide-out-top calc(240ms * var(--bz-anim)) var(--bz-ease) forwards; }
+.bz-drawer__panel[data-side='bottom'] { bottom: 0; left: 0; width: 100%; border-top: var(--bz-border-w) solid var(--bz-border-c); animation: bz-slide-in-bottom calc(240ms * var(--bz-anim)) var(--bz-ease); }
+.bz-drawer__panel[data-side='bottom'][data-state='closed'] { animation: bz-slide-out-bottom calc(240ms * var(--bz-anim)) var(--bz-ease) forwards; }
 
 .bz-drawer__panel[data-side='left'][data-size='sm'], .bz-drawer__panel[data-side='right'][data-size='sm'] { width: 20rem; }
 .bz-drawer__panel[data-side='left'][data-size='md'], .bz-drawer__panel[data-side='right'][data-size='md'] { width: 24rem; }
@@ -1817,21 +2069,23 @@ html[data-theme='umbro'] {
 .bz-menu {
 	z-index: 110;
 	min-width: 12rem;
-	padding: 0.25rem;
-	background: var(--c-dropdown-bg, var(--c-surface));
-	border: 1px solid var(--c-dropdown-border, var(--c-border));
+	padding: calc(0.25rem * var(--bz-density));
+	background: var(--c-dropdown-bg, var(--bz-surface-bg));
+	-webkit-backdrop-filter: var(--bz-surface-filter);
+	backdrop-filter: var(--bz-surface-filter);
+	border: var(--bz-border-w) solid var(--c-dropdown-border, var(--bz-border-c));
 	border-radius: var(--radius-lg);
 	box-shadow: var(--shadow-lg);
-	animation: bz-pop-in 140ms var(--bz-ease);
+	animation: bz-pop-in calc(140ms * var(--bz-anim)) var(--bz-ease);
 }
-.bz-menu[data-state='closed'] { animation: bz-pop-out 120ms var(--bz-ease) forwards; }
+.bz-menu[data-state='closed'] { animation: bz-pop-out calc(120ms * var(--bz-anim)) var(--bz-ease) forwards; }
 .bz-menu__separator { height: 1px; margin: 0.25rem 0; background: var(--c-border); }
 .bz-menu__item {
 	display: flex;
 	align-items: center;
 	gap: 0.75rem;
 	width: 100%;
-	padding: 0.5rem 0.75rem;
+	padding: calc(0.5rem * var(--bz-density)) calc(0.75rem * var(--bz-density));
 	border: 0;
 	border-radius: var(--radius-md);
 	background: transparent;
@@ -1865,7 +2119,7 @@ html[data-theme='umbro'] {
 	font-size: 0.875rem;
 	color: var(--c-text);
 	background: var(--c-surface-2);
-	border: 1px solid var(--c-border);
+	border: var(--bz-border-w) solid var(--bz-border-c);
 	border-radius: var(--radius-md);
 	cursor: pointer;
 }
@@ -1880,12 +2134,12 @@ html[data-theme='umbro'] {
 .bz-command__backdrop {
 	position: fixed;
 	inset: 0;
-	background: rgba(0, 0, 0, 0.5);
+	background: var(--bz-overlay-bg, rgba(0, 0, 0, 0.5));
 	-webkit-backdrop-filter: blur(4px);
 	backdrop-filter: blur(4px);
-	animation: bz-fade-in 160ms ease;
+	animation: bz-fade-in calc(160ms * var(--bz-anim)) ease;
 }
-.bz-command__backdrop[data-state='closed'] { animation: bz-fade-out 140ms ease forwards; }
+.bz-command__backdrop[data-state='closed'] { animation: bz-fade-out calc(140ms * var(--bz-anim)) ease forwards; }
 .bz-command__panel {
 	position: relative;
 	margin: 10vh auto 0;
@@ -1893,15 +2147,17 @@ html[data-theme='umbro'] {
 	max-height: 60vh;
 	display: flex;
 	flex-direction: column;
-	background: var(--c-surface);
+	background: var(--bz-surface-bg);
+	-webkit-backdrop-filter: var(--bz-surface-filter);
+	backdrop-filter: var(--bz-surface-filter);
 	color: var(--c-text);
-	border: 1px solid var(--c-border);
+	border: var(--bz-border-w) solid var(--bz-border-c);
 	border-radius: var(--radius-xl);
 	box-shadow: var(--shadow-xl);
 	overflow: hidden;
-	animation: bz-pop-in 180ms var(--bz-ease);
+	animation: bz-pop-in calc(180ms * var(--bz-anim)) var(--bz-ease);
 }
-.bz-command__panel[data-state='closed'] { animation: bz-pop-out 140ms var(--bz-ease) forwards; }
+.bz-command__panel[data-state='closed'] { animation: bz-pop-out calc(140ms * var(--bz-anim)) var(--bz-ease) forwards; }
 .bz-command__input-row {
 	display: flex;
 	align-items: center;
@@ -1934,7 +2190,7 @@ html[data-theme='umbro'] {
 	display: flex;
 	align-items: center;
 	gap: 0.75rem;
-	padding: 0.55rem 0.75rem;
+	padding: calc(0.55rem * var(--bz-density)) calc(0.75rem * var(--bz-density));
 	border-radius: var(--radius-md);
 	cursor: pointer;
 }
@@ -1989,16 +2245,18 @@ html[data-theme='umbro'] {
 	display: flex;
 	align-items: flex-start;
 	gap: 0.625rem;
-	padding: 0.75rem 1rem;
-	background: var(--c-surface);
+	padding: calc(0.75rem * var(--bz-density)) calc(1rem * var(--bz-density));
+	background: var(--bz-surface-bg);
+	-webkit-backdrop-filter: var(--bz-surface-filter);
+	backdrop-filter: var(--bz-surface-filter);
 	color: var(--c-text);
-	border: 1px solid var(--c-border);
+	border: var(--bz-border-w) solid var(--bz-border-c);
 	border-radius: var(--radius-lg);
 	box-shadow: var(--shadow-lg);
 	font-size: 0.875rem;
-	animation: bz-toast-in 200ms var(--bz-ease);
+	animation: bz-toast-in calc(200ms * var(--bz-anim)) var(--bz-ease);
 }
-.bz-toast[data-state='closed'] { animation: bz-toast-out 180ms ease forwards; }
+.bz-toast[data-state='closed'] { animation: bz-toast-out calc(180ms * var(--bz-anim)) ease forwards; }
 .bz-toast__icon { display: inline-flex; flex-shrink: 0; margin-top: 0.1rem; }
 .bz-toast__variant-icon { width: 1.1rem; height: 1.1rem; }
 .bz-toast[data-variant='success'] .bz-toast__icon { color: var(--c-success); }
@@ -2012,7 +2270,7 @@ html[data-theme='umbro'] {
 	flex-shrink: 0;
 	align-self: center;
 	padding: 0.25rem 0.625rem;
-	border: 1px solid var(--c-border);
+	border: var(--bz-border-w) solid var(--bz-border-c);
 	border-radius: var(--radius-md);
 	background: var(--c-surface-2);
 	color: var(--c-text);
@@ -2060,9 +2318,9 @@ html[data-theme='umbro'] {
 }
 .bz-tabs__tab:disabled { cursor: not-allowed; opacity: 0.5; }
 .bz-tabs__tab:focus-visible { outline: 2px solid var(--c-primary-ring); outline-offset: -2px; }
-.bz-tabs[data-size='sm'] .bz-tabs__tab { font-size: 0.75rem; padding: 0.375rem 0.75rem; }
-.bz-tabs[data-size='md'] .bz-tabs__tab { font-size: 0.875rem; padding: 0.5rem 1rem; }
-.bz-tabs[data-size='lg'] .bz-tabs__tab { font-size: 1rem; padding: 0.625rem 1.25rem; }
+.bz-tabs[data-size='sm'] .bz-tabs__tab { font-size: 0.75rem; padding: calc(0.375rem * var(--bz-density)) calc(0.75rem * var(--bz-density)); }
+.bz-tabs[data-size='md'] .bz-tabs__tab { font-size: 0.875rem; padding: calc(0.5rem * var(--bz-density)) calc(1rem * var(--bz-density)); }
+.bz-tabs[data-size='lg'] .bz-tabs__tab { font-size: 1rem; padding: calc(0.625rem * var(--bz-density)) calc(1.25rem * var(--bz-density)); }
 .bz-tabs__icon { display: inline-flex; flex-shrink: 0; }
 .bz-tabs__badge {
 	display: inline-flex;
@@ -2079,7 +2337,7 @@ html[data-theme='umbro'] {
 .bz-tabs[data-variant='default'] {
 	gap: 0.125rem;
 	padding: 0.125rem;
-	border: 1px solid var(--c-border);
+	border: var(--bz-border-w) solid var(--bz-border-c);
 	border-radius: var(--radius-xl);
 	background: color-mix(in srgb, var(--c-surface) 50%, transparent);
 }
@@ -2149,7 +2407,7 @@ html[data-theme='umbro'] {
 	box-shadow: var(--shadow-sm);
 }
 
-.bz-tab-panel { animation: bz-fade-in 200ms ease; }
+.bz-tab-panel { animation: bz-fade-in calc(200ms * var(--bz-anim)) ease; }
 .bz-tab-panel:focus-visible { outline: 2px solid var(--c-primary-ring); outline-offset: 2px; }
 
 /* Breadcrumbs ------------------------------------------------------------ */
@@ -2225,7 +2483,7 @@ html[data-theme='umbro'] {
 	background: color-mix(in srgb, var(--c-surface) 20%, transparent);
 	-webkit-backdrop-filter: blur(16px);
 	backdrop-filter: blur(16px);
-	border-bottom: 1px solid color-mix(in srgb, var(--c-border) 30%, transparent);
+	border-bottom: var(--bz-border-w) solid color-mix(in srgb, var(--bz-border-c) 30%, transparent);
 }
 .bz-top-nav__inner { max-width: 80rem; margin: 0 auto; padding: 0 1rem; }
 .bz-top-nav__bar {
@@ -2270,7 +2528,7 @@ html[data-theme='umbro'] {
 	align-items: center;
 	justify-content: center;
 	padding: 0.5rem;
-	border: 1px solid var(--c-border);
+	border: var(--bz-border-w) solid var(--bz-border-c);
 	border-radius: var(--radius-lg);
 	background: color-mix(in srgb, var(--c-surface) 80%, transparent);
 	color: var(--c-text-secondary);
@@ -2282,7 +2540,7 @@ html[data-theme='umbro'] {
 	background: color-mix(in srgb, var(--c-surface) 95%, transparent);
 	-webkit-backdrop-filter: blur(16px);
 	backdrop-filter: blur(16px);
-	border-top: 1px solid var(--c-border);
+	border-top: var(--bz-border-w) solid var(--bz-border-c);
 }
 @media (min-width: 768px) {
 	.bz-top-nav__mobile { display: none; }
@@ -2622,27 +2880,91 @@ html[data-theme='umbro'] {
 }
 .bz-cycle-theme-switcher:hover { background: color-mix(in srgb, var(--c-surface) 40%, transparent); }
 
-/* Shape switcher — the option glyph literally previews its corner radius. */
-.bz-shape-switcher__swatch {
-	display: block;
-	width: 1.05rem;
-	height: 0.75rem;
-	border: 1.5px solid currentColor;
-	transition: border-radius var(--bz-duration) var(--bz-ease);
+/* Style switcher — a picker whose tiles are real scoped previews: each
+   tile carries data-style, so its chip renders with that preset's actual
+   tokens (radius, border, shadow, control shape). */
+.bz-style-switcher__trigger {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0.4rem 0.6rem;
+	border: var(--bz-border-w) solid var(--bz-border-c);
+	border-radius: var(--radius-lg);
+	background: color-mix(in srgb, var(--c-surface) 80%, transparent);
+	color: var(--c-text-secondary);
+	font-size: 0.75rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: color var(--bz-duration) var(--bz-ease), border-color var(--bz-duration) var(--bz-ease);
 }
-.bz-shape-switcher__swatch[data-shape-preview='sharp'] { border-radius: 1px; }
-.bz-shape-switcher__swatch[data-shape-preview='soft'] { border-radius: 4px; }
-.bz-shape-switcher__swatch[data-shape-preview='round'] { border-radius: 7px; }
+.bz-style-switcher__trigger:hover { color: var(--c-text); border-color: var(--bz-border-c-strong); }
+.bz-style-switcher__grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(7.5rem, 1fr));
+	gap: 0.5rem;
+}
+.bz-style-switcher__tile {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+	padding: 0.5rem;
+	border: var(--bz-border-w) solid var(--bz-border-c);
+	border-radius: var(--radius-md);
+	background: transparent;
+	cursor: pointer;
+	text-align: left;
+	transition: border-color var(--bz-duration) var(--bz-ease), background-color var(--bz-duration) var(--bz-ease);
+}
+.bz-style-switcher__tile:hover { background: var(--c-hover); }
+.bz-style-switcher__tile[data-active] {
+	border-color: var(--c-primary);
+	background: var(--c-primary-light);
+}
+.bz-style-switcher__chip {
+	/* The live preview: uses the TILE's own data-style tokens. */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.3rem;
+	height: 2.2rem;
+	background: var(--bz-surface-bg);
+	border: var(--bz-border-w) solid var(--bz-border-c);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-md);
+}
+.bz-style-switcher__chip-dot {
+	width: 1.1rem;
+	height: 0.6rem;
+	border-radius: var(--bz-control-radius, var(--radius-lg));
+	background: var(--c-primary);
+}
+.bz-style-switcher__chip-line {
+	width: 1.6rem;
+	height: 0.35rem;
+	border-radius: var(--radius-sm);
+	background: var(--c-border-strong);
+}
+.bz-style-switcher__tile-name {
+	font-size: 0.7rem;
+	font-weight: 600;
+	color: var(--c-text);
+	text-transform: capitalize;
+}
+.bz-style-switcher__tile-desc {
+	font-size: 0.65rem;
+	color: var(--c-text-muted);
+	line-height: 1.25;
+}
 
 /* Accordion -------------------------------------------------------------- */
 
 .bz-accordion {
-	border: 1px solid var(--c-border);
+	border: var(--bz-border-w) solid var(--bz-border-c);
 	border-radius: var(--radius-lg);
 	background: var(--c-surface-2);
 	overflow: hidden;
 }
-.bz-accordion__item { border-bottom: 1px solid var(--c-border); }
+.bz-accordion__item { border-bottom: var(--bz-border-w) solid var(--bz-border-c); }
 .bz-accordion__item:last-child { border-bottom: 0; }
 .bz-accordion__heading { margin: 0; }
 .bz-accordion__trigger {
@@ -2676,13 +2998,13 @@ html[data-theme='umbro'] {
 .bz-accordion__panel {
 	display: grid;
 	grid-template-rows: 0fr;
-	transition: grid-template-rows 220ms var(--bz-ease);
+	transition: grid-template-rows calc(220ms * var(--bz-anim)) var(--bz-ease);
 }
 .bz-accordion__panel[data-state='open'] { grid-template-rows: 1fr; }
 .bz-accordion__panel-inner { overflow: hidden; }
 .bz-accordion__panel[data-state='closed'] .bz-accordion__panel-inner {
 	visibility: hidden;
-	transition: visibility 0s 220ms;
+	transition: visibility 0s calc(220ms * var(--bz-anim));
 }
 .bz-accordion__content {
 	padding: 0 1rem 0.875rem;
@@ -2716,8 +3038,203 @@ html[data-theme='umbro'] {
 .bz-footer__social-link:focus-visible,
 .bz-footer__newsletter-button:focus-visible,
 .bz-theme-switcher__option:focus-visible,
+.bz-style-switcher__trigger:focus-visible,
+.bz-style-switcher__tile:focus-visible,
 .bz-cycle-theme-switcher:focus-visible {
 	outline: 2px solid var(--c-primary-ring);
 	outline-offset: 2px;
 }
 .bz-sidebar-nav__link:focus-visible { outline: none; }
+
+/* ========================================================================
+   9. Style presets — structural rules. Kept at the end of the file:
+   several rules beat equal-specificity component rules only by source
+   order. Each style's rules live in an @scope donut — scoped from its
+   [data-style] element down to (but not into) any nested [data-style]
+   container — so scoped previews never inherit another preset's
+   behavior. Browsers without @scope keep the token layer (the whole
+   personality's look); they only lose these interaction signatures.
+   ===================================================================== */
+
+/* ---- round: plush primary-tinted glow on hover ---- */
+@scope ([data-style='round']) to ([data-style]) {
+	[data-style='round'] .bz-card[data-interactive]:hover {
+		box-shadow: var(--shadow-lg), 0 0 24px -8px color-mix(in srgb, var(--c-primary) 14%, transparent);
+	}
+	[data-style='round'] .bz-button[data-variant='bold']:hover:not(:disabled) {
+		box-shadow: var(--shadow-lg), 0 0 24px -8px color-mix(in srgb, var(--c-primary) 14%, transparent);
+	}
+}
+
+/* ---- flat: no lift, ever — feedback is border/wash only ---- */
+@scope ([data-style='flat']) to ([data-style]) {
+	[data-style='flat'] .bz-card[data-interactive]:hover,
+	[data-style='flat'] .bz-card[data-interactive]:active {
+		transform: none;
+		box-shadow: 0 0 0 0 transparent;
+	}
+	[data-style='flat'] :is(.bz-button[data-variant='bold'], .bz-button[data-variant='success'], .bz-button[data-variant='danger']):hover:not(:disabled) {
+		transform: none;
+	}
+	/* No lift must not also mean no press feedback — restore the scale. */
+	[data-style='flat'] :is(.bz-button[data-variant='bold'], .bz-button[data-variant='success'], .bz-button[data-variant='danger']):active:not(:disabled) {
+		transform: scale(0.97);
+	}
+}
+
+/* ---- crisp: instrument-panel focus — hugging outline + primary underline ---- */
+@scope ([data-style='crisp']) to ([data-style]) {
+	[data-style='crisp'] :is(.bz-input, .bz-textarea, .bz-select, .bz-combobox__input):focus {
+		outline: 2px solid var(--c-focus);
+		outline-offset: 0;
+		box-shadow: inset 0 -2px 0 0 var(--c-primary);
+	}
+	/* Error tone keeps its danger signal under the crisp treatment. */
+	[data-style='crisp'] :is(.bz-input, .bz-textarea, .bz-select, .bz-combobox__input)[data-tone='error']:focus {
+		outline-color: var(--c-danger);
+		box-shadow: inset 0 -2px 0 0 var(--c-danger);
+	}
+	[data-style='crisp'] .bz-button:focus-visible {
+		outline: 2px solid var(--c-focus);
+		outline-offset: 0;
+	}
+}
+
+/* ---- depth: the shadow carries the card edge; hover promotes a step ---- */
+@scope ([data-style='depth']) to ([data-style]) {
+	[data-style='depth'] .bz-card {
+		border-color: transparent; /* width kept — no layout shift */
+		box-shadow: var(--shadow-sm);
+	}
+	[data-style='depth'] .bz-card[data-variant='elevated'] {
+		box-shadow: var(--shadow-md); /* keep elevated above the base card */
+	}
+	[data-style='depth'] .bz-card[data-variant='outlined'] {
+		border-color: var(--bz-border-c-strong);
+		box-shadow: 0 0 0 0 transparent;
+	}
+	[data-style='depth'] .bz-card[data-interactive]:hover {
+		border-color: transparent; /* the base hover rule would pop the border back */
+		box-shadow: var(--shadow-xl);
+	}
+}
+
+/* ---- puff: extruded at rest, inverted on press ---- */
+@scope ([data-style='puff']) to ([data-style]) {
+	[data-style='puff'] .bz-button:not([data-variant='text'], [data-variant='nav']) {
+		box-shadow: var(--shadow-sm);
+	}
+	/* Selected state keeps its ring on top of the extrusion. */
+	[data-style='puff'] :is(.bz-button[data-variant='bold'], .bz-button[data-variant='glass'])[data-selected] {
+		box-shadow: var(--shadow-sm), 0 0 0 2px var(--c-primary-ring);
+	}
+	[data-style='puff'] .bz-button:active:not(:disabled) {
+		transform: none;
+		box-shadow: inset 2px 2px 5px var(--bz-nu-lo), inset -2px -2px 5px var(--bz-nu-hi);
+	}
+	[data-style='puff'] .bz-card[data-interactive]:hover { transform: none; }
+}
+
+/* ---- brutal: ink borders, slam-press, offset focus, squared pills ---- */
+@scope ([data-style='brutal']) to ([data-style]) {
+	[data-style='brutal'] .bz-button:not([data-variant='text'], [data-variant='ghost'], [data-variant='icon'], [data-variant='nav']) {
+		border-color: var(--c-text);
+	}
+	[data-style='brutal'] .bz-button[data-icon-only] { border-radius: 0; }
+	[data-style='brutal'] .bz-button:active:not(:disabled) { transform: translate(2px, 2px); }
+	[data-style='brutal'] :is(.bz-button[data-variant='bold'], .bz-button[data-variant='success'], .bz-button[data-variant='danger']):hover:not(:disabled) {
+		transform: none; /* brutal doesn't levitate */
+	}
+	[data-style='brutal'] :is(.bz-button[data-variant='bold'], .bz-button[data-variant='success'], .bz-button[data-variant='danger']):active:not(:disabled) {
+		transform: translate(2px, 2px);
+		box-shadow: var(--shadow-sm); /* slams one step into its own shadow */
+	}
+	[data-style='brutal'] .bz-card[data-interactive]:hover { transform: none; }
+	[data-style='brutal'] .bz-button:focus-visible {
+		outline: 2px solid var(--c-focus);
+		outline-offset: 3px; /* outside the 2px ink border */
+	}
+}
+
+/* ---- toy: 3D bottom edge, spring press, pill inputs ---- */
+@scope ([data-style='toy']) to ([data-style]) {
+	[data-style='toy'] .bz-button:not([data-variant='text'], [data-variant='ghost'], [data-variant='icon'], [data-variant='nav']) {
+		border-color: var(--bz-border-c-strong);
+		box-shadow: var(--shadow-md);
+	}
+	[data-style='toy'] .bz-button[data-variant='bold'] {
+		border-color: color-mix(in srgb, var(--c-primary) 70%, black);
+		box-shadow: 0 4px 0 0 color-mix(in srgb, var(--c-primary) 70%, black);
+	}
+	/* Selected state keeps its ring on top of the 3D edge. */
+	[data-style='toy'] :is(.bz-button[data-variant='bold'], .bz-button[data-variant='glass'])[data-selected] {
+		box-shadow: var(--shadow-md), 0 0 0 2px var(--c-primary-ring);
+	}
+	[data-style='toy'] :is(.bz-button[data-variant='bold'], .bz-button[data-variant='success'], .bz-button[data-variant='danger']):hover:not(:disabled) {
+		transform: none; /* the 3D edge is the affordance; no float */
+	}
+	[data-style='toy'] .bz-button:active:not(:disabled) {
+		transform: translateY(4px);
+		box-shadow: 0 1px 0 0 var(--bz-border-c-strong);
+	}
+	/* The hover transform:none above outranks the generic press rule while
+	   the pointer is still hovering (it always is, mid-click) — re-assert
+	   the press for every 3D-edged variant at matching specificity. */
+	[data-style='toy'] :is(.bz-button[data-variant='success'], .bz-button[data-variant='danger']):active:not(:disabled) {
+		transform: translateY(4px);
+		box-shadow: 0 1px 0 0 var(--bz-border-c-strong);
+	}
+	[data-style='toy'] .bz-button[data-variant='bold']:active:not(:disabled) {
+		transform: translateY(4px);
+		box-shadow: 0 1px 0 0 color-mix(in srgb, var(--c-primary) 70%, black);
+	}
+	[data-style='toy'] :is(.bz-input, .bz-select, .bz-combobox__input) { border-radius: 999px; }
+	/* textarea intentionally excluded from pills */
+}
+
+/* ---- glass: translucency + blur, gated together (progressive enhancement:
+   browsers without backdrop-filter keep fully opaque surfaces) ---- */
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+	[data-style='glass'] {
+		--bz-surface-bg: color-mix(in srgb, var(--c-surface) var(--bz-glass-mix), transparent);
+		--bz-surface-filter: saturate(180%) blur(16px);
+		--bz-overlay-bg: rgb(0 0 0 / 0.25); /* the blur does the separation work */
+	}
+	/* Per-surface tuning must restate the full derivation — var() resolves
+	   at the declaring element, so redefining only --bz-glass-mix on a
+	   descendant would not re-derive an inherited --bz-surface-bg. */
+	[data-style='glass'] :is(.bz-modal__panel, .bz-drawer__panel, .bz-command__panel) {
+		--bz-surface-bg: color-mix(in srgb, var(--c-surface) 65%, transparent);
+		--bz-surface-filter: saturate(160%) blur(28px);
+	}
+	[data-style='glass'] :is(.bz-toast, .bz-menu, .bz-combobox__listbox) {
+		--bz-surface-bg: color-mix(in srgb, var(--c-surface) 78%, transparent);
+	}
+	/* One glass layer per stack: a card nested inside a glass surface goes
+	   near-opaque and unfiltered so text never sits on double-blurred mush.
+	   (Menus/popovers/listboxes portal out to <body>, so only cards can
+	   actually nest inside another surface.) */
+	[data-style='glass'] :is(.bz-modal__panel, .bz-drawer__panel, .bz-command__panel, .bz-popover, .bz-card) .bz-card {
+		--bz-surface-filter: none;
+		--bz-surface-bg: color-mix(in srgb, var(--c-surface) 94%, transparent);
+	}
+}
+/* Corner-bleed / stacking mitigations (harmless without blur support) */
+@scope ([data-style='glass']) to ([data-style]) {
+	[data-style='glass'] :is(.bz-card, .bz-toast) { overflow: hidden; }
+	[data-style='glass'] :is(.bz-popover, .bz-menu, .bz-combobox__listbox, .bz-modal__panel, .bz-command__panel, .bz-drawer__panel) {
+		isolation: isolate;
+	}
+}
+
+/* ---- accessibility: honor reduced transparency for glass. The
+   per-surface tuning rules above set element-level tokens, which beat
+   inherited values — so the override must out-cascade them per surface,
+   not just reset the root. ---- */
+@media (prefers-reduced-transparency: reduce) {
+	[data-style='glass'],
+	[data-style='glass'] :is(.bz-modal__panel, .bz-drawer__panel, .bz-command__panel, .bz-toast, .bz-menu, .bz-combobox__listbox, .bz-popover, .bz-card) {
+		--bz-surface-bg: var(--c-surface);
+		--bz-surface-filter: none;
+	}
+}

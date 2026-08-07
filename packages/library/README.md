@@ -109,17 +109,22 @@ const theme = getServerTheme(await cookies())
 	<head><script dangerouslySetInnerHTML={{ __html: themeInitScript(theme) }} /></head>
 ```
 
-### Shape: a second, independent dimension
+### Styles: ten looks-and-feels, independent of color
 
-Color theme answers *light or dark, which brand color*. `data-shape` answers
-a different question — corner radius, shadow weight, motion feel — and
-combines freely with any color theme (6 themes × 3 shapes, one stylesheet):
+Color theme answers *light or dark, which brand color*. `data-style` answers
+*what personality does this product have* — corners, elevation, borders,
+glass, density and motion as one coherent preset — and composes freely with
+any color theme (6 themes × 10 styles = 60 looks, one stylesheet):
 
 ```tsx
-import { ShapeSwitcher } from '@creo-team/buzz-ui/client'
+import { StyleSwitcher } from '@creo-team/buzz-ui/client'
 
-<ShapeSwitcher /> // sharp · soft (default) · round
+<StyleSwitcher />
+// soft · crisp · sharp · flat · depth · glass · round · puff · toy · brutal
 ```
+
+Lock one in with a single attribute (`<html data-style="glass">`), scope one
+to a container, or write your own preset in a few lines of CSS.
 
 See [THEMING.md](./THEMING.md) for the token reference, custom themes and
 custom shapes, and [HOTKEYS.md](./HOTKEYS.md) for the shortcut system.
@@ -144,8 +149,9 @@ CommandPalette · Toast
 SidebarNav · Menu · Footer
 
 **Theme** ThemeProvider · ThemeSwitcher · EnhancedThemeSwitcher ·
-CycleThemeSwitcher · six built-in themes + preset factory · ShapeSwitcher
-(sharp/soft/round, independent of color)
+CycleThemeSwitcher · six built-in themes + preset factory · StyleSwitcher
+(ten looks-and-feels — soft/crisp/sharp/flat/depth/glass/round/puff/toy/brutal
+— independent of color)
 
 ## Styling and customization
 

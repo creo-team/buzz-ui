@@ -318,49 +318,56 @@ The library includes 6 built-in themes:
 
 Each theme provides a complete set of CSS variables for consistent styling across all components.
 
-## Shape: a second, independent dimension
+## Styles: ten looks-and-feels, independent of color
 
-Color theme answers *light or dark, which brand color*. **Shape** answers a
-completely different question — *how tight are the corners, how heavy are
-the shadows, how snappy is the motion* — and the two combine freely. Six
-color themes × three shapes is eighteen distinct looks from one stylesheet,
-with zero extra CSS to write.
+Color theme answers *light or dark, which brand color*. **Style** answers
+*what personality does this product have* — corner radius, elevation
+character, border weight, surface treatment (opaque vs. glass), spacing
+density and motion feel, as one coherent preset. The two compose freely:
+six color themes x ten styles is sixty distinct looks from one stylesheet.
 
-Shape is selected via `data-shape` on `<html>`, exactly like color theme is
-selected via `data-theme` — a separate attribute, a separate cookie, zero
-coupling. It overrides only the radius, shadow and motion tokens; it never
-touches color.
+Style is selected via `data-style` — on `<html>` for the whole app, or on
+**any container** for a scoped section (every trait is an inherited custom
+property). It writes only the style-axis tokens (`--radius-*`, `--shadow-*`,
+`--bz-*`); it never touches a color token.
 
-| Preset | Feel |
+| Preset | Personality |
 | --- | --- |
-| `sharp` | Tight corners, flat shadows, snappy 120ms motion. Architectural, dashboard-dense — a Linear or Vercel-console feel. |
 | `soft` | The shipped default — unmodified `:root` values. Upgrading consumers see no change unless they opt in. |
-| `round` | Generous corners, soft glow shadows, a gentle 220ms overshoot. Warm and consumer-friendly — an Arc or Craft feel. |
+| `crisp` | Enterprise instrument panel: 2px corners, conservative shadows, compact density, keyboard-first focus. |
+| `sharp` | Architectural precision: tight corners, hairline-ring elevation instead of blur. |
+| `flat` | Quiet utility: hairlines and ink, shadows almost abolished, no hover lift. |
+| `depth` | Cinematic layered elevation: stacked three-layer shadows; cards let elevation carry the edge. |
+| `glass` | Liquid translucency: blurred, saturated surfaces, specular top edge, capsule controls. Falls back to opaque without `backdrop-filter` support, and honors `prefers-reduced-transparency`. |
+| `round` | Warm and plush: generous corners, diffuse glow, gentle overshoot motion. |
+| `puff` | Soft-extruded: controls pressed out of the page; both shadow poles derive from the theme background. |
+| `toy` | Chunky and bouncy: pills with a physical 3D bottom edge that collapses on press. |
+| `brutal` | Neo-brutalism: zero radius, 2px ink borders, hard offset shadows, slam press. |
 
 ```tsx
-import { ShapeSwitcher } from '@creo-team/buzz-ui/client'
+import { StyleSwitcher } from '@creo-team/buzz-ui/client'
 
-<ShapeSwitcher />
+<StyleSwitcher /> // a picker whose tiles are real scoped previews
 ```
 
-It persists to its own `shape` cookie and reads it back with `getServerShape`
-for the same flicker-free SSR pattern as the color theme:
+It persists to its own `style` cookie and reads it back with
+`getServerStyle` for the same flicker-free SSR pattern as the color theme:
 
 ```tsx
 // app/layout.tsx
 import { cookies } from 'next/headers'
-import { getServerShape, shapeInitScript } from '@creo-team/buzz-ui/server'
-import { ShapeSwitcher } from '@creo-team/buzz-ui/client'
+import { getServerStyle, styleInitScript } from '@creo-team/buzz-ui/server'
+import { StyleSwitcher } from '@creo-team/buzz-ui/client'
 
 export default async function RootLayout({ children }) {
-	const shape = getServerShape(await cookies(), 'soft')
+	const style = getServerStyle(await cookies(), 'soft')
 	return (
-		<html data-shape={shape}>
+		<html data-style={style}>
 			<head>
-				<script dangerouslySetInnerHTML={{ __html: shapeInitScript(shape) }} />
+				<script dangerouslySetInnerHTML={{ __html: styleInitScript(style) }} />
 			</head>
 			<body>
-				<ShapeSwitcher initialShape={shape} />
+				<StyleSwitcher initialStyle={style} />
 				{children}
 			</body>
 		</html>
@@ -368,28 +375,53 @@ export default async function RootLayout({ children }) {
 }
 ```
 
-The switcher is a convenience — the mechanism underneath is three plain
-attribute selectors, so a fourth preset is just more CSS:
+### Locking a style in, scoping, extending
+
+The switcher is a convenience — the mechanism is inherited custom
+properties under attribute selectors, so all of these work with no JS:
+
+```html
+<!-- Whole app, forever -->
+<html data-style="glass">
+
+<!-- One section only -->
+<div data-style="brutal">…</div>
+```
 
 ```css
-[data-shape='brutalist'] {
-	--radius-sm: 0;
-	--radius-md: 0;
-	--radius-lg: 0;
-	--radius-xl: 0;
-	--shadow-md: none;
-	--bz-duration: 0ms;
+/* Your own eleventh preset */
+[data-style='blueprint'] {
+	--radius-sm: 0; --radius-md: 0; --radius-lg: 0;
+	--bz-border-w: 1px;
+	--bz-border-c: var(--c-info);
+	--shadow-md: 0 0 0 0 transparent; /* never `none` — it voids composed shadow lists */
+	--bz-duration: 100ms;
 }
 ```
 
-Build a custom switcher on the same engine `ThemeSwitcher` uses, minus the
-color-palette application:
+Style-axis tokens a preset may override:
 
-```tsx
-import { useShapeSwitcher, ALL_SHAPES } from '@creo-team/buzz-ui/client'
+| Token | Purpose | Default |
+| --- | --- | --- |
+| `--radius-sm` … `--radius-2xl` | Radius scale | 6–16px |
+| `--bz-control-radius` | Button radius override (e.g. `999px` pills) | unset (per-size radii) |
+| `--shadow-sm` … `--shadow-xl` | Elevation scale (full shadow lists) | standard |
+| `--bz-border-w` | Surface border width | `1px` |
+| `--bz-border-c` / `--bz-border-c-strong` | Surface border colors (indirection over theme tokens) | `var(--c-border)` / `var(--c-border-strong)` |
+| `--bz-surface-bg` | Floating/raised surface background | `var(--c-surface)` |
+| `--bz-surface-filter` | `backdrop-filter` on floating surfaces | `none` |
+| `--bz-overlay-bg` | Modal/drawer/palette backdrop | unset (component literals) |
+| `--bz-density` | Multiplies base whitespace (never font size) | `1` |
+| `--bz-ease` / `--bz-duration` | Micro-interaction motion | standard |
+| `--bz-anim` | Multiplies entrance/exit animation durations | `1` |
 
-const { shape, setShape, cycle } = useShapeSwitcher({ shapes: ALL_SHAPES })
-```
+Two caveats worth knowing:
+
+- Portaled overlays (menus, modals, toasts) render under `<body>`, so they
+  escape a container-scoped style. `data-style` on `<html>` is the
+  supported way to style overlays.
+- Glass reads best over imagery or gradients; over a flat background it
+  simply looks like a subtle card, which is the correct graceful floor.
 
 ## Best Practices
 

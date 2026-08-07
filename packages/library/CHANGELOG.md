@@ -1,5 +1,73 @@
 # Changelog
 
+## 0.6.0
+
+The Style system: ten holistic looks-and-feels, independent of color theme.
+
+### New
+
+- **Styles** — `data-style` on `<html>` (whole app) or any container
+  (scoped section) selects one of ten coherent visual personalities:
+  `soft` (default) · `crisp` · `sharp` · `flat` · `depth` · `glass` ·
+  `round` · `puff` · `toy` · `brutal`. Each preset is a single token block
+  covering corner radius, shadow character, border weight/color, surface
+  treatment, control shape, spacing density, and motion (easing, duration,
+  and an entrance/exit animation multiplier). 6 themes × 10 styles = 60
+  looks from one stylesheet.
+  - **glass** implements liquid-glass surfaces: `color-mix` translucency +
+    `backdrop-filter: saturate(180%) blur(16px)` with a specular top edge
+    baked into the shadow tokens, capsule controls, per-surface tuning
+    (heavier blur on modals, more opacity on toasts/menus), a one-glass-
+    layer-per-stack guard for nested surfaces, gated *together* behind
+    `@supports (backdrop-filter…)` so unsupported browsers keep fully
+    opaque surfaces, and `prefers-reduced-transparency` support.
+  - **brutal**/`toy`/`puff` carry structural signatures (slam-press into
+    the shadow, 3D bottom edge that collapses on press, extrusion that
+    inverts on press) — all keyed off the style attribute, none leaking
+    into other styles.
+- `StyleSwitcher` — a picker whose tiles are *real scoped previews*: each
+  tile carries its own `data-style`, so every chip renders with that
+  preset's actual tokens. Built on Popover; `useStyleSwitcher` exposes the
+  engine (own `style` cookie, DOM application, toast announcement).
+- `getServerStyle` + `styleInitScript` for flicker-free SSR, mirroring the
+  color-theme contracts exactly. `Style` enum, `ALL_STYLES`,
+  `STYLE_COOKIE_NAME`, cookie helpers exported from root, `/server` and
+  `/client`.
+- New style-axis tokens (all defaulting to today's shipped values, so the
+  zero-diff guarantee holds for consumers who never opt in):
+  `--bz-border-w`, `--bz-border-c`, `--bz-border-c-strong`,
+  `--bz-surface-bg`, `--bz-surface-filter`, `--bz-overlay-bg`,
+  `--bz-control-radius`, `--bz-density`, `--bz-anim`, `--bz-glass-mix`.
+
+### Hardened (adversarial review of the diff before shipping)
+
+- Theme selectors re-derive the `--bz-*` indirection tokens, so a scoped
+  theme container (`<div class="dark">`) resolves surfaces/borders against
+  its own colors instead of inheriting the outer theme's frozen values.
+- Every preset block restates the full style-axis token set (including a
+  real `[data-style='soft']` reset block), and structural rules live in
+  `@scope … to ([data-style])` donuts — nested scoped previews can neither
+  inherit another preset's tokens nor catch its interaction rules, so the
+  switcher tiles and gallery panels never lie.
+- `prefers-reduced-transparency` now out-cascades glass's per-surface
+  tuning (modals, drawers, palette, toasts, menus, listboxes included).
+- Cascade ties fixed: toy/flat press feedback survives hover overrides,
+  puff/toy preserve the `[data-selected]` ring, depth keeps elevated cards
+  above base cards and its borderless look through hover, crisp keeps the
+  danger signal on invalid-input focus.
+- `useStyleSwitcher` instances stay in sync via a shared broadcast; the
+  switcher trigger's accessible name contains its visible label; gallery
+  buttons no longer drop keyboard focus on activation; switcher controls
+  joined the shared focus-ring list. `getServerStyle` gained
+  `getServerTheme`'s bare-default overload for exact contract parity.
+
+### Changed (supersedes 0.4.0's Shape system — never published)
+
+- The 3-preset Shape axis (`data-shape`, `ShapeSwitcher`, `getServerShape`)
+  is replaced by the Style axis before ever shipping in a release. `sharp`
+  and `round` live on as full Style presets; `soft` remains the untouched
+  default.
+
 ## 0.5.0
 
 Two roadmap components, closing out Phase 1 and Phase 2 of the component

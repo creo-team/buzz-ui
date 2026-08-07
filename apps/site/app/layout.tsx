@@ -3,9 +3,9 @@ import './globals.css'
 // import the stylesheet source too — npm consumers use '@creo-team/buzz-ui/styles.css'.
 import '../../../packages/library/src/styles/buzz.css'
 import { cookies } from 'next/headers'
-import { TopNav, getServerTheme, getServerShape } from '@creo-team/buzz-ui/server'
-import { ThemeSwitcher, ShapeSwitcher, ToastProvider } from '@creo-team/buzz-ui/client'
-import { themeInitScript, shapeInitScript } from '@creo-team/buzz-ui/server'
+import { TopNav, getServerTheme, getServerStyle } from '@creo-team/buzz-ui/server'
+import { ThemeSwitcher, StyleSwitcher, ToastProvider } from '@creo-team/buzz-ui/client'
+import { themeInitScript, styleInitScript } from '@creo-team/buzz-ui/server'
 import { DevBanner } from '../components/dev-banner'
 import { Logo } from '../components/logo'
 import { BuzzTextLogo } from '../components/buzz-text-logo'
@@ -13,13 +13,13 @@ import { SiteFooter } from '../components/site-footer'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	const initialTheme = getServerTheme(cookies(), 'light')
-	const initialShape = getServerShape(cookies(), 'soft')
+	const initialStyle = getServerStyle(cookies(), 'soft')
 
 	return (
-		<html lang="en" data-theme={initialTheme} data-shape={initialShape} className={initialTheme}>
+		<html lang="en" data-theme={initialTheme} data-style={initialStyle} className={initialTheme}>
 			<head>
 				<script dangerouslySetInnerHTML={{ __html: themeInitScript(initialTheme) }} />
-				<script dangerouslySetInnerHTML={{ __html: shapeInitScript(initialShape) }} />
+				<script dangerouslySetInnerHTML={{ __html: styleInitScript(initialStyle) }} />
 			</head>
 			<body>
 				<div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--c-background)', color: 'var(--c-text)' }}>
@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 							}
 							right={
 								<div className="flex items-center gap-3">
-									<ShapeSwitcher initialShape={initialShape} />
+									<StyleSwitcher initialStyle={initialStyle} />
 									<ThemeSwitcher initialTheme={initialTheme} />
 									<a href="https://github.com/creo-team/buzz-ui" className="no-underline">
 										<button className="rounded-[var(--radius-md)] border border-[var(--c-border)] bg-[var(--c-surface-2)] px-3 py-2 text-sm text-[var(--c-text)] hover:bg-[var(--c-hover)] transition-colors">

@@ -1,6 +1,7 @@
 "use client"
 import { Button, Card, Infotip, TextInput, Checkbox, CodeBox } from '@creo-team/buzz-ui/server'
 import { DevStatusCard } from '../components/dev-status-card'
+import { StyleGallery } from '../components/style-gallery'
 
 export default function Page() {
 	return (
@@ -85,8 +86,29 @@ export default function Page() {
 					</div>
 				</section>
 
-				{/* Component Showcase */}
+				{/* Style Gallery */}
 				<section className="py-24 bg-[var(--c-surface-2)]">
+					<div className="mx-auto max-w-7xl px-6">
+						<div className="text-center mb-16">
+							<h2 className="text-3xl font-bold text-[var(--c-text)]">One library, ten personalities</h2>
+							<p className="mt-4 text-lg text-[var(--c-text-secondary)] max-w-2xl mx-auto">
+								Pick a <strong>style</strong> — corners, elevation, glass, density and motion as one
+								coherent look — independent of color theme. Lock it in during setup, or switch live.
+								Every preview below is real tokens, not a screenshot.
+							</p>
+							<div className="mt-4">
+								<a href="/docs/theme/style" className="inline-flex items-center gap-2 text-sm text-[var(--c-primary)] hover:text-[var(--c-primary-hover)] transition-colors no-underline">
+									<span>Read the style guide</span>
+									<span>→</span>
+								</a>
+							</div>
+						</div>
+						<StyleGallery />
+					</div>
+				</section>
+
+				{/* Component Showcase */}
+				<section className="py-24 bg-[var(--c-surface)]">
 					<div className="mx-auto max-w-7xl px-6">
 						<div className="text-center mb-16">
 							<h2 className="text-3xl font-bold text-[var(--c-text)]">Component Highlights</h2>
@@ -162,7 +184,7 @@ export default function Page() {
 				</section>
 
 				{/* Getting Started */}
-				<section className="py-24 bg-[var(--c-surface)]">
+				<section className="py-24 bg-[var(--c-surface-2)]">
 					<div className="mx-auto max-w-4xl px-6 text-center">
 						<h2 className="text-3xl font-bold text-[var(--c-text)]">Ready to get started?</h2>
 						<p className="mt-4 text-lg text-[var(--c-text-secondary)]">

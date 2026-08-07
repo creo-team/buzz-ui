@@ -35,8 +35,8 @@ export { Slot, type SlotProps } from './internal/slot.js'
 // Server-side theme helpers + shared theme types/constants
 export * from './theme/theme-utils.js'
 export * from './theme/theme-types.js'
-export * from './theme/shape-utils.js'
-export { Shape, ALL_SHAPES, SHAPE_COOKIE_NAME, setShapeCookie, getShapeFromCookie, type ShapeConfig } from './theme/shape-types.js'
+export * from './theme/style-utils.js'
+export { Style, ALL_STYLES, STYLE_COOKIE_NAME, setStyleCookie, getStyleFromCookie, type StyleConfig } from './theme/style-types.js'
 
 // Interactive components (client islands) kept here for compatibility —
 // importing them from a Server Component creates a client boundary.

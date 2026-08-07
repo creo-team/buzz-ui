@@ -17,6 +17,7 @@ const docsNavigation = [
 		title: 'Theming',
 		items: [
 			{ key: 'theme-overview', label: 'Theme System', href: '/docs/theme' },
+			{ key: 'styles', label: 'Styles', href: '/docs/theme/style' },
 			{ key: 'theme-provider', label: 'Theme Provider', href: '/docs/theme/provider' },
 			{ key: 'custom-colors', label: 'Custom Colors', href: '/docs/theme/colors' },
 			{ key: 'design-tokens', label: 'Design Tokens', href: '/docs/theme/tokens' },
