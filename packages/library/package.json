@@ -1,6 +1,6 @@
 {
   "name": "@creo-team/buzz-ui",
-  "version": "0.3.0",
+  "version": "0.6.0",
   "description": "A lean, elegant, zero-dependency React component library. Server-first, SSR-safe, themeable with CSS tokens.",
   "private": false,
   "type": "module",

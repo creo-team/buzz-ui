@@ -68,7 +68,7 @@ export function ThemeProvider({
 				document.documentElement.classList.add('bz-disable-transitions')
 			}
 			setThemeState(newTheme)
-			document.cookie = `${THEME_COOKIE_NAME}=${newTheme};path=/;max-age=31536000;SameSite=Lax`
+			document.cookie = `${THEME_COOKIE_NAME}=${newTheme}; path=/; max-age=31536000; SameSite=Lax`
 			if (disableTransitionOnChange) {
 				requestAnimationFrame(() => {
 					document.documentElement.classList.remove('bz-disable-transitions')

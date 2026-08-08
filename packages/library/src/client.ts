@@ -34,6 +34,17 @@ export { HotToastProvider } from './overlays/toast-provider.js'
 // Theme system
 export { ThemeProvider, useTheme, type ThemeConfig, type ThemeProviderProps } from './theme/theme-provider.js'
 export { ThemeSwitcher, type ThemeConfig as SwitcherThemeConfig, type ThemeSwitcherProps } from './theme/theme-switcher.js'
+export { StyleSwitcher, type StyleSwitcherProps } from './theme/style-switcher.js'
+export { useStyleSwitcher, type UseStyleSwitcherOptions } from './theme/use-style-switcher.js'
+export {
+	Style,
+	ALL_STYLES,
+	STYLE_COOKIE_NAME,
+	setStyleCookie,
+	getStyleFromCookie,
+	type StyleConfig,
+} from './theme/style-types.js'
+export { getServerStyle, styleInitScript } from './theme/style-utils.js'
 export { EnhancedThemeSwitcher, type EnhancedThemeConfig, type EnhancedThemeSwitcherProps } from './theme/enhanced-theme-switcher.js'
 export { CycleThemeSwitcher, type CycleThemeConfig, type CycleThemeSwitcherProps } from './theme/cycle-theme-switcher.js'
 export { useThemeSwitcher, resolveThemeIcon, smartThemeIcon, type AnyThemeConfig } from './theme/use-theme-switcher.js'
@@ -61,8 +72,10 @@ export {
 
 // Interactive controls
 export * from './forms/slider.js'
+export * from './forms/combobox.js'
 export * from './inputs/switch.js'
 export * from './primitives/button.js'
+export * from './primitives/fab.js'
 export * from './disclosure/accordion.js'
 export * from './alerts/banner.js'
 export * from './navigation/menu.js'

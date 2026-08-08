@@ -109,16 +109,34 @@ const theme = getServerTheme(await cookies())
 	<head><script dangerouslySetInnerHTML={{ __html: themeInitScript(theme) }} /></head>
 ```
 
-See [THEMING.md](./THEMING.md) for the token reference and custom themes, and
-[HOTKEYS.md](./HOTKEYS.md) for the shortcut system.
+### Styles: ten looks-and-feels, independent of color
+
+Color theme answers *light or dark, which brand color*. `data-style` answers
+*what personality does this product have* — corners, elevation, borders,
+glass, density and motion as one coherent preset — and composes freely with
+any color theme (6 themes × 10 styles = 60 looks, one stylesheet):
+
+```tsx
+import { StyleSwitcher } from '@creo-team/buzz-ui/client'
+
+<StyleSwitcher />
+// soft · crisp · sharp · flat · depth · glass · round · puff · toy · brutal
+```
+
+Lock one in with a single attribute (`<html data-style="glass">`), scope one
+to a container, or write your own preset in a few lines of CSS.
+
+See [THEMING.md](./THEMING.md) for the token reference, custom themes and
+custom shapes, and [HOTKEYS.md](./HOTKEYS.md) for the shortcut system.
 
 ## Components
 
-**Primitives** Button (9 variants, loading, hotkeys, asChild) · Spinner · Kbd ·
-Separator · VisuallyHidden · Slot
+**Primitives** Button (9 variants, loading, hotkeys, asChild) · Fab (Button,
+pinned to a corner) · Spinner · Kbd · Separator · VisuallyHidden · Slot
 
-**Forms** TextInput/Input · Textarea (CSS auto-resize) · Select · Checkbox
-(indeterminate) · RadioGroup · Switch · Field
+**Forms** TextInput/Input · Textarea (CSS auto-resize) · Select · Combobox
+(filterable, ARIA combobox pattern) · Checkbox (indeterminate) · RadioGroup ·
+Switch · Field
 
 **Display** Card · Badge · Chip (removable) · Alert · Banner · Avatar +
 AvatarGroup · Skeleton · Table · CodeBox · Progress · CircularProgress ·
@@ -131,7 +149,9 @@ CommandPalette · Toast
 SidebarNav · Menu · Footer
 
 **Theme** ThemeProvider · ThemeSwitcher · EnhancedThemeSwitcher ·
-CycleThemeSwitcher · six built-in themes + preset factory
+CycleThemeSwitcher · six built-in themes + preset factory · StyleSwitcher
+(ten looks-and-feels — soft/crisp/sharp/flat/depth/glass/round/puff/toy/brutal
+— independent of color)
 
 ## Styling and customization
 

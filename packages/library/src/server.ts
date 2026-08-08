@@ -35,11 +35,14 @@ export { Slot, type SlotProps } from './internal/slot.js'
 // Server-side theme helpers + shared theme types/constants
 export * from './theme/theme-utils.js'
 export * from './theme/theme-types.js'
+export * from './theme/style-utils.js'
+export { Style, ALL_STYLES, STYLE_COOKIE_NAME, setStyleCookie, getStyleFromCookie, type StyleConfig } from './theme/style-types.js'
 
 // Interactive components (client islands) kept here for compatibility —
 // importing them from a Server Component creates a client boundary.
 export * from './forms/slider.js'
 export * from './primitives/button.js'
+export * from './primitives/fab.js'
 export * from './alerts/banner.js'
 export { Tabs, TabPanel, TabsVariant, TabsSize, type TabItem, type TabsProps, type TabPanelProps } from './navigation/tabs.js'
 export * from './navigation/top-nav.js'

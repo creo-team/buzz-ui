@@ -1,5 +1,132 @@
 # Changelog
 
+## 0.6.0
+
+The Style system: ten holistic looks-and-feels, independent of color theme.
+
+### New
+
+- **Styles** — `data-style` on `<html>` (whole app) or any container
+  (scoped section) selects one of ten coherent visual personalities:
+  `soft` (default) · `crisp` · `sharp` · `flat` · `depth` · `glass` ·
+  `round` · `puff` · `toy` · `brutal`. Each preset is a single token block
+  covering corner radius, shadow character, border weight/color, surface
+  treatment, control shape, spacing density, and motion (easing, duration,
+  and an entrance/exit animation multiplier). 6 themes × 10 styles = 60
+  looks from one stylesheet.
+  - **glass** implements liquid-glass surfaces: `color-mix` translucency +
+    `backdrop-filter: saturate(180%) blur(16px)` with a specular top edge
+    baked into the shadow tokens, capsule controls, per-surface tuning
+    (heavier blur on modals, more opacity on toasts/menus), a one-glass-
+    layer-per-stack guard for nested surfaces, gated *together* behind
+    `@supports (backdrop-filter…)` so unsupported browsers keep fully
+    opaque surfaces, and `prefers-reduced-transparency` support.
+  - **brutal**/`toy`/`puff` carry structural signatures (slam-press into
+    the shadow, 3D bottom edge that collapses on press, extrusion that
+    inverts on press) — all keyed off the style attribute, none leaking
+    into other styles.
+- `StyleSwitcher` — a picker whose tiles are *real scoped previews*: each
+  tile carries its own `data-style`, so every chip renders with that
+  preset's actual tokens. Built on Popover; `useStyleSwitcher` exposes the
+  engine (own `style` cookie, DOM application, toast announcement).
+- `getServerStyle` + `styleInitScript` for flicker-free SSR, mirroring the
+  color-theme contracts exactly. `Style` enum, `ALL_STYLES`,
+  `STYLE_COOKIE_NAME`, cookie helpers exported from root, `/server` and
+  `/client`.
+- New style-axis tokens (all defaulting to today's shipped values, so the
+  zero-diff guarantee holds for consumers who never opt in):
+  `--bz-border-w`, `--bz-border-c`, `--bz-border-c-strong`,
+  `--bz-surface-bg`, `--bz-surface-filter`, `--bz-overlay-bg`,
+  `--bz-control-radius`, `--bz-density`, `--bz-anim`, `--bz-glass-mix`.
+
+### Hardened (adversarial review of the diff before shipping)
+
+- Theme selectors re-derive the `--bz-*` indirection tokens, so a scoped
+  theme container (`<div class="dark">`) resolves surfaces/borders against
+  its own colors instead of inheriting the outer theme's frozen values.
+- Every preset block restates the full style-axis token set (including a
+  real `[data-style='soft']` reset block), and structural rules live in
+  `@scope … to ([data-style])` donuts — nested scoped previews can neither
+  inherit another preset's tokens nor catch its interaction rules, so the
+  switcher tiles and gallery panels never lie.
+- `prefers-reduced-transparency` now out-cascades glass's per-surface
+  tuning (modals, drawers, palette, toasts, menus, listboxes included).
+- Cascade ties fixed: toy/flat press feedback survives hover overrides,
+  puff/toy preserve the `[data-selected]` ring, depth keeps elevated cards
+  above base cards and its borderless look through hover, crisp keeps the
+  danger signal on invalid-input focus.
+- `useStyleSwitcher` instances stay in sync via a shared broadcast; the
+  switcher trigger's accessible name contains its visible label; gallery
+  buttons no longer drop keyboard focus on activation; switcher controls
+  joined the shared focus-ring list. `getServerStyle` gained
+  `getServerTheme`'s bare-default overload for exact contract parity.
+
+### Changed (supersedes 0.4.0's Shape system — never published)
+
+- The 3-preset Shape axis (`data-shape`, `ShapeSwitcher`, `getServerShape`)
+  is replaced by the Style axis before ever shipping in a release. `sharp`
+  and `round` live on as full Style presets; `soft` remains the untouched
+  default.
+
+## 0.5.0
+
+Two roadmap components, closing out Phase 1 and Phase 2 of the component
+roadmap.
+
+### New
+
+- **Fab** — a Button pinned to a screen corner via `position: fixed`. Same
+  variants, sizes, hotkeys and `asChild` polymorphism as Button; add
+  `position` (`bottom-right` default, plus the other three corners and both
+  centers) and `offset`. Sits at z-index 40, below every overlay, so an open
+  modal/popover/tooltip/toast always wins visually. Centered positions avoid
+  `transform` for centering specifically so they don't fight Button's own
+  hover-lift/press-scale animations.
+- **Combobox** — filterable single-select input implementing the WAI-ARIA
+  combobox + listbox pattern, built on the same overlay engine as Dropdown
+  (portal, collision-aware positioning, shared layer-stack dismissal).
+  Focusing shows every option; typing filters (case-insensitive substring by
+  default, or pass `filter` for server-side search); `onInputChange` fires
+  per keystroke for your own debounced async fetch; `loading` swaps the
+  chevron for a spinner. Controlled (`value`/`onChange`) or uncontrolled
+  (`defaultValue`); `name` renders a hidden input so the selection
+  participates in native form submission; `clearable` shows a (×) button.
+  Closing without selecting (Escape, outside-press, Tab) reverts the typed
+  text to the current selection instead of leaving a dangling string.
+  Keyboard navigation skips disabled options entirely, matching Dropdown's
+  existing precedent, rather than landing on one Enter can't select.
+
+## 0.4.0
+
+Elegance pass: a second, independent design dimension, plus a round of
+motion/interaction polish.
+
+### New
+
+- **Shape system** — `data-shape` (`sharp` / `soft` / `round`) covering
+  corner radius, shadow weight and motion timing, completely orthogonal to
+  color theme: any shape combines with any of the six built-in themes (18
+  looks, one stylesheet, zero extra CSS). Ships `ShapeSwitcher`,
+  `useShapeSwitcher`, `getServerShape`, `shapeInitScript`, and the `Shape`
+  enum / `ALL_SHAPES` / cookie helpers — mirroring the color-theme SSR
+  pattern exactly (own cookie, flicker-free hard loads, `initialShape` to
+  skip the mount fallback). `soft` is the unmodified `:root` default, so
+  existing consumers see no visual change unless they opt in.
+
+### Improved
+
+- Subtle hover-lift (`translateY`) on filled button variants
+  (`bold`/`success`/`danger`) and interactive `Card`s. Press feedback
+  (`:active` scale) still wins over the lift when both are true at once —
+  hovering while pressing scales down rather than staying lifted.
+
+### Fixed
+
+- Cookie-writer strings (`setThemeCookie`, `setShapeCookie`,
+  `ThemeProvider`'s internal cookie write) now include a space after each
+  `;` separator, matching standard `Set-Cookie` formatting and fixing naive
+  substring-based cookie parsers that split on `'; '`.
+
 ## 0.3.0
 
 Quality pass driven by a full multi-lens audit (correctness, accessibility,

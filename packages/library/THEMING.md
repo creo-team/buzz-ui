@@ -318,6 +318,111 @@ The library includes 6 built-in themes:
 
 Each theme provides a complete set of CSS variables for consistent styling across all components.
 
+## Styles: ten looks-and-feels, independent of color
+
+Color theme answers *light or dark, which brand color*. **Style** answers
+*what personality does this product have* — corner radius, elevation
+character, border weight, surface treatment (opaque vs. glass), spacing
+density and motion feel, as one coherent preset. The two compose freely:
+six color themes x ten styles is sixty distinct looks from one stylesheet.
+
+Style is selected via `data-style` — on `<html>` for the whole app, or on
+**any container** for a scoped section (every trait is an inherited custom
+property). It writes only the style-axis tokens (`--radius-*`, `--shadow-*`,
+`--bz-*`); it never touches a color token.
+
+| Preset | Personality |
+| --- | --- |
+| `soft` | The shipped default — unmodified `:root` values. Upgrading consumers see no change unless they opt in. |
+| `crisp` | Enterprise instrument panel: 2px corners, conservative shadows, compact density, keyboard-first focus. |
+| `sharp` | Architectural precision: tight corners, hairline-ring elevation instead of blur. |
+| `flat` | Quiet utility: hairlines and ink, shadows almost abolished, no hover lift. |
+| `depth` | Cinematic layered elevation: stacked three-layer shadows; cards let elevation carry the edge. |
+| `glass` | Liquid translucency: blurred, saturated surfaces, specular top edge, capsule controls. Falls back to opaque without `backdrop-filter` support, and honors `prefers-reduced-transparency`. |
+| `round` | Warm and plush: generous corners, diffuse glow, gentle overshoot motion. |
+| `puff` | Soft-extruded: controls pressed out of the page; both shadow poles derive from the theme background. |
+| `toy` | Chunky and bouncy: pills with a physical 3D bottom edge that collapses on press. |
+| `brutal` | Neo-brutalism: zero radius, 2px ink borders, hard offset shadows, slam press. |
+
+```tsx
+import { StyleSwitcher } from '@creo-team/buzz-ui/client'
+
+<StyleSwitcher /> // a picker whose tiles are real scoped previews
+```
+
+It persists to its own `style` cookie and reads it back with
+`getServerStyle` for the same flicker-free SSR pattern as the color theme:
+
+```tsx
+// app/layout.tsx
+import { cookies } from 'next/headers'
+import { getServerStyle, styleInitScript } from '@creo-team/buzz-ui/server'
+import { StyleSwitcher } from '@creo-team/buzz-ui/client'
+
+export default async function RootLayout({ children }) {
+	const style = getServerStyle(await cookies(), 'soft')
+	return (
+		<html data-style={style}>
+			<head>
+				<script dangerouslySetInnerHTML={{ __html: styleInitScript(style) }} />
+			</head>
+			<body>
+				<StyleSwitcher initialStyle={style} />
+				{children}
+			</body>
+		</html>
+	)
+}
+```
+
+### Locking a style in, scoping, extending
+
+The switcher is a convenience — the mechanism is inherited custom
+properties under attribute selectors, so all of these work with no JS:
+
+```html
+<!-- Whole app, forever -->
+<html data-style="glass">
+
+<!-- One section only -->
+<div data-style="brutal">…</div>
+```
+
+```css
+/* Your own eleventh preset */
+[data-style='blueprint'] {
+	--radius-sm: 0; --radius-md: 0; --radius-lg: 0;
+	--bz-border-w: 1px;
+	--bz-border-c: var(--c-info);
+	--shadow-md: 0 0 0 0 transparent; /* never `none` — it voids composed shadow lists */
+	--bz-duration: 100ms;
+}
+```
+
+Style-axis tokens a preset may override:
+
+| Token | Purpose | Default |
+| --- | --- | --- |
+| `--radius-sm` … `--radius-2xl` | Radius scale | 6–16px |
+| `--bz-control-radius` | Button radius override (e.g. `999px` pills) | unset (per-size radii) |
+| `--shadow-sm` … `--shadow-xl` | Elevation scale (full shadow lists) | standard |
+| `--bz-border-w` | Surface border width | `1px` |
+| `--bz-border-c` / `--bz-border-c-strong` | Surface border colors (indirection over theme tokens) | `var(--c-border)` / `var(--c-border-strong)` |
+| `--bz-surface-bg` | Floating/raised surface background | `var(--c-surface)` |
+| `--bz-surface-filter` | `backdrop-filter` on floating surfaces | `none` |
+| `--bz-overlay-bg` | Modal/drawer/palette backdrop | unset (component literals) |
+| `--bz-density` | Multiplies base whitespace (never font size) | `1` |
+| `--bz-ease` / `--bz-duration` | Micro-interaction motion | standard |
+| `--bz-anim` | Multiplies entrance/exit animation durations | `1` |
+
+Two caveats worth knowing:
+
+- Portaled overlays (menus, modals, toasts) render under `<body>`, so they
+  escape a container-scoped style. `data-style` on `<html>` is the
+  supported way to style overlays.
+- Glass reads best over imagery or gradients; over a flat background it
+  simply looks like a subtle card, which is the correct graceful floor.
+
 ## Best Practices
 
 1. **Use CSS Variables** - Always use CSS variables instead of hard-coded colors
