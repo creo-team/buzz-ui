@@ -20,16 +20,20 @@ export enum ProgressSize {
 	ExtraLarge = 'xl',
 }
 
+/** Corner rounding of the track and bar. */
 export enum ProgressShape {
 	Rounded = 'rounded',
 	Square = 'square',
 	Pill = 'pill',
 }
 
+/** Props for {@link Progress}. */
 export interface ProgressProps {
 	/** Percentage 0–100. */
 	value?: number
+	/** Track height preset. @default 'md' */
 	size?: ProgressSize | `${ProgressSize}`
+	/** Bar color. @default 'primary' */
 	variant?: ProgressVariant | `${ProgressVariant}`
 	/** Show label row with percentage. */
 	showLabel?: boolean
@@ -41,6 +45,7 @@ export interface ProgressProps {
 	indeterminate?: boolean
 	/** Custom label text. */
 	label?: string
+	/** Corner rounding. @default 'rounded' */
 	shape?: ProgressShape | `${ProgressShape}`
 	className?: string
 }

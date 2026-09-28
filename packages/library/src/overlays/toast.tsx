@@ -47,10 +47,12 @@ export interface ToastOptions {
 	dismissible?: boolean
 }
 
+/** A toast as held in the store: its options resolved, plus runtime state. */
 export interface ToastItem extends ToastOptions {
 	id: string
 	message: React.ReactNode
 	variant: ToastVariant
+	/** Resolved auto-dismiss delay in ms (`Infinity` persists). */
 	duration: number
 	/** false while the exit animation plays. */
 	open: boolean
@@ -133,9 +135,13 @@ function dismissToast(id?: string) {
 	emit()
 }
 
+/** Per-phase messages for `toast.promise`. */
 export interface ToastPromiseMessages<T> {
+	/** Shown while the promise is pending. */
 	loading: React.ReactNode
+	/** Shown on resolve — a function receives the resolved value. */
 	success: React.ReactNode | ((value: T) => React.ReactNode)
+	/** Shown on reject — a function receives the rejection reason. */
 	error: React.ReactNode | ((error: unknown) => React.ReactNode)
 }
 
@@ -151,6 +157,22 @@ interface ToastFunction {
 	dismiss: (id?: string) => void
 }
 
+/**
+ * The imperative toast API — callable anywhere, including outside React
+ * (mount one {@link Toaster} to render the results). Calling it shows a
+ * default toast; `toast.success` / `error` / `warning` / `info` / `loading`
+ * set the variant, `toast.promise` tracks a promise through
+ * loading → success/error, and `toast.dismiss(id?)` closes one or all.
+ * Every call returns the toast's id — pass it back as `options.id` to
+ * update that toast in place.
+ *
+ * @example
+ * toast('Saved')
+ * toast.success('Profile updated', { description: 'Changes are live.' })
+ * const id = toast.loading('Uploading…')
+ * toast.success('Uploaded', { id }) // updates the loading toast in place
+ * toast.promise(save(), { loading: 'Saving…', success: 'Saved', error: 'Failed' })
+ */
 export const toast: ToastFunction = Object.assign(
 	(message: React.ReactNode, options?: ToastOptions) => addToast(message, 'default', options),
 	{

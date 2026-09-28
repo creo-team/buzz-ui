@@ -3,6 +3,7 @@ import { cx } from '../internal/cx.js'
 import { CheckboxIndeterminate } from './checkbox-indeterminate.js'
 import { FormFieldError } from './form.js'
 
+/** Props for {@link Checkbox}. */
 export interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	label?: React.ReactNode
 	/** Secondary line under the label. */
