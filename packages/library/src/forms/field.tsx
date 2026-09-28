@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { cx } from '../internal/cx.js'
+import { FormFieldError } from './form.js'
 
 export interface FieldMessages {
 	error?: React.ReactNode
@@ -20,6 +21,12 @@ export function fieldDescribedBy(id: string, { error, warningText, helpText }: F
 export interface FieldProps extends FieldMessages {
 	/** id of the control this field labels. */
 	htmlFor: string
+	/**
+	 * The control's `name`. When set, errors from a surrounding `<Form>` are
+	 * rendered inline here (a small client slot — the Field itself still
+	 * renders on the server).
+	 */
+	name?: string
 	label?: React.ReactNode
 	/** Marks the label with a required indicator. */
 	required?: boolean
@@ -34,7 +41,7 @@ export interface FieldProps extends FieldMessages {
  *
  * Renders in Server Components — no client JavaScript.
  */
-export function Field({ htmlFor, label, required, error, warningText, helpText, className, children }: FieldProps) {
+export function Field({ htmlFor, name, label, required, error, warningText, helpText, className, children }: FieldProps) {
 	return (
 		<div className={cx('bz-field', className)}>
 			{label != null && (
@@ -58,6 +65,10 @@ export function Field({ htmlFor, label, required, error, warningText, helpText, 
 					{error}
 				</div>
 			)}
+			{/* Form-level errors surface here without making the Field a client
+			    component; a stylesheet :has() rule hides the help text while
+			    one is showing, mirroring the prop-error behavior above. */}
+			{name != null && error == null && <FormFieldError name={name} htmlFor={htmlFor} />}
 			{helpText != null && error == null && warningText == null && (
 				<div id={`${htmlFor}-help`} className="bz-field__message" data-tone="help">
 					{helpText}

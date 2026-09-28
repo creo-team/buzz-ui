@@ -915,6 +915,10 @@ html[data-theme='umbro'] {
 	padding: 0.5rem;
 }
 .bz-field__message[data-tone='help'] { color: var(--c-text-muted); }
+/* A Form-level error arrives via a client slot after the server rendered the
+   help text — hide the help while any error message is showing, matching the
+   prop-error behavior (where JSX omits the help element entirely). */
+.bz-field:has(.bz-field__message[data-tone='error']) .bz-field__message[data-tone='help'] { display: none; }
 
 .bz-input,
 .bz-textarea,

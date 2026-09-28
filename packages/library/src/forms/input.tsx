@@ -54,6 +54,7 @@ export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(func
 
 	return (
 		<Field
+			name={props.name}
 			htmlFor={inputId}
 			label={label}
 			required={required}

@@ -93,6 +93,7 @@ export * from './primitives/spinner.js'
 export * from './primitives/separator.js'
 export * from './primitives/visually-hidden.js'
 export * from './forms/field.js'
+export * from './forms/form.js'
 
 // Hooks
 export * from './hooks/use-hotkey.js'

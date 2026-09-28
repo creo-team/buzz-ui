@@ -24,6 +24,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(function 
 
 	return (
 		<Field
+			name={props.name}
 			htmlFor={selectId}
 			label={label}
 			required={required}

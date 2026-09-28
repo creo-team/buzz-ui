@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { cx } from '../internal/cx.js'
+import { FormFieldError } from './form.js'
 
 export interface RadioOption {
 	value: string
@@ -51,6 +52,7 @@ export function RadioGroup({
 
 	return (
 		<fieldset
+			id={groupId}
 			className={cx('bz-radio-group', className)}
 			disabled={disabled}
 			aria-describedby={describedBy}
@@ -97,6 +99,7 @@ export function RadioGroup({
 					{error}
 				</div>
 			)}
+			{error == null && <FormFieldError name={name} htmlFor={groupId} />}
 			{helpText != null && !error && (
 				<div id={`${groupId}-help`} className="bz-field__message" data-tone="help">
 					{helpText}

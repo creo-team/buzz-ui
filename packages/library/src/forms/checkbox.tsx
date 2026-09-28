@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { cx } from '../internal/cx.js'
 import { CheckboxIndeterminate } from './checkbox-indeterminate.js'
+import { FormFieldError } from './form.js'
 
 export interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	label?: React.ReactNode
@@ -48,7 +49,7 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(functi
 					<path d="M5 12h14" />
 				</svg>
 			</span>
-			{(label != null || description != null || error != null) && (
+			{(label != null || description != null || error != null || props.name != null) && (
 				<span className="bz-checkbox__text">
 					{label != null && (
 						<label htmlFor={inputId} className="bz-checkbox__label">
@@ -65,6 +66,7 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(functi
 							{error}
 						</span>
 					)}
+					{error == null && props.name != null && <FormFieldError name={props.name} htmlFor={inputId} />}
 				</span>
 			)}
 			{indeterminate !== undefined && <CheckboxIndeterminate htmlFor={inputId} value={indeterminate} />}

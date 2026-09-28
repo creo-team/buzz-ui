@@ -25,6 +25,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(fun
 
 	return (
 		<Field
+			name={props.name}
 			htmlFor={textareaId}
 			label={label}
 			required={required}

@@ -237,7 +237,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
 	}
 
 	return (
-		<Field htmlFor={inputId} label={label} required={required} error={error} helpText={helpText} className={wrapperClassName}>
+		<Field htmlFor={inputId} name={name} label={label} required={required} error={error} helpText={helpText} className={wrapperClassName}>
 			<div ref={wrapperRef} className="bz-combobox">
 				<input
 					ref={ref}
