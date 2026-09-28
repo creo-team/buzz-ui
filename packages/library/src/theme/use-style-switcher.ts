@@ -3,10 +3,15 @@ import * as React from 'react'
 import { toast } from '../overlays/toast.js'
 import { Style, type StyleConfig, setStyleCookie, getStyleFromCookie } from './style-types.js'
 
+/** Options for {@link useStyleSwitcher}. */
 export interface UseStyleSwitcherOptions {
+	/** Style presets to persist and cycle through. */
 	styles: StyleConfig[]
+	/** Style used before a saved cookie exists. @default Style.Soft */
 	defaultStyle?: Style | string
+	/** Server-read style for flicker-free SSR (pass from `getServerStyle`). */
 	initialStyle?: string
+	/** Announce changes with a toast. @default true */
 	showToast?: boolean
 }
 

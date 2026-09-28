@@ -41,6 +41,7 @@ export const DEFAULT_THEMES: ThemeConfig[] = [
 	{ value: 'dark', label: 'Dark', icon: 'moon' },
 ]
 
+/** All six built-in themes, with labels and icons. */
 export const ALL_THEMES: ThemeConfig[] = [
 	{ value: 'light', label: 'Light', icon: 'sun' },
 	{ value: 'dark', label: 'Dark', icon: 'moon' },
@@ -55,10 +56,12 @@ export const ALL_THEMES: ThemeConfig[] = [
  */
 export const THEME_COOKIE_NAME = 'theme'
 
+/** Persist the theme choice in a year-long cookie (client only). */
 export function setThemeCookie(theme: Theme | string): void {
 	document.cookie = `${THEME_COOKIE_NAME}=${theme}; path=/; max-age=31536000; SameSite=Lax`
 }
 
+/** Read the persisted theme on the client, falling back to `defaultTheme` (always the fallback during SSR). */
 export function getThemeFromCookie(defaultTheme: Theme | string = "light"): string {
 	if (typeof document === 'undefined') return defaultTheme.toString()
 	
