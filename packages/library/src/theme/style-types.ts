@@ -53,12 +53,15 @@ export const ALL_STYLES: StyleConfig[] = [
 	{ value: Style.Brutal, label: 'Brutal', description: 'Ink borders, hard offsets' },
 ]
 
+/** Cookie the chosen style persists under. */
 export const STYLE_COOKIE_NAME = 'style'
 
+/** Persist the style choice in a year-long cookie (client only). */
 export function setStyleCookie(style: Style | string): void {
 	document.cookie = `${STYLE_COOKIE_NAME}=${style}; path=/; max-age=31536000; SameSite=Lax`
 }
 
+/** Read the persisted style on the client, falling back to `defaultStyle` (always the fallback during SSR). */
 export function getStyleFromCookie(defaultStyle: Style | string = Style.Soft): string {
 	if (typeof document === 'undefined') return defaultStyle.toString()
 
