@@ -68,7 +68,7 @@ export default function FormsValidationDocs() {
 				</Card>
 				<div className="flex gap-2">
 					<Button type="submit">Submit</Button>
-					<Button variant="subtle" type="button" onClick={() => { setData({ email: '', role: '', plan: 'free', agree: false, message: '' }); setErrors({}) }}>Reset</Button>
+					<Button variant="soft" type="button" onClick={() => { setData({ email: '', role: '', plan: 'free', agree: false, message: '' }); setErrors({}) }}>Reset</Button>
 				</div>
 				{Object.values(errors).length > 0 && (
 					<Card>

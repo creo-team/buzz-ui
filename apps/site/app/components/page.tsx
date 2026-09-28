@@ -180,7 +180,7 @@ export default function ComponentsPage() {
 					</p>
 					<div className="flex flex-wrap justify-center gap-6">
 						<Link href="/docs/installation" className="no-underline">
-							<Button variant="bold" size="lg" className="px-10 py-5 text-xl font-bold">
+							<Button size="lg" className="px-10 py-5 text-xl font-bold">
 								Install Now
 							</Button>
 						</Link>

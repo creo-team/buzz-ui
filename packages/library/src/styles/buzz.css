@@ -699,44 +699,149 @@ html[data-theme='umbro'] {
 .bz-button[data-icon-only][data-size='md'] { width: 2.5rem; height: 2.5rem; }
 .bz-button[data-icon-only][data-size='lg'] { width: 3rem; height: 3rem; }
 
-.bz-button[data-variant='bold'] {
-	background: var(--c-primary);
-	color: var(--c-on-primary);
+/*
+ * Button color model: variant (weight) × tone (meaning).
+ *
+ * Each tone block only fills a small palette of --bz-btn-* custom
+ * properties; each weight block only consumes them. Four tone blocks plus
+ * six weight blocks therefore style all twenty-four combinations — adding a
+ * tone never touches a weight rule and vice versa. The component maps
+ * legacy v0.6 variant names (bold, subtle, text, nav, icon, success,
+ * danger) onto these axes before they reach the DOM.
+ */
+.bz-button[data-tone='primary'] {
+	--bz-btn-accent: var(--c-primary);
+	--bz-btn-accent-hover: var(--c-primary-hover);
+	--bz-btn-on-accent: var(--c-on-primary);
+	--bz-btn-soft: var(--c-primary-light);
+	--bz-btn-soft-hover: color-mix(in srgb, var(--c-primary) 16%, var(--c-primary-light));
+	--bz-btn-soft-active: color-mix(in srgb, var(--c-primary) 24%, var(--c-primary-light));
+	--bz-btn-soft-border: color-mix(in srgb, var(--c-primary) 22%, transparent);
+	--bz-btn-outline-border: color-mix(in srgb, var(--c-primary) 55%, var(--c-border-strong));
+	--bz-btn-tinted-fg: var(--c-primary);
+	--bz-btn-quiet-fg: var(--c-primary);
+	--bz-btn-quiet-fg-hover: var(--c-primary-hover);
+	--bz-btn-quiet-hover: var(--c-primary-light);
+	--bz-btn-quiet-active: color-mix(in srgb, var(--c-primary) 20%, var(--c-primary-light));
+	--bz-btn-ring: var(--c-primary-ring);
+}
+.bz-button[data-tone='neutral'] {
+	--bz-btn-accent: var(--c-text);
+	--bz-btn-accent-hover: color-mix(in srgb, var(--c-text) 84%, var(--c-background));
+	--bz-btn-on-accent: var(--c-background);
+	--bz-btn-soft: var(--c-surface-2);
+	--bz-btn-soft-hover: var(--c-hover);
+	--bz-btn-soft-active: var(--c-active);
+	--bz-btn-soft-border: var(--c-border);
+	--bz-btn-outline-border: var(--c-border-strong);
+	--bz-btn-tinted-fg: var(--c-text);
+	--bz-btn-quiet-fg: var(--c-text-secondary);
+	--bz-btn-quiet-fg-hover: var(--c-text);
+	--bz-btn-quiet-hover: var(--c-hover);
+	--bz-btn-quiet-active: var(--c-active);
+	--bz-btn-ring: color-mix(in srgb, var(--c-text) 30%, transparent);
+}
+.bz-button[data-tone='success'] {
+	--bz-btn-accent: var(--c-success);
+	--bz-btn-accent-hover: color-mix(in srgb, var(--c-success) 86%, var(--c-text));
+	--bz-btn-on-accent: var(--c-on-success, #ffffff);
+	--bz-btn-soft: var(--c-success-light);
+	--bz-btn-soft-hover: color-mix(in srgb, var(--c-success) 16%, var(--c-success-light));
+	--bz-btn-soft-active: color-mix(in srgb, var(--c-success) 24%, var(--c-success-light));
+	--bz-btn-soft-border: color-mix(in srgb, var(--c-success) 22%, transparent);
+	--bz-btn-outline-border: color-mix(in srgb, var(--c-success) 55%, var(--c-border-strong));
+	--bz-btn-tinted-fg: var(--c-success);
+	--bz-btn-quiet-fg: var(--c-success);
+	--bz-btn-quiet-fg-hover: var(--c-success);
+	--bz-btn-quiet-hover: var(--c-success-light);
+	--bz-btn-quiet-active: color-mix(in srgb, var(--c-success) 20%, var(--c-success-light));
+	--bz-btn-ring: color-mix(in srgb, var(--c-success) 40%, transparent);
+}
+.bz-button[data-tone='danger'] {
+	--bz-btn-accent: var(--c-danger);
+	--bz-btn-accent-hover: color-mix(in srgb, var(--c-danger) 86%, var(--c-text));
+	--bz-btn-on-accent: var(--c-on-danger, #ffffff);
+	--bz-btn-soft: var(--c-danger-light);
+	--bz-btn-soft-hover: color-mix(in srgb, var(--c-danger) 16%, var(--c-danger-light));
+	--bz-btn-soft-active: color-mix(in srgb, var(--c-danger) 24%, var(--c-danger-light));
+	--bz-btn-soft-border: color-mix(in srgb, var(--c-danger) 22%, transparent);
+	--bz-btn-outline-border: color-mix(in srgb, var(--c-danger) 55%, var(--c-border-strong));
+	--bz-btn-tinted-fg: var(--c-danger);
+	--bz-btn-quiet-fg: var(--c-danger);
+	--bz-btn-quiet-fg-hover: var(--c-danger);
+	--bz-btn-quiet-hover: var(--c-danger-light);
+	--bz-btn-quiet-active: color-mix(in srgb, var(--c-danger) 20%, var(--c-danger-light));
+	--bz-btn-ring: color-mix(in srgb, var(--c-danger) 40%, transparent);
+}
+
+/* solid — filled with the accent; the strongest weight */
+.bz-button[data-variant='solid'] {
+	background: var(--bz-btn-accent);
+	color: var(--bz-btn-on-accent);
 	box-shadow: var(--shadow-md);
 }
-.bz-button[data-variant='bold']:hover:not(:disabled) {
-	background: var(--c-primary-hover);
+.bz-button[data-variant='solid']:hover:not(:disabled) {
+	background: var(--bz-btn-accent-hover);
 	box-shadow: var(--shadow-lg);
 	transform: translateY(-1px);
 }
-.bz-button[data-variant='bold'][data-selected] {
-	box-shadow: var(--shadow-lg), 0 0 0 2px var(--c-primary-ring);
+.bz-button[data-variant='solid'][data-selected] {
+	box-shadow: var(--shadow-lg), 0 0 0 2px var(--bz-btn-ring);
 }
 
+/* soft — tinted fill, no elevation */
+.bz-button[data-variant='soft'] {
+	background: var(--bz-btn-soft);
+	border-color: var(--bz-btn-soft-border);
+	color: var(--bz-btn-tinted-fg);
+}
+.bz-button[data-variant='soft']:hover:not(:disabled) { background: var(--bz-btn-soft-hover); }
+.bz-button[data-variant='soft'][data-selected] { background: var(--bz-btn-soft-active); }
+
+/* outline — a border carries the weight */
 .bz-button[data-variant='outline'] {
 	background: transparent;
-	border-color: var(--c-border-strong);
-	color: var(--c-text);
+	border-color: var(--bz-btn-outline-border);
+	color: var(--bz-btn-tinted-fg);
 }
 .bz-button[data-variant='outline']:hover:not(:disabled) {
-	border-color: var(--c-primary);
-	color: var(--c-primary);
-	background: var(--c-hover);
+	border-color: var(--bz-btn-accent);
+	background: var(--bz-btn-quiet-hover);
 }
 .bz-button[data-variant='outline'][data-selected] {
-	border-color: var(--c-primary);
-	color: var(--c-primary);
-	background: var(--c-primary-light);
+	border-color: var(--bz-btn-accent);
+	background: var(--bz-btn-soft);
 }
 
-.bz-button[data-variant='subtle'] {
-	background: var(--c-surface-2);
-	border-color: var(--c-border);
-	color: var(--c-text);
+/* ghost — invisible until hovered */
+.bz-button[data-variant='ghost'] {
+	background: transparent;
+	color: var(--bz-btn-quiet-fg);
 }
-.bz-button[data-variant='subtle']:hover:not(:disabled) { background: var(--c-hover); }
-.bz-button[data-variant='subtle'][data-selected] { background: var(--c-active); }
+.bz-button[data-variant='ghost']:hover:not(:disabled) {
+	background: var(--bz-btn-quiet-hover);
+	color: var(--bz-btn-quiet-fg-hover);
+}
+.bz-button[data-variant='ghost'][data-selected] {
+	background: var(--bz-btn-quiet-active);
+	color: var(--bz-btn-quiet-fg-hover);
+}
 
+/* link — inline-link appearance, no box */
+.bz-button[data-variant='link'] {
+	background: transparent;
+	color: var(--bz-btn-quiet-fg);
+	padding: 0;
+	border-radius: 0;
+	text-underline-offset: 0.2em;
+}
+.bz-button[data-variant='link']:hover:not(:disabled) {
+	color: var(--bz-btn-quiet-fg-hover);
+	text-decoration: underline;
+}
+.bz-button[data-variant='link'][data-selected] { font-weight: 600; }
+
+/* glass — translucent over imagery; deliberately tone-agnostic */
 .bz-button[data-variant='glass'] {
 	background: color-mix(in srgb, var(--c-surface) 30%, transparent);
 	-webkit-backdrop-filter: blur(16px) saturate(1.5);
@@ -753,65 +858,11 @@ html[data-theme='umbro'] {
 	box-shadow: var(--shadow-md);
 }
 
-.bz-button[data-variant='ghost'],
-.bz-button[data-variant='icon'] {
-	background: transparent;
-	color: var(--c-text-secondary);
-}
-.bz-button[data-variant='ghost']:hover:not(:disabled),
-.bz-button[data-variant='icon']:hover:not(:disabled) {
-	background: var(--c-hover);
-	color: var(--c-text);
-}
-.bz-button[data-variant='ghost'][data-selected],
-.bz-button[data-variant='icon'][data-selected] {
-	background: var(--c-active);
-	color: var(--c-text);
-}
-
-.bz-button[data-variant='text'] {
-	background: transparent;
-	color: var(--c-primary);
-	padding: 0;
-	border-radius: 0;
-}
-.bz-button[data-variant='text']:hover:not(:disabled) { color: var(--c-primary-hover); }
-.bz-button[data-variant='text'][data-selected] { font-weight: 600; }
-
-.bz-button[data-variant='nav'] {
-	background: transparent;
-	color: var(--c-text-secondary);
-}
-.bz-button[data-variant='nav']:hover:not(:disabled) {
-	color: var(--c-text);
-	background: var(--c-hover);
-}
-.bz-button[data-variant='nav'][data-selected] {
-	color: var(--c-primary);
-	background: var(--c-primary-light);
-}
-
-.bz-button[data-variant='success'] {
-	background: var(--c-success);
-	color: var(--c-on-success, #ffffff);
-	box-shadow: var(--shadow-sm);
-}
-.bz-button[data-variant='success']:hover:not(:disabled) { filter: brightness(1.1); box-shadow: var(--shadow-md); transform: translateY(-1px); }
-
-.bz-button[data-variant='danger'] {
-	background: var(--c-danger);
-	color: var(--c-on-danger, #ffffff);
-	box-shadow: var(--shadow-sm);
-}
-.bz-button[data-variant='danger']:hover:not(:disabled) { filter: brightness(1.1); box-shadow: var(--shadow-md); transform: translateY(-1px); }
-
-/* The hover-lift rules above are more specific (attribute-qualified) than
+/* The solid hover-lift rule is more specific (attribute-qualified) than
    the base :active press-scale rule, so pressing while still hovering would
    otherwise keep the lift instead of scaling down. Re-assert the press with
-   equal specificity, after the lift rules, so tap feedback still wins. */
-.bz-button[data-variant='bold']:active:not(:disabled),
-.bz-button[data-variant='success']:active:not(:disabled),
-.bz-button[data-variant='danger']:active:not(:disabled) {
+   equal specificity, after the lift rule, so tap feedback still wins. */
+.bz-button[data-variant='solid']:active:not(:disabled) {
 	transform: scale(0.97);
 }
 
@@ -3061,8 +3112,8 @@ html[data-theme='umbro'] {
 	[data-style='round'] .bz-card[data-interactive]:hover {
 		box-shadow: var(--shadow-lg), 0 0 24px -8px color-mix(in srgb, var(--c-primary) 14%, transparent);
 	}
-	[data-style='round'] .bz-button[data-variant='bold']:hover:not(:disabled) {
-		box-shadow: var(--shadow-lg), 0 0 24px -8px color-mix(in srgb, var(--c-primary) 14%, transparent);
+	[data-style='round'] .bz-button[data-variant='solid']:hover:not(:disabled) {
+		box-shadow: var(--shadow-lg), 0 0 24px -8px color-mix(in srgb, var(--bz-btn-accent) 14%, transparent);
 	}
 }
 
@@ -3073,11 +3124,11 @@ html[data-theme='umbro'] {
 		transform: none;
 		box-shadow: 0 0 0 0 transparent;
 	}
-	[data-style='flat'] :is(.bz-button[data-variant='bold'], .bz-button[data-variant='success'], .bz-button[data-variant='danger']):hover:not(:disabled) {
+	[data-style='flat'] .bz-button[data-variant='solid']:hover:not(:disabled) {
 		transform: none;
 	}
 	/* No lift must not also mean no press feedback — restore the scale. */
-	[data-style='flat'] :is(.bz-button[data-variant='bold'], .bz-button[data-variant='success'], .bz-button[data-variant='danger']):active:not(:disabled) {
+	[data-style='flat'] .bz-button[data-variant='solid']:active:not(:disabled) {
 		transform: scale(0.97);
 	}
 }
@@ -3121,12 +3172,12 @@ html[data-theme='umbro'] {
 
 /* ---- puff: extruded at rest, inverted on press ---- */
 @scope ([data-style='puff']) to ([data-style]) {
-	[data-style='puff'] .bz-button:not([data-variant='text'], [data-variant='nav']) {
+	[data-style='puff'] .bz-button:not([data-variant='link'], [data-variant='ghost']) {
 		box-shadow: var(--shadow-sm);
 	}
 	/* Selected state keeps its ring on top of the extrusion. */
-	[data-style='puff'] :is(.bz-button[data-variant='bold'], .bz-button[data-variant='glass'])[data-selected] {
-		box-shadow: var(--shadow-sm), 0 0 0 2px var(--c-primary-ring);
+	[data-style='puff'] :is(.bz-button[data-variant='solid'], .bz-button[data-variant='glass'])[data-selected] {
+		box-shadow: var(--shadow-sm), 0 0 0 2px var(--bz-btn-ring);
 	}
 	[data-style='puff'] .bz-button:active:not(:disabled) {
 		transform: none;
@@ -3137,15 +3188,15 @@ html[data-theme='umbro'] {
 
 /* ---- brutal: ink borders, slam-press, offset focus, squared pills ---- */
 @scope ([data-style='brutal']) to ([data-style]) {
-	[data-style='brutal'] .bz-button:not([data-variant='text'], [data-variant='ghost'], [data-variant='icon'], [data-variant='nav']) {
+	[data-style='brutal'] .bz-button:not([data-variant='link'], [data-variant='ghost']) {
 		border-color: var(--c-text);
 	}
 	[data-style='brutal'] .bz-button[data-icon-only] { border-radius: 0; }
 	[data-style='brutal'] .bz-button:active:not(:disabled) { transform: translate(2px, 2px); }
-	[data-style='brutal'] :is(.bz-button[data-variant='bold'], .bz-button[data-variant='success'], .bz-button[data-variant='danger']):hover:not(:disabled) {
+	[data-style='brutal'] .bz-button[data-variant='solid']:hover:not(:disabled) {
 		transform: none; /* brutal doesn't levitate */
 	}
-	[data-style='brutal'] :is(.bz-button[data-variant='bold'], .bz-button[data-variant='success'], .bz-button[data-variant='danger']):active:not(:disabled) {
+	[data-style='brutal'] .bz-button[data-variant='solid']:active:not(:disabled) {
 		transform: translate(2px, 2px);
 		box-shadow: var(--shadow-sm); /* slams one step into its own shadow */
 	}
@@ -3158,19 +3209,21 @@ html[data-theme='umbro'] {
 
 /* ---- toy: 3D bottom edge, spring press, pill inputs ---- */
 @scope ([data-style='toy']) to ([data-style]) {
-	[data-style='toy'] .bz-button:not([data-variant='text'], [data-variant='ghost'], [data-variant='icon'], [data-variant='nav']) {
+	[data-style='toy'] .bz-button:not([data-variant='link'], [data-variant='ghost']) {
 		border-color: var(--bz-border-c-strong);
 		box-shadow: var(--shadow-md);
 	}
-	[data-style='toy'] .bz-button[data-variant='bold'] {
-		border-color: color-mix(in srgb, var(--c-primary) 70%, black);
-		box-shadow: 0 4px 0 0 color-mix(in srgb, var(--c-primary) 70%, black);
+	/* Solid buttons get a 3D bottom edge cut from their own tone's accent —
+	   one token-driven rule where v0.6 needed a hand-written rule per color. */
+	[data-style='toy'] .bz-button[data-variant='solid'] {
+		border-color: color-mix(in srgb, var(--bz-btn-accent) 70%, black);
+		box-shadow: 0 4px 0 0 color-mix(in srgb, var(--bz-btn-accent) 70%, black);
 	}
 	/* Selected state keeps its ring on top of the 3D edge. */
-	[data-style='toy'] :is(.bz-button[data-variant='bold'], .bz-button[data-variant='glass'])[data-selected] {
-		box-shadow: var(--shadow-md), 0 0 0 2px var(--c-primary-ring);
+	[data-style='toy'] :is(.bz-button[data-variant='solid'], .bz-button[data-variant='glass'])[data-selected] {
+		box-shadow: var(--shadow-md), 0 0 0 2px var(--bz-btn-ring);
 	}
-	[data-style='toy'] :is(.bz-button[data-variant='bold'], .bz-button[data-variant='success'], .bz-button[data-variant='danger']):hover:not(:disabled) {
+	[data-style='toy'] .bz-button[data-variant='solid']:hover:not(:disabled) {
 		transform: none; /* the 3D edge is the affordance; no float */
 	}
 	[data-style='toy'] .bz-button:active:not(:disabled) {
@@ -3179,14 +3232,10 @@ html[data-theme='umbro'] {
 	}
 	/* The hover transform:none above outranks the generic press rule while
 	   the pointer is still hovering (it always is, mid-click) — re-assert
-	   the press for every 3D-edged variant at matching specificity. */
-	[data-style='toy'] :is(.bz-button[data-variant='success'], .bz-button[data-variant='danger']):active:not(:disabled) {
+	   the press for solid at matching specificity, landing on its own edge. */
+	[data-style='toy'] .bz-button[data-variant='solid']:active:not(:disabled) {
 		transform: translateY(4px);
-		box-shadow: 0 1px 0 0 var(--bz-border-c-strong);
-	}
-	[data-style='toy'] .bz-button[data-variant='bold']:active:not(:disabled) {
-		transform: translateY(4px);
-		box-shadow: 0 1px 0 0 color-mix(in srgb, var(--c-primary) 70%, black);
+		box-shadow: 0 1px 0 0 color-mix(in srgb, var(--bz-btn-accent) 70%, black);
 	}
 	[data-style='toy'] :is(.bz-input, .bz-select, .bz-combobox__input) { border-radius: 999px; }
 	/* textarea intentionally excluded from pills */

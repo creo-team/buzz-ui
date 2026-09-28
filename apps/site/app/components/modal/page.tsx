@@ -53,7 +53,7 @@ function ModalDocsContent() {
 				
 				<div className="bg-[var(--c-surface)] border border-[var(--c-border)] rounded-[var(--radius-lg)] p-6 mb-6">
 					<div className="flex gap-4 mb-4">
-						<Button onClick={() => setBasicOpen(true)} variant="bold">
+						<Button onClick={() => setBasicOpen(true)}>
 							Open Basic Modal
 						</Button>
 					</div>
@@ -89,7 +89,7 @@ export default function BasicExample() {
 							This is a basic modal example with a header and close functionality.
 						</p>
 						<div className="flex gap-2">
-							<Button onClick={() => setBasicOpen(false)} variant="bold">
+							<Button onClick={() => setBasicOpen(false)}>
 								Close
 							</Button>
 						</div>
@@ -111,7 +111,7 @@ export default function BasicExample() {
 				
 				<div className="bg-[var(--c-surface)] border border-[var(--c-border)] rounded-[var(--radius-lg)] p-6 mb-6">
 					<div className="flex gap-4 mb-4">
-						<Button onClick={openQueryModal} variant="bold">
+						<Button onClick={openQueryModal}>
 							Open Settings Modal (Query Param)
 						</Button>
 						<span className="text-sm text-[var(--c-text-secondary)] self-center">
@@ -183,7 +183,7 @@ export default function QueryParamModal() {
 							</p>
 						</div>
 						<div className="flex gap-2">
-							<Button onClick={closeQueryModal} variant="bold">
+							<Button onClick={closeQueryModal}>
 								Close
 							</Button>
 						</div>
@@ -197,7 +197,7 @@ export default function QueryParamModal() {
 				
 				<div className="bg-[var(--c-surface)] border border-[var(--c-border)] rounded-[var(--radius-lg)] p-6 mb-6">
 					<div className="flex gap-4 mb-4">
-						<Button onClick={() => setFormOpen(true)} variant="bold">
+						<Button onClick={() => setFormOpen(true)}>
 							Open Form Modal
 						</Button>
 					</div>
@@ -249,7 +249,7 @@ export default function FormModal() {
           </div>
           
           <div className="flex gap-2 pt-4">
-            <Button type="submit" variant="bold">Create</Button>
+            <Button type="submit">Create</Button>
             <Button type="button" onClick={() => setOpen(false)}>Cancel</Button>
           </div>
         </form>
@@ -284,7 +284,7 @@ export default function FormModal() {
 						</div>
 						
 						<div className="flex gap-2 pt-4">
-							<Button type="submit" variant="bold">Create</Button>
+							<Button type="submit">Create</Button>
 							<Button type="button" onClick={() => setFormOpen(false)}>Cancel</Button>
 						</div>
 					</form>
@@ -297,7 +297,7 @@ export default function FormModal() {
 				
 				<div className="bg-[var(--c-surface)] border border-[var(--c-border)] rounded-[var(--radius-lg)] p-6 mb-6">
 					<div className="flex gap-4 mb-4">
-						<Button onClick={() => setConfirmOpen(true)} variant="danger">
+						<Button onClick={() => setConfirmOpen(true)} tone="danger">
 							Delete Item
 						</Button>
 					</div>
@@ -317,7 +317,7 @@ export default function ConfirmationModal() {
   
   return (
     <>
-      <Button onClick={() => setOpen(true)} variant="danger">
+      <Button onClick={() => setOpen(true)} tone="danger">
         Delete Item
       </Button>
       
@@ -330,7 +330,7 @@ export default function ConfirmationModal() {
           <p>Are you sure you want to delete this item? This action cannot be undone.</p>
           
           <div className="flex gap-2 pt-4">
-            <Button onClick={handleDelete} variant="danger">
+            <Button onClick={handleDelete} tone="danger">
               Delete
             </Button>
             <Button onClick={() => setOpen(false)}>
@@ -353,7 +353,7 @@ export default function ConfirmationModal() {
 						</p>
 						
 						<div className="flex gap-2 pt-4">
-							<Button onClick={() => setConfirmOpen(false)} variant="danger">
+							<Button onClick={() => setConfirmOpen(false)} tone="danger">
 								Delete
 							</Button>
 							<Button onClick={() => setConfirmOpen(false)}>

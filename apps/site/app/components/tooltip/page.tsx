@@ -18,10 +18,10 @@ export default function TooltipDocs() {
 					<div>
 						<h3 className="text-sm font-medium text-[var(--c-text)] mb-3">Direction Examples</h3>
 						<div className="flex flex-wrap gap-3">
-							<Tooltip content="Top tooltip" placement="top"><Button variant="text">Top</Button></Tooltip>
-							<Tooltip content="Right tooltip" placement="right"><Button variant="text">Right</Button></Tooltip>
-							<Tooltip content="Bottom tooltip" placement="bottom"><Button variant="text">Bottom</Button></Tooltip>
-							<Tooltip content="Left tooltip" placement="left"><Button variant="text">Left</Button></Tooltip>
+							<Tooltip content="Top tooltip" placement="top"><Button variant="link">Top</Button></Tooltip>
+							<Tooltip content="Right tooltip" placement="right"><Button variant="link">Right</Button></Tooltip>
+							<Tooltip content="Bottom tooltip" placement="bottom"><Button variant="link">Bottom</Button></Tooltip>
+							<Tooltip content="Left tooltip" placement="left"><Button variant="link">Left</Button></Tooltip>
 						</div>
 					</div>
 
@@ -36,7 +36,7 @@ export default function TooltipDocs() {
 								size="lg"
 								delayMs={200}
 							>
-								<Button variant="subtle" size="lg">Extra Large</Button>
+								<Button variant="soft" size="lg">Extra Large</Button>
 							</Tooltip>
 						</div>
 					</div>
@@ -44,9 +44,9 @@ export default function TooltipDocs() {
 					<div>
 						<h3 className="text-sm font-medium text-[var(--c-text)] mb-3">Delay Example</h3>
 						<div className="flex flex-wrap gap-3">
-							<Tooltip content="Quick tooltip" delayMs={100}><Button variant="subtle">Fast (100ms)</Button></Tooltip>
-							<Tooltip content="Standard tooltip" delayMs={400}><Button variant="subtle">Standard (400ms)</Button></Tooltip>
-							<Tooltip content="Slow tooltip" delayMs={1000}><Button variant="subtle">Slow (1000ms)</Button></Tooltip>
+							<Tooltip content="Quick tooltip" delayMs={100}><Button variant="soft">Fast (100ms)</Button></Tooltip>
+							<Tooltip content="Standard tooltip" delayMs={400}><Button variant="soft">Standard (400ms)</Button></Tooltip>
+							<Tooltip content="Slow tooltip" delayMs={1000}><Button variant="soft">Slow (1000ms)</Button></Tooltip>
 						</div>
 					</div>
 

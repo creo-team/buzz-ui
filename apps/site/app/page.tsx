@@ -24,7 +24,7 @@ export default function Page() {
 							</p>
 							<div className="mt-10 flex flex-wrap items-center justify-center gap-4">
 								<a href="/docs" className="no-underline">
-									<Button size="lg" variant="bold">Get Started</Button>
+									<Button size="lg">Get Started</Button>
 								</a>
 								<a href="https://github.com/creo-team/buzz-ui" className="no-underline">
 									<Button size="lg" variant="outline">View on GitHub</Button>
@@ -122,20 +122,20 @@ export default function Page() {
 								header="Buttons" 
 								actions={
 									<a className="no-underline" href="/components/button">
-										<Button variant="text">View docs →</Button>
+										<Button variant="link">View docs →</Button>
 									</a>
 								}
 							>
 								<div className="space-y-4">
 									<div className="flex flex-wrap gap-2">
-										<Button variant="bold">Bold</Button>
+										<Button>Bold</Button>
 										<Button variant="outline">Outline</Button>
-										<Button variant="subtle">Subtle</Button>
+										<Button variant="soft">Subtle</Button>
 									</div>
 									<div className="flex flex-wrap gap-2">
-										<Button variant="success" size="sm">Success</Button>
-										<Button variant="danger" size="sm">Danger</Button>
-										<Button variant="text">Text button</Button>
+										<Button tone="success" size="sm">Success</Button>
+										<Button tone="danger" size="sm">Danger</Button>
+										<Button variant="link">Text button</Button>
 									</div>
 								</div>
 							</Card>
@@ -145,7 +145,7 @@ export default function Page() {
 								header="Forms" 
 								actions={
 									<a className="no-underline" href="/components/input">
-										<Button variant="text">View docs →</Button>
+										<Button variant="link">View docs →</Button>
 									</a>
 								}
 							>
@@ -162,7 +162,7 @@ export default function Page() {
 								header="Interactive Elements" 
 								actions={
 									<a className="no-underline" href="/components/infotip">
-										<Button variant="text">View docs →</Button>
+										<Button variant="link">View docs →</Button>
 									</a>
 								}
 							>
@@ -192,7 +192,7 @@ export default function Page() {
 						</p>
 						<div className="mt-8 flex justify-center">
 							<a href="/docs" className="no-underline">
-								<Button size="lg" variant="bold">
+								<Button size="lg">
 									Browse Documentation
 								</Button>
 							</a>

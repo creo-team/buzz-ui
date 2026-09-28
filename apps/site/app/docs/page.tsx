@@ -186,7 +186,7 @@ export default function Example() {
       <p className="text-[var(--c-text-secondary)] mb-4">
         This is an example of using multiple Buzz UI components together.
       </p>
-      <Button variant="bold">
+      <Button>
         Get Started
       </Button>
     </Card>

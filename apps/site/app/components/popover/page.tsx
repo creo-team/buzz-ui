@@ -32,7 +32,7 @@ export default function PopoverDocs() {
 
 					<Popover side="right" align="start">
 						<PopoverTrigger asChild>
-							<Button variant="subtle">Right / start</Button>
+							<Button variant="soft">Right / start</Button>
 						</PopoverTrigger>
 						<PopoverContent>Positioned to the right, aligned to the top.</PopoverContent>
 					</Popover>

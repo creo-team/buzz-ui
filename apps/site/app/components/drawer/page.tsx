@@ -38,13 +38,13 @@ export default function DrawerPage() {
 						<Button onClick={() => setRightOpen(true)}>
 							Open Right Drawer
 						</Button>
-						<Button onClick={() => setLeftOpen(true)} variant="subtle">
+						<Button onClick={() => setLeftOpen(true)} variant="soft">
 							Open Left Drawer
 						</Button>
 						<Button onClick={() => setTopOpen(true)} variant="outline">
 							Open Top Drawer
 						</Button>
-						<Button onClick={() => setBottomOpen(true)} variant="text">
+						<Button onClick={() => setBottomOpen(true)} variant="link">
 							Open Bottom Drawer
 						</Button>
 					</div>
@@ -164,7 +164,7 @@ export default function Example() {
 			>
 				<div className="space-y-4">
 					<p>This drawer slides in from the left side.</p>
-					<Button onClick={() => setLeftOpen(false)} variant="subtle">
+					<Button onClick={() => setLeftOpen(false)} variant="soft">
 						Close Drawer
 					</Button>
 				</div>
@@ -194,7 +194,7 @@ export default function Example() {
 			>
 				<div className="space-y-4">
 					<p>This drawer slides up from the bottom.</p>
-					<Button onClick={() => setBottomOpen(false)} variant="text">
+					<Button onClick={() => setBottomOpen(false)} variant="link">
 						Close Drawer
 					</Button>
 				</div>

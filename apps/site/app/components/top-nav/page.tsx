@@ -197,7 +197,7 @@ export default function Example() {
 							]}
 							right={
 								<div className="flex items-center gap-2">
-									<Button variant="text" size="sm">
+									<Button variant="link" size="sm">
 										<svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM9 6l5-5v5H9z" />
 										</svg>

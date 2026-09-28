@@ -14,7 +14,7 @@ export function SiteTopNav() {
 			right={
 				<div className="flex items-center gap-2">
 					<ThemeSwitcher />
-					<a href="https://github.com/creo-team/buzz-ui" className="no-underline"><Button variant="subtle" size="sm">GitHub</Button></a>
+					<a href="https://github.com/creo-team/buzz-ui" className="no-underline"><Button variant="soft" size="sm">GitHub</Button></a>
 				</div>
 			}
 		/>

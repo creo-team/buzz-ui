@@ -8,12 +8,12 @@ export default function CardDocs() {
 			<h1 className="text-2xl font-semibold">Card</h1>
 			<p className="mt-2 text-sm text-white/70">A lightweight container with optional header and actions.</p>
 			<h2 className="mt-6 text-lg font-semibold">Usage</h2>
-			<Card header="Header" actions={<Button variant="subtle">Action</Button>}>
+			<Card header="Header" actions={<Button variant="soft">Action</Button>}>
 				<p className="text-sm text-white/80">Content inside a card.</p>
 				<div className="mt-4">
 					<CodeBlock code={`import { Card } from '@creo-team/buzz-ui/server'
 
-<Card header="Header" actions={<Button variant="subtle">Action</Button>}>
+<Card header="Header" actions={<Button variant="soft">Action</Button>}>
   Content
 </Card>`} />
 				</div>
