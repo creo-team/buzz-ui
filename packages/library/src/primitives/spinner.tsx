@@ -1,9 +1,12 @@
 import * as React from 'react'
 import { cx } from '../internal/cx.js'
 
+/** Diameter preset for {@link Spinner}. */
 export type SpinnerSize = 'xs' | 'sm' | 'md' | 'lg'
 
+/** Props for {@link Spinner}. */
 export interface SpinnerProps extends React.SVGProps<SVGSVGElement> {
+	/** Diameter preset. @default 'md' */
 	size?: SpinnerSize
 	/** Accessible label. Default "Loading". Pass null to mark decorative. */
 	label?: string | null

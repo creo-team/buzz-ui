@@ -2,6 +2,7 @@ import * as React from 'react'
 import { cx } from '../internal/cx.js'
 import { Field, fieldDescribedBy } from './field.js'
 
+/** Props for {@link Select}. Options are passed as native `<option>` children. */
 export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
 	label?: React.ReactNode
 	error?: string

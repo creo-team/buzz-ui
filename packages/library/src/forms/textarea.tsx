@@ -2,6 +2,7 @@ import * as React from 'react'
 import { cx } from '../internal/cx.js'
 import { Field, fieldDescribedBy } from './field.js'
 
+/** Props for {@link Textarea}. */
 export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
 	label?: React.ReactNode
 	error?: string

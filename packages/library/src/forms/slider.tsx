@@ -3,19 +3,24 @@ import * as React from 'react'
 import { cx } from '../internal/cx.js'
 import { useControllableState } from '../internal/use-controllable-state.js'
 
+/** Track and thumb size presets. */
 export type SliderSize = 'sm' | 'md' | 'lg'
 
+/** Tick mark rendered under the track. */
 export interface SliderMark {
+	/** Position on the min–max scale. */
 	value: number
 	label?: React.ReactNode
 }
 
+/** Props for {@link Slider}. */
 export interface SliderProps
 	extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size' | 'type'> {
 	/** Controlled value. */
 	value?: number
 	/** Initial value for uncontrolled usage. Defaults to the midpoint. */
 	defaultValue?: number
+	/** Fires on every change while dragging; see `onChangeEnd` for the commit. */
 	onChange?: (value: number) => void
 	/** Fires once when the user releases the thumb (commit). */
 	onChangeEnd?: (value: number) => void
@@ -29,6 +34,7 @@ export interface SliderProps
 	formatValue?: (value: number) => string
 	/** Tick marks rendered under the track. */
 	marks?: SliderMark[]
+	/** Size preset. Default 'md'. */
 	size?: SliderSize
 	/** className for the outer wrapper (className styles the input itself). */
 	wrapperClassName?: string

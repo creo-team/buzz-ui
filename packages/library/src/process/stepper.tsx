@@ -2,14 +2,18 @@ import * as React from 'react'
 import { cx } from '../internal/cx.js'
 import { IconCheck } from '../internal/icons.js'
 
+/** One step in a {@link Stepper}. */
 export interface Step {
+	/** Unique key, matched against `current`. */
 	key: string
 	label: React.ReactNode
 	/** Secondary line under the label. */
 	description?: React.ReactNode
 }
 
+/** Props for {@link Stepper}. */
 export interface StepperProps {
+	/** Steps in order. */
 	steps: Step[]
 	/** Key of the current step. */
 	current: string

@@ -5,6 +5,7 @@ import { Avatar, type AvatarSize } from '../media/avatar.js'
 import { IconCamera, IconX } from '../internal/icons.js'
 import { useFileDrop, type FileRejection } from './use-file-drop.js'
 
+/** Props for {@link AvatarUpload}. */
 export interface AvatarUploadProps {
 	/** Current image URL (e.g. the saved avatar). */
 	src?: string

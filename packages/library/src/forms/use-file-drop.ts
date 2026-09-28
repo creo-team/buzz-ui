@@ -43,6 +43,7 @@ export function formatFileSize(bytes: number): string {
 	return `${value >= 100 ? Math.round(value) : value.toFixed(1)} ${units[unit]}`
 }
 
+/** Options for {@link useFileDrop}. */
 export interface UseFileDropOptions {
 	/** File-input accept grammar: `.pdf`, `image/*`, `image/png`, comma-separated. */
 	accept?: string

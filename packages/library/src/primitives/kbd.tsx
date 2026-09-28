@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { cx } from '../internal/cx.js'
 
+/** Props for {@link Kbd}. */
 export interface KbdProps extends React.HTMLAttributes<HTMLElement> {
 	children?: React.ReactNode
 }

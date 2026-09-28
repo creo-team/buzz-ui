@@ -6,20 +6,28 @@ import { Tooltip } from '../overlays/tooltip.js'
 import { useThemeSwitcher, resolveThemeIcon, type AnyThemeConfig } from './use-theme-switcher.js'
 import type { ThemeConfigWithPreset } from './theme-presets.js'
 
+/** A selectable theme for {@link CycleThemeSwitcher}. */
 export interface CycleThemeConfig {
 	value: string
 	label: string
+	/** Component or built-in icon name ('sun', 'moon', …); inferred from the theme's name when omitted. */
 	icon?: React.ComponentType<{ className?: string }> | string
+	/** Custom palette applied as CSS variables while the theme is active. */
 	colors?: ThemeConfigWithPreset['colors']
 }
 
+/** Props for {@link CycleThemeSwitcher}. */
 export interface CycleThemeSwitcherProps {
+	/** Themes to cycle through. Defaults to the six built-ins. */
 	themes?: (CycleThemeConfig | ThemeConfigWithPreset)[]
+	/** Theme used before a saved cookie exists. @default 'light' */
 	defaultTheme?: string
 	/** Server-read theme for flicker-free SSR (pass from `getServerTheme`). */
 	initialTheme?: string
 	className?: string
+	/** Wrap the button in a tooltip naming the current theme. @default true */
 	showTooltip?: boolean
+	/** Register Alt+T to cycle themes. @default true */
 	enableHotkey?: boolean
 }
 

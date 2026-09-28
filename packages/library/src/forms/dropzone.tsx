@@ -4,6 +4,7 @@ import { cx } from '../internal/cx.js'
 import { IconUpload, IconX } from '../internal/icons.js'
 import { useFileDrop, formatFileSize, type FileRejection } from './use-file-drop.js'
 
+/** Props for {@link Dropzone}. */
 export interface DropzoneProps {
 	/** File-input accept grammar: `.pdf`, `image/*`, `image/png`, comma-separated. */
 	accept?: string

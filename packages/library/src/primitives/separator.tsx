@@ -1,7 +1,9 @@
 import * as React from 'react'
 import { cx } from '../internal/cx.js'
 
+/** Props for {@link Separator}. */
 export interface SeparatorProps extends React.HTMLAttributes<HTMLDivElement> {
+	/** Line axis. @default 'horizontal' */
 	orientation?: 'horizontal' | 'vertical'
 	/** Purely visual (skipped by assistive tech). Default true. */
 	decorative?: boolean
