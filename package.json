@@ -7,10 +7,15 @@
     "apps/*",
     "packages/*"
   ],
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "scripts": {
     "build": "npm run -w @creo-team/buzz-ui build && npm run -w @buzz-ui/site build",
-    "dev": "npm run -w @buzz-ui/site dev",
-    "lint": "npm run -w @buzz-ui/site lint",
+    "dev": "node scripts/dev.mjs",
     "test": "npm run -w @creo-team/buzz-ui test",
     "typecheck": "npm run -w @creo-team/buzz-ui typecheck && npm run -w @buzz-ui/site typecheck"
   },

@@ -1,56 +1,47 @@
 "use client"
 import React from 'react'
-import { Card, TextInput, Textarea, Select, RadioGroup, Checkbox } from '@creo-team/buzz-ui/server'
-import { Button } from '@creo-team/buzz-ui/client'
+import { Card, TextInput, Textarea, Select, RadioGroup, Checkbox, PageHeader } from '@creo-team/buzz-ui/server'
+import { Form, Button, type FormValues } from '@creo-team/buzz-ui/client'
+import { CodeBlock } from '../../../components/code-block'
+import Link from 'next/link'
 import { z } from 'zod'
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic'
 
-const schema = z.object({
-	email: z.string().email('Enter a valid email'),
-	role: z.string().min(1, 'Pick a role'),
-	plan: z.enum(['free', 'pro', 'enterprise']),
-	agree: z.boolean().refine(v => v, 'You must agree to continue'),
-	message: z.string().min(10, 'Message must be at least 10 chars'),
-})
+// Zod slots straight into Form's per-field validators — browser constraint
+// validation handles the required/empty cases first, zod refines the rest.
+const email = z.string().email('Enter a valid email address.')
+const message = z.string().min(10, 'Tell us a little more — at least 10 characters.')
 
-type FormData = z.infer<typeof schema>
+const zodMessage = (schema: z.ZodType, value: unknown) =>
+	schema.safeParse(value).error?.issues[0]?.message
 
 export default function FormsValidationDocs() {
-	const [data, setData] = React.useState<FormData>({ email: '', role: '', plan: 'free', agree: false, message: '' })
-	const [errors, setErrors] = React.useState<Partial<Record<keyof FormData, string>>>({})
-
-	function set<K extends keyof FormData>(key: K, value: FormData[K]) {
-		setData(prev => ({ ...prev, [key]: value }))
-	}
-
-	function submit(e: React.FormEvent) {
-		e.preventDefault()
-		const res = schema.safeParse(data)
-		if (!res.success) {
-			const errs: Partial<Record<keyof FormData, string>> = {}
-			for (const issue of res.error.issues) {
-				const k = issue.path[0] as keyof FormData
-				errs[k] = issue.message
-			}
-			setErrors(errs)
-			return
-		}
-		setErrors({})
-		// Show simple alert instead of toast for now
-		alert('Submitted successfully')
-	}
+	const [submitted, setSubmitted] = React.useState<FormValues | null>(null)
 
 	return (
 		<div className="mx-auto max-w-6xl px-4 py-12">
-			<h1 className="text-2xl font-semibold">Forms & Validation</h1>
-			<form onSubmit={submit} className="mt-4 grid gap-4">
+			<PageHeader
+				title="Forms & Validation"
+				description="Problems are caught before submission and shown inline at the fields — not collected in a summary box, not thrown as toasts. Submit the empty form to see it."
+			/>
+
+			<Form
+				className="mt-8 grid gap-4"
+				validate={{
+					email: value => zodMessage(email, value),
+					message: value => zodMessage(message, value),
+				}}
+				onSubmit={values => setSubmitted(values)}
+			>
 				<Card>
 					<div className="grid gap-3">
-						<TextInput label="Email" placeholder="you@example.com" value={data.email} onChange={e => set('email', e.currentTarget.value)} className={errors.email ? 'border-red-500' : ''} />
-						<Select label="Role" value={data.role} onChange={e => set('role', e.currentTarget.value)} className={errors.role ? 'border-red-500' : ''}>
-							<option value="" disabled>Select one</option>
+						<TextInput name="email" label="Email" type="email" required placeholder="you@example.com" />
+						<Select name="role" label="Role" required defaultValue="">
+							<option value="" disabled>
+								Select one
+							</option>
 							<option value="dev">Developer</option>
 							<option value="designer">Designer</option>
 							<option value="pm">Product Manager</option>
@@ -58,26 +49,61 @@ export default function FormsValidationDocs() {
 						<RadioGroup
 							label="Plan"
 							name="plan"
-							options={[{ value: 'free', label: 'Free' }, { value: 'pro', label: 'Pro' }, { value: 'enterprise', label: 'Enterprise' }]}
-							value={data.plan}
-							onChange={v => set('plan', v as FormData['plan'])}
+							defaultValue="free"
+							options={[
+								{ value: 'free', label: 'Free' },
+								{ value: 'pro', label: 'Pro' },
+								{ value: 'enterprise', label: 'Enterprise' },
+							]}
 						/>
-						<Textarea label="Message" rows={4} placeholder="Tell us more..." value={data.message} onChange={e => set('message', e.currentTarget.value)} className={errors.message ? 'border-red-500' : ''} />
-						<Checkbox label="I agree to the terms" checked={data.agree} onChange={e => set('agree', e.currentTarget.checked)} />
+						<Textarea name="message" label="Message" rows={4} required placeholder="Tell us more..." helpText="At least 10 characters." />
+						<Checkbox name="agree" label="I agree to the terms" required />
 					</div>
 				</Card>
-				<div className="flex gap-2">
+				<div className="flex items-center gap-2">
 					<Button type="submit">Submit</Button>
-					<Button variant="subtle" type="button" onClick={() => { setData({ email: '', role: '', plan: 'free', agree: false, message: '' }); setErrors({}) }}>Reset</Button>
+					<Button variant="soft" type="reset" onClick={() => setSubmitted(null)}>
+						Reset
+					</Button>
+					{submitted && (
+						<span className="text-sm text-[var(--c-success)]" role="status">
+							Submitted — thanks, {String(submitted.email)}!
+						</span>
+					)}
 				</div>
-				{Object.values(errors).length > 0 && (
-					<Card>
-						<ul className="list-disc pl-4 text-sm text-red-300">
-							{Object.entries(errors).map(([k, v]) => v && <li key={k}>{v}</li>)}
-						</ul>
-					</Card>
-				)}
-			</form>
+			</Form>
+
+			<Card className="mt-8" header="How this works">
+				<p className="text-sm text-[var(--c-text-secondary)]">
+					Every control just has a <code>name</code> — no controlled state, no error threading. The{' '}
+					<code>Form</code> runs browser constraint validation first (<code>required</code>,{' '}
+					<code>type="email"</code>…), then the zod-backed <code>validate</code> functions, and
+					renders each problem under its own field. After the first attempt, errors clear live as
+					you fix them.
+				</p>
+				<div className="mt-4">
+					<CodeBlock
+						code={`const email = z.string().email('Enter a valid email address.')
+const zodMessage = (schema, value) => schema.safeParse(value).error?.issues[0]?.message
+
+<Form
+  validate={{ email: value => zodMessage(email, value) }}
+  onSubmit={values => api.contact(values)}
+>
+  <TextInput name="email" label="Email" type="email" required />
+  <Checkbox name="agree" label="I agree to the terms" required />
+  <Button type="submit">Submit</Button>
+</Form>`}
+					/>
+				</div>
+				<p className="mt-4 text-sm text-[var(--c-text-secondary)]">
+					Full contract — focus management, cross-field rules, custom controls — on the{' '}
+					<Link className="text-[var(--c-primary)] hover:underline" href="/components/form">
+						Form page
+					</Link>
+					.
+				</p>
+			</Card>
 		</div>
 	)
 }

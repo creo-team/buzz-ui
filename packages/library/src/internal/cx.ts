@@ -1,3 +1,4 @@
+/** One class-name candidate for {@link cx} — falsy values are dropped. */
 export type ClassValue = string | number | null | false | undefined
 
 /** Minimal class-name combiner (falsy values dropped). */

@@ -2,36 +2,57 @@ import * as React from 'react'
 import { cx } from '../internal/cx.js'
 import { NewsletterForm, type NewsletterFormProps } from './newsletter-form.js'
 
+/**
+ * Footer layout — from a single row to the full brand + link-columns
+ * treatment. `Sections`, `Modern` and `Epic` are the rich layouts (brand,
+ * link columns, newsletter); the rest render one row.
+ */
 export enum FooterVariant {
+	/** Link row plus copyright on the secondary surface. The default. */
 	Simple = 'simple',
+	/** Rich layout: brand block, link columns, optional newsletter, bottom bar. */
 	Sections = 'sections',
+	/** The same rich layout as `Sections` (a separate styling hook). */
 	Modern = 'modern',
+	/** Logo and copyright only. */
 	Minimal = 'minimal',
+	/** The `Simple` row on a translucent, blurred surface. */
 	Glass = 'glass',
+	/** The rich layout, fading into the page background. */
 	Epic = 'epic',
 }
 
+/** One footer link — used by `links`, `sections` and `social`. */
 export interface FooterLink {
 	key: string
 	label: React.ReactNode
 	href: string
+	/** Leading icon. Social links render the icon alone, with a string `label` as the accessible name. */
 	icon?: React.ReactNode
 }
 
+/** A titled column of links, rendered by the rich variants. */
 export interface FooterSection {
 	key: string
 	title: string
 	links: FooterLink[]
 }
 
+/** Props for {@link Footer}. */
 export interface FooterProps {
+	/** Layout. @default 'simple' */
 	variant?: FooterVariant | `${FooterVariant}`
+	/** Link columns — rendered only by the rich variants (`sections`, `modern`, `epic`). */
 	sections?: FooterSection[]
+	/** Flat link row: the whole body in `simple`/`glass`, the bottom bar in rich variants. */
 	links?: FooterLink[]
+	/** Copyright line — rendered by every variant. */
 	copyright?: React.ReactNode
+	/** Brand mark — shown by `minimal` and the rich variants. */
 	logo?: React.ReactNode
 	/** Short blurb rendered near the logo in rich variants. */
 	tagline?: React.ReactNode
+	/** Social links, rendered as round icon buttons in the rich variants. */
 	social?: FooterLink[]
 	/**
 	 * Newsletter signup. From client components pass `onSubmit`; from Server

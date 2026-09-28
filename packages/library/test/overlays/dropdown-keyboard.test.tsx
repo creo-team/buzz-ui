@@ -87,3 +87,21 @@ describe('Dropdown menu', () => {
 		expect(document.activeElement?.textContent).toBe('Duplicate')
 	})
 })
+
+describe('Dropdown shortcut hints', () => {
+	it('renders a platform-formatted shortcut, display-only', async () => {
+		render(
+			<Dropdown
+				trigger={<button>Menu</button>}
+				items={[{ key: 'save', label: 'Save', shortcut: 'mod+s', onClick: () => {} }]}
+			/>
+		)
+		fireEvent.click(screen.getByRole('button', { name: 'Menu' }))
+		await waitFor(() => expect(screen.getByRole('menu')).toBeInTheDocument())
+		const item = screen.getByRole('menuitem')
+		// jsdom is not macOS, so mod renders as Ctrl.
+		expect(item.querySelector('.bz-menu__item-shortcut')).toHaveTextContent(/Ctrl\+S/i)
+		// aria-hidden: the hint is visual; the accessible name stays the label.
+		expect(item).toHaveAccessibleName('Save')
+	})
+})

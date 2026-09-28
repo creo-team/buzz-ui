@@ -2,6 +2,7 @@ import * as React from 'react'
 import { composeRefs } from './compose-refs.js'
 import { cx } from './cx.js'
 
+/** Props for {@link Slot} — merged onto the single child element. */
 export interface SlotProps extends React.HTMLAttributes<HTMLElement> {
 	children?: React.ReactNode
 }

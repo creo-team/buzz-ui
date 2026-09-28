@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { cx } from '../internal/cx.js'
 
+/** Props for {@link Skeleton}. */
 export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
 	/** Shape preset. Default 'rect'. */
 	variant?: 'rect' | 'text' | 'circle'

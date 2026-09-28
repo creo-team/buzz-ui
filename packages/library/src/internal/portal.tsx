@@ -2,6 +2,7 @@
 import * as React from 'react'
 import { createPortal } from 'react-dom'
 
+/** Props for {@link Portal}. */
 export interface PortalProps {
 	children: React.ReactNode
 	/** Custom container. Defaults to `document.body`. */

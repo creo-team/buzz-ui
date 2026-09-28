@@ -96,10 +96,10 @@ export default function ThemeTestPage() {
 						<div className="space-y-4">
 							<h3 className="font-medium text-[var(--c-text)]">Buttons</h3>
 							<div className="flex flex-wrap gap-2">
-								<Button variant="bold">Bold</Button>
+								<Button>Bold</Button>
 								<Button variant="outline">Outline</Button>
-								<Button variant="subtle">Subtle</Button>
-								<Button variant="text">Text</Button>
+								<Button variant="soft">Subtle</Button>
+								<Button variant="link">Text</Button>
 							</div>
 						</div>
 

@@ -5,14 +5,19 @@ import { cx } from '../internal/cx.js'
 import { Tooltip } from '../overlays/tooltip.js'
 import { useThemeSwitcher, resolveThemeIcon, type AnyThemeConfig } from './use-theme-switcher.js'
 
+/** A selectable theme for {@link ThemeSwitcher}. */
 export interface ThemeConfig {
 	value: string
 	label: string
+	/** Component or built-in icon name ('sun', 'moon', 'palette', …). */
 	icon: React.ComponentType<{ className?: string }> | string
 }
 
+/** Props for {@link ThemeSwitcher}. */
 export interface ThemeSwitcherProps {
+	/** Themes to offer — the first three are shown. Defaults to light + dark. */
 	themes?: ThemeConfig[]
+	/** Theme used before a saved cookie exists. @default 'light' */
 	defaultTheme?: string
 	/** Server-read theme for flicker-free SSR (pass from `getServerTheme`). */
 	initialTheme?: string

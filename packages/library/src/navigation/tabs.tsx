@@ -3,25 +3,36 @@ import * as React from 'react'
 import { cx } from '../internal/cx.js'
 import { useControllableState } from '../internal/use-controllable-state.js'
 
+/** Visual style of the tab list. */
 export enum TabsVariant {
+	/** Bordered container; the active tab gets a soft fill. The default. */
 	Default = 'default',
+	/** Free-standing pills; the active one fills with the primary color. */
 	Pills = 'pills',
+	/** Flat row over a baseline rule; the active tab underlines in primary. */
 	Underline = 'underline',
+	/** Individually outlined tabs; the active one fills with the primary color. */
 	Buttons = 'buttons',
+	/** Translucent, blurred container — for tabs floating over imagery. */
 	Glass = 'glass',
 }
 
+/** Size presets for tab padding and font size. */
 export enum TabsSize {
 	Small = 'sm',
 	Medium = 'md',
 	Large = 'lg',
 }
 
+/** One tab in a {@link Tabs} list. */
 export interface TabItem {
+	/** Stable key — the value reported by `onChange` and matched by `TabPanel`. */
 	key: string
 	label: React.ReactNode
 	icon?: React.ReactNode
+	/** Small counter/tag rendered after the label. */
 	badge?: string | number
+	/** Not selectable; skipped by arrow-key navigation. */
 	disabled?: boolean
 }
 
@@ -32,15 +43,21 @@ interface TabsContextValue {
 
 const TabsContext = React.createContext<TabsContextValue | null>(null)
 
+/** Props for {@link Tabs}. */
 export interface TabsProps {
+	/** Tabs in order — the first enabled one is selected when no `value`/`defaultValue` is given. */
 	items: TabItem[]
 	/** Controlled selected key. */
 	value?: string
 	/** Initial key for uncontrolled usage. */
 	defaultValue?: string
+	/** Called with the key of the newly selected tab. */
 	onChange?: (key: string) => void
+	/** Visual style. @default 'default' */
 	variant?: TabsVariant | `${TabsVariant}`
+	/** Size preset. @default 'md' */
 	size?: TabsSize | `${TabsSize}`
+	/** Stretch tabs evenly across the container width. */
 	fullWidth?: boolean
 	/**
 	 * 'auto' selects a tab as focus moves to it (default); 'manual' requires
@@ -168,7 +185,9 @@ export function Tabs({
 	)
 }
 
+/** Props for {@link TabPanel}. */
 export interface TabPanelProps {
+	/** Key of the tab this panel belongs to. */
 	value: string
 	/** Optional when rendered inside `<Tabs>` (read from context). */
 	selectedValue?: string

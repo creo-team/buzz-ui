@@ -1,9 +1,9 @@
 import './globals.css'
-// The site consumes the library's workspace source (see tsconfig paths), so
-// import the stylesheet source too — npm consumers use '@creo-team/buzz-ui/styles.css'.
-import '../../../packages/library/src/styles/buzz.css'
+// The site consumes the built workspace package — the same dist + exports map
+// npm consumers get — so every site build exercises the shipped artifact.
+import '@creo-team/buzz-ui/styles.css'
 import { cookies } from 'next/headers'
-import { TopNav, getServerTheme, getServerStyle } from '@creo-team/buzz-ui/server'
+import { TopNav, Button, getServerTheme, getServerStyle } from '@creo-team/buzz-ui/server'
 import { ThemeSwitcher, StyleSwitcher, ToastProvider } from '@creo-team/buzz-ui/client'
 import { themeInitScript, styleInitScript } from '@creo-team/buzz-ui/server'
 import { DevBanner } from '../components/dev-banner'
@@ -11,9 +11,10 @@ import { Logo } from '../components/logo'
 import { BuzzTextLogo } from '../components/buzz-text-logo'
 import { SiteFooter } from '../components/site-footer'
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-	const initialTheme = getServerTheme(cookies(), 'light')
-	const initialStyle = getServerStyle(cookies(), 'soft')
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+	const cookieStore = await cookies()
+	const initialTheme = getServerTheme(cookieStore, 'light')
+	const initialStyle = getServerStyle(cookieStore, 'soft')
 
 	return (
 		<html lang="en" data-theme={initialTheme} data-style={initialStyle} className={initialTheme}>
@@ -29,10 +30,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 							brand={
 								<a href="/" className="flex items-center gap-2 group no-underline">
 									<div className="transition-transform duration-200 group-hover:scale-105">
-										<Logo width={32} className="drop-shadow-sm" />
+										<Logo width={32} className="drop-shadow-xs" />
 									</div>
 									<div className="transition-transform duration-200 group-hover:scale-105">
-										<BuzzTextLogo width={65} className="drop-shadow-sm" />
+										<BuzzTextLogo width={65} className="drop-shadow-xs" />
 									</div>
 								</a>
 							}
@@ -40,11 +41,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 								<div className="flex items-center gap-3">
 									<StyleSwitcher initialStyle={initialStyle} />
 									<ThemeSwitcher initialTheme={initialTheme} />
-									<a href="https://github.com/creo-team/buzz-ui" className="no-underline">
-										<button className="rounded-[var(--radius-md)] border border-[var(--c-border)] bg-[var(--c-surface-2)] px-3 py-2 text-sm text-[var(--c-text)] hover:bg-[var(--c-hover)] transition-colors">
-											GitHub
-										</button>
-									</a>
+									<Button asChild variant="soft" size="sm">
+										<a href="https://github.com/creo-team/buzz-ui">GitHub</a>
+									</Button>
 								</div>
 							}
 							items={[

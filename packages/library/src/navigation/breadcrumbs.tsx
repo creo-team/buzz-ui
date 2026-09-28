@@ -1,13 +1,17 @@
 import * as React from 'react'
 import { cx } from '../internal/cx.js'
 
+/** One entry in a {@link Breadcrumbs} trail. */
 export interface Crumb {
 	key: string
 	label: React.ReactNode
+	/** Omit for plain text. The last crumb always renders as text — it is the current page. */
 	href?: string
 }
 
+/** Props for {@link Breadcrumbs}. */
 export interface BreadcrumbsProps {
+	/** Crumbs in order, root first — the last is the current page. */
 	items: Crumb[]
 	/** Separator glyph between crumbs. Default '/'. */
 	separator?: React.ReactNode

@@ -1,6 +1,11 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+/*
+ * Tailwind 4 is CSS-first: no tailwind.config.ts. The site's themes are
+ * classes on <html> (light/dark/midnight/forest/ocean/umbro), so map the
+ * `dark:` variant to the .dark class rather than prefers-color-scheme.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
 
 /*
  * Design tokens (colors, radii, shadows, all themes) now come from the

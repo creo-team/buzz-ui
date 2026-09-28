@@ -3,6 +3,11 @@ import * as React from 'react'
 import { cx } from '../internal/cx.js'
 import { IconInfo, IconSuccess, IconWarning, IconDanger, IconSparkles, IconX } from '../internal/icons.js'
 
+/**
+ * Color scheme of the banner: four status gradients, an amber `development`
+ * environment notice, a translucent blurred `glass` surface, and a
+ * purple-pink promotional `gradient`.
+ */
 export enum BannerVariant {
 	Info = 'info',
 	Success = 'success',
@@ -13,7 +18,7 @@ export enum BannerVariant {
 	Gradient = 'gradient',
 }
 
-// Allow both enum values and their string literals
+/** A {@link BannerVariant} or its string literal ('info', 'glass', …). */
 export type BannerVariantInput = BannerVariant | `${BannerVariant}`
 
 const ICONS: Record<BannerVariant, React.ReactNode> = {
@@ -26,18 +31,26 @@ const ICONS: Record<BannerVariant, React.ReactNode> = {
 	[BannerVariant.Gradient]: <IconSparkles />,
 }
 
+/** Props for {@link Banner}. */
 export interface BannerProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {
 	children: React.ReactNode
+	/** Color scheme. @default 'info' */
 	variant?: BannerVariantInput
 	/** Replace the variant icon; pass `null` to hide it. */
 	icon?: React.ReactNode
+	/** Show a dismiss (×) button that hides the banner. @default false */
 	dismissible?: boolean
+	/** Called after the dismiss button hides the banner. */
 	onDismiss?: () => void
+	/** Pin to the viewport (`position: fixed`) at `position`. */
 	fixed?: boolean
+	/** Stick to the scroll edge (`position: sticky`) at `position`. */
 	sticky?: boolean
+	/** Edge used by `fixed`/`sticky` placement. @default 'top' */
 	position?: 'top' | 'bottom'
 	/** Subtle attention animation on the icon. */
 	animated?: boolean
+	/** Call-to-action button rendered after the content. */
 	action?: {
 		label: string
 		onClick: () => void

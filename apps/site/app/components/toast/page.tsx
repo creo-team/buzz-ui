@@ -23,11 +23,11 @@ export default function ToastDocs() {
 
 			<Card className="mt-6" header="Variants">
 				<div className="flex flex-wrap gap-3">
-					<Button variant="subtle" onClick={() => toast('Plain message')}>Default</Button>
-					<Button variant="success" onClick={() => toast.success('Successfully saved!')}>Success</Button>
-					<Button variant="danger" onClick={() => toast.error('Something went wrong')}>Error</Button>
-					<Button variant="subtle" onClick={() => toast.warning('Storage almost full')}>Warning</Button>
-					<Button variant="subtle" onClick={() => toast.info('New version available')}>Info</Button>
+					<Button variant="soft" onClick={() => toast('Plain message')}>Default</Button>
+					<Button tone="success" onClick={() => toast.success('Successfully saved!')}>Success</Button>
+					<Button tone="danger" onClick={() => toast.error('Something went wrong')}>Error</Button>
+					<Button variant="soft" onClick={() => toast.warning('Storage almost full')}>Warning</Button>
+					<Button variant="soft" onClick={() => toast.info('New version available')}>Info</Button>
 					<Button
 						variant="outline"
 						onClick={() =>

@@ -24,14 +24,16 @@ jobs:
       - name: Install
         run: npm ci
 
+      # The site typechecks against the library's built dist (its real
+      # exports map), so the library build comes first.
+      - name: Build library (includes RSC boundary verification)
+        run: npm run -w @creo-team/buzz-ui build
+
       - name: Typecheck (library + site)
         run: npm run typecheck
 
       - name: Test (library)
         run: npm test
-
-      - name: Build library (includes RSC boundary verification)
-        run: npm run -w @creo-team/buzz-ui build
 
       - name: Build site
         run: npm run -w @buzz-ui/site build

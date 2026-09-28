@@ -78,7 +78,7 @@ export default function App() {
           Start building with our component library.
         </p>
         <div className="flex gap-2">
-          <Button variant="bold">Get Started</Button>
+          <Button>Get Started</Button>
           <Badge variant="success">New</Badge>
         </div>
       </Card>

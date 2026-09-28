@@ -23,7 +23,7 @@ const themes: ThemeConfig[] = [
 ]
 
 export default function Example() {
-	return <Button variant="bold">Typed button</Button>
+	return <Button>Typed button</Button>
 }`}
 					label="Types"
 				/>

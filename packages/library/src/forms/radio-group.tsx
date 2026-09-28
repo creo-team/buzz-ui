@@ -1,7 +1,10 @@
 import * as React from 'react'
 import { cx } from '../internal/cx.js'
+import { FormFieldError } from './form.js'
 
+/** One option in a {@link RadioGroup}. */
 export interface RadioOption {
+	/** Submitted form value; unique within the group. */
 	value: string
 	label: React.ReactNode
 	/** Secondary line under the option label. */
@@ -9,14 +12,18 @@ export interface RadioOption {
 	disabled?: boolean
 }
 
+/** Props for {@link RadioGroup}. */
 export interface RadioGroupProps extends Omit<React.HTMLAttributes<HTMLFieldSetElement>, 'onChange'> {
+	/** Group label rendered as the `<legend>`. */
 	label?: React.ReactNode
+	/** Shared input `name` — also the key form-level errors are reported under. */
 	name: string
 	options: RadioOption[]
 	/** Controlled selected value. */
 	value?: string
 	/** Initial value for uncontrolled usage (e.g. server-action forms). */
 	defaultValue?: string
+	/** Fires with the selected option's value. The group is controlled only when both `value` and `onChange` are set. */
 	onChange?: (value: string) => void
 	/** Stack direction. Default 'horizontal'. */
 	orientation?: 'horizontal' | 'vertical'
@@ -51,6 +58,7 @@ export function RadioGroup({
 
 	return (
 		<fieldset
+			id={groupId}
 			className={cx('bz-radio-group', className)}
 			disabled={disabled}
 			aria-describedby={describedBy}
@@ -97,6 +105,7 @@ export function RadioGroup({
 					{error}
 				</div>
 			)}
+			{error == null && <FormFieldError name={name} htmlFor={groupId} />}
 			{helpText != null && !error && (
 				<div id={`${groupId}-help`} className="bz-field__message" data-tone="help">
 					{helpText}

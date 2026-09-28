@@ -51,7 +51,7 @@ export default function EnumsUsagePage() {
 				<div className="space-y-4">
 					<div className="flex gap-3">
 						{/* Using enum values (recommended) */}
-						<Button variant={ButtonVariant.Bold} size={ButtonSize.Medium}>
+						<Button size={ButtonSize.Medium}>
 							Bold Button
 						</Button>
 						<Button variant={ButtonVariant.Outline} size={ButtonSize.Small}>
@@ -63,8 +63,8 @@ export default function EnumsUsagePage() {
 					</div>
 					<div className="flex gap-3">
 						{/* String literals still work for backwards compatibility */}
-						<Button variant="success">Success</Button>
-						<Button variant="danger">Danger</Button>
+						<Button tone="success">Success</Button>
+						<Button tone="danger">Danger</Button>
 					</div>
 				</div>
 			</Card>
@@ -156,8 +156,7 @@ export default function EnumsUsagePage() {
 } from '@creo-team/buzz-ui'
 
 // Use enums for better type safety
-<Button 
-  variant={ButtonVariant.Bold}
+<Button
   size={ButtonSize.Large}
 >
   Click Me

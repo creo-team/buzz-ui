@@ -7,6 +7,7 @@ import { Button, type ButtonProps } from './button.js'
 /** Screen corner (or top/bottom edge center) the Fab floats in. */
 export type FabPosition = 'bottom-right' | 'bottom-left' | 'bottom-center' | 'top-right' | 'top-left'
 
+/** Props for {@link Fab} — all of {@link ButtonProps} plus fixed positioning. */
 export interface FabProps extends ButtonProps {
 	/** Corner (or edge-center) to float in. Default 'bottom-right'. */
 	position?: FabPosition

@@ -9,7 +9,8 @@ describe('Fab', () => {
 		const button = screen.getByRole('button', { name: 'Add' })
 		expect(button).toHaveClass('bz-fab')
 		expect(button).toHaveClass('bz-button')
-		expect(button).toHaveAttribute('data-variant', 'bold')
+		expect(button).toHaveAttribute('data-variant', 'solid')
+		expect(button).toHaveAttribute('data-tone', 'primary')
 	})
 
 	it('defaults to bottom-right and exposes it as data-position', () => {
@@ -35,14 +36,15 @@ describe('Fab', () => {
 		expect(screen.getByRole('button')).toHaveStyle('--bz-fab-offset: 40px')
 	})
 
-	it('passes through Button props like variant, size and iconOnly', () => {
+	it('passes through Button props like tone, size and iconOnly', () => {
 		render(
-			<Fab aria-label="Add" variant="success" size="lg" iconOnly>
+			<Fab aria-label="Add" tone="success" size="lg" iconOnly>
 				+
 			</Fab>
 		)
 		const button = screen.getByRole('button')
-		expect(button).toHaveAttribute('data-variant', 'success')
+		expect(button).toHaveAttribute('data-variant', 'solid')
+		expect(button).toHaveAttribute('data-tone', 'success')
 		expect(button).toHaveAttribute('data-size', 'lg')
 		expect(button).toHaveAttribute('data-icon-only')
 	})

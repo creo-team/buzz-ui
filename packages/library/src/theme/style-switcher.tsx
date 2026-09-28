@@ -7,9 +7,13 @@ import { Popover, PopoverTrigger, PopoverContent } from '../overlays/popover.js'
 import { ALL_STYLES, Style, type StyleConfig } from './style-types.js'
 import { useStyleSwitcher } from './use-style-switcher.js'
 
+/** Props for {@link StyleSwitcher}. */
 export interface StyleSwitcherProps {
+	/** Style presets to offer. Defaults to all ten built-ins. */
 	styles?: StyleConfig[]
+	/** Style used before a saved cookie exists. @default Style.Soft */
 	defaultStyle?: Style | string
+	/** Server-read style for flicker-free SSR (pass from `getServerStyle`). */
 	initialStyle?: string
 	className?: string
 }
@@ -38,10 +42,16 @@ export function StyleSwitcher({
 	return (
 		<Popover open={open} onOpenChange={setOpen} side="bottom" align="end" sideOffset={8}>
 			<PopoverTrigger asChild>
-				<button type="button" className={cx('bz-style-switcher__trigger', className)} disabled={!mounted}>
+				{/* The visible label ("Soft") is contained in the accessible name
+				    ("Style: Soft"), satisfying Label in Name deterministically —
+				    accname whitespace joining varies across engines. */}
+				<button
+					type="button"
+					className={cx('bz-style-switcher__trigger', className)}
+					disabled={!mounted}
+					aria-label={`Style: ${active?.label ?? 'Style'}`}
+				>
 					<span className="bz-style-switcher__chip-dot" aria-hidden="true" />
-					{/* Visible label stays in the accessible name (Label in Name). */}
-					<span className="bz-visually-hidden">Style: </span>
 					{active?.label ?? 'Style'}
 					<IconChevronDown aria-hidden="true" />
 				</button>

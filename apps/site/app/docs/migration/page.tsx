@@ -11,6 +11,33 @@ export default function MigrationDocsPage() {
 			</div>
 
 			<section className="space-y-4">
+				<h2 className="text-2xl font-semibold text-[var(--c-text)]">0.6.x → 0.7.0</h2>
+				<p className="text-[var(--c-text-secondary)]">
+					Button moved from ten flat variants to two orthogonal axes — <code>variant</code> (visual
+					weight) × <code>tone</code> (meaning). Nothing breaks: every v0.6 name still works as a
+					deprecated alias with the same rendered look. Migrate at your own pace:
+				</p>
+				<CodeBlock
+					code={`// before                          // after
+<Button variant="bold">     →     <Button>                      (solid primary is the default)
+<Button variant="success">  →     <Button tone="success">
+<Button variant="danger">   →     <Button tone="danger">
+<Button variant="subtle">   →     <Button variant="soft">
+<Button variant="text">     →     <Button variant="link">
+<Button variant="nav">      →     <Button variant="ghost">
+<Button variant="icon">     →     <Button variant="ghost" iconOnly>`}
+				/>
+				<p className="text-sm text-[var(--c-text-secondary)]">
+					Only custom CSS keyed on the old DOM attributes needs attention:{' '}
+					<code>data-variant</code> now carries the resolved weight (<code>solid</code>,{' '}
+					<code>soft</code>, <code>outline</code>, <code>ghost</code>, <code>link</code>,{' '}
+					<code>glass</code>) and <code>data-tone</code> the color — e.g.{' '}
+					<code>[data-variant='bold']</code> becomes <code>[data-variant='solid']</code>, and the
+					old success/danger variants are <code>[data-variant='solid'][data-tone='success']</code>.
+				</p>
+			</section>
+
+			<section className="space-y-4">
 				<h2 className="text-2xl font-semibold text-[var(--c-text)]">0.1.x → 0.2.0+</h2>
 				<p className="text-[var(--c-text-secondary)]">
 					0.2.0 rebuilt the library around zero dependencies, a shipped stylesheet, and React

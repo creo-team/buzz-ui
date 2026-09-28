@@ -2,11 +2,16 @@ import * as React from 'react'
 import { cx } from '../internal/cx.js'
 import { AvatarImage } from './avatar-image.js'
 
+/** Diameter preset, from `xs` (1.25rem) to `xl` (4rem). */
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
+/** Props for {@link Avatar}. */
 export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
+	/** Full name — supplies the initials fallback (first two words) and the accessible label. */
 	name?: string
+	/** Image URL. Initials show while it is absent or fails to load. */
 	src?: string
+	/** Size preset. @default 'md' */
 	size?: AvatarSize
 }
 
@@ -43,9 +48,11 @@ export function Avatar({ name, src, size = 'md', className, ...props }: AvatarPr
 	)
 }
 
+/** Props for {@link AvatarGroup}. */
 export interface AvatarGroupProps extends React.HTMLAttributes<HTMLDivElement> {
 	/** Cap on visible avatars; the rest collapse into a "+N" counter. */
 	max?: number
+	/** Size of the "+N" counter — match the child avatars. @default 'md' */
 	size?: AvatarSize
 	children: React.ReactNode
 }

@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { cx } from '../internal/cx.js'
 
+/** Props for {@link VisuallyHidden}. */
 export interface VisuallyHiddenProps extends React.HTMLAttributes<HTMLSpanElement> {
 	children?: React.ReactNode
 }

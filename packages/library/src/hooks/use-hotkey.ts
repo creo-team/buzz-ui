@@ -1,6 +1,7 @@
 "use client"
 import * as React from 'react'
 
+/** One keyboard shortcut for {@link useHotkey} — a combo string plus its action. */
 export interface HotkeyConfig {
 	/** The key combination (e.g. 'ctrl+k', 'mod+s', 'alt+t', 'enter', 'escape'). */
 	key: string
@@ -30,6 +31,7 @@ interface ParsedCombo {
 	mod: boolean
 }
 
+/** True on macOS/iOS, where 'mod' means ⌘ rather than Ctrl. False during SSR. */
 export function isMacPlatform(): boolean {
 	if (typeof navigator === 'undefined') return false
 	return /mac|iphone|ipad|ipod/i.test(navigator.platform ?? '') || /mac/i.test(navigator.userAgent ?? '')

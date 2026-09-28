@@ -131,22 +131,27 @@ custom shapes, and [HOTKEYS.md](./HOTKEYS.md) for the shortcut system.
 
 ## Components
 
-**Primitives** Button (9 variants, loading, hotkeys, asChild) · Fab (Button,
-pinned to a corner) · Spinner · Kbd · Separator · VisuallyHidden · Slot
+**Primitives** Button (variant × tone axes, loading, hotkeys, asChild) ·
+Fab (Button, pinned to a corner) · Spinner · Kbd · Separator ·
+VisuallyHidden · Slot
 
-**Forms** TextInput/Input · Textarea (CSS auto-resize) · Select · Combobox
-(filterable, ARIA combobox pattern) · Checkbox (indeterminate) · RadioGroup ·
-Switch · Field
+**Forms** Form (pre-submit inline validation) · TextInput/Input · Textarea
+(CSS auto-resize) · Select · Combobox (filterable, ARIA combobox pattern) ·
+Checkbox (indeterminate) · RadioGroup · Switch · Field · Dropzone
+(drag-and-drop files) · AvatarUpload
+
+**Layout** Section (full-bleed bands) · PageHeader (the standard title
+block) · Footer
 
 **Display** Card · Badge · Chip (removable) · Alert · Banner · Avatar +
 AvatarGroup · Skeleton · Table · CodeBox · Progress · CircularProgress ·
 Stepper
 
-**Overlays** Tooltip · Infotip · Popover · Modal · Drawer · Dropdown ·
-CommandPalette · Toast
+**Overlays** Tooltip · Infotip · Popover · Modal · Drawer · Dropdown
+(shortcut hints) · CommandPalette · Toast
 
 **Navigation** Tabs + TabPanel · Breadcrumbs · Pagination · TopNav ·
-SidebarNav · Menu · Footer
+SidebarNav (grouping) · Menu
 
 **Theme** ThemeProvider · ThemeSwitcher · EnhancedThemeSwitcher ·
 CycleThemeSwitcher · six built-in themes + preset factory · StyleSwitcher

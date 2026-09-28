@@ -3,21 +3,27 @@ import * as React from 'react'
 import { cx } from '../internal/cx.js'
 import { useControllableState } from '../internal/use-controllable-state.js'
 
+/** Size presets for the track and thumb. */
 export type SwitchSize = 'sm' | 'md' | 'lg'
 
+/** Props for {@link Switch}. */
 export interface SwitchProps
 	extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onChange' | 'value'> {
 	/** Controlled checked state. */
 	checked?: boolean
 	/** Initial state for uncontrolled usage. */
 	defaultChecked?: boolean
+	/** Called with the next checked state. */
 	onChange?: (checked: boolean) => void
+	/** Size preset. @default 'md' */
 	size?: SwitchSize
+	/** Clickable label rendered beside the control. */
 	label?: React.ReactNode
 	/** Secondary line under the label. */
 	description?: React.ReactNode
 	/** Submit this value with forms via a hidden input. */
 	name?: string
+	/** Form value submitted while checked. @default 'on' */
 	value?: string
 }
 

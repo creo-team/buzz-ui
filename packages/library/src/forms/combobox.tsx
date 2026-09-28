@@ -12,22 +12,31 @@ import { useIsomorphicLayoutEffect } from '../internal/use-isomorphic-layout-eff
 import { IconCheck, IconChevronDown, IconX } from '../internal/icons.js'
 import { Field, fieldDescribedBy } from './field.js'
 
+/** One option in a {@link Combobox}. */
 export interface ComboboxOption {
+	/** Committed/submitted value; unique among the options. */
 	value: string
+	/** Text shown in the list and, once selected, in the input. The default filter matches against it. */
 	label: string
+	/** Secondary line under the label. */
 	description?: string
+	/** Leading icon in the option row. */
 	icon?: React.ReactNode
+	/** Visible but unselectable; keyboard navigation skips it. */
 	disabled?: boolean
 }
 
+/** Predicate deciding whether an option matches the typed query. */
 export type ComboboxFilter = (option: ComboboxOption, query: string) => boolean
 
+/** Props for {@link Combobox}. */
 export interface ComboboxProps {
 	options: ComboboxOption[]
 	/** Controlled selected value (an option's `value`, or `null` for none). */
 	value?: string | null
 	/** Initial value for uncontrolled usage. */
 	defaultValue?: string | null
+	/** Fires with the committed option's value, or `null` on clear. */
 	onChange?: (value: string | null) => void
 	/** Fires on every keystroke — hook up your own debounced fetch for async options. */
 	onInputChange?: (query: string) => void
@@ -38,6 +47,7 @@ export interface ComboboxProps {
 	required?: boolean
 	error?: string
 	helpText?: React.ReactNode
+	/** Listbox text when nothing matches. Default: 'No results found.' */
 	emptyMessage?: string
 	/** Show a spinner in place of the chevron (e.g. while `options` load async). */
 	loading?: boolean
@@ -48,6 +58,7 @@ export interface ComboboxProps {
 	name?: string
 	id?: string
 	className?: string
+	/** className for the outer field wrapper (className styles the input itself). */
 	wrapperClassName?: string
 }
 
@@ -237,7 +248,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
 	}
 
 	return (
-		<Field htmlFor={inputId} label={label} required={required} error={error} helpText={helpText} className={wrapperClassName}>
+		<Field htmlFor={inputId} name={name} label={label} required={required} error={error} helpText={helpText} className={wrapperClassName}>
 			<div ref={wrapperRef} className="bz-combobox">
 				<input
 					ref={ref}

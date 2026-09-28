@@ -2,6 +2,7 @@ import * as React from 'react'
 import { cx } from '../internal/cx.js'
 import { Field, fieldDescribedBy } from './field.js'
 
+/** Props for {@link Textarea}. */
 export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
 	label?: React.ReactNode
 	error?: string
@@ -25,6 +26,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(fun
 
 	return (
 		<Field
+			name={props.name}
 			htmlFor={textareaId}
 			label={label}
 			required={required}

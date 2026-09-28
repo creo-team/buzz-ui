@@ -18,6 +18,7 @@ function getTabbables(container: HTMLElement): HTMLElement[] {
 	})
 }
 
+/** Options for {@link useFocusTrap}. */
 export interface FocusTrapOptions {
 	/** Focus this element on activation instead of the default heuristic. */
 	initialFocusRef?: React.RefObject<HTMLElement | null>

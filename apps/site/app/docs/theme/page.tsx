@@ -132,7 +132,7 @@ export default function ThemeSystemPage() {
 						<h3 className="text-xl font-medium text-[var(--c-text)] mb-3">Customize Shadows</h3>
 						<CodeBlock 
 							code={`:root {
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+  --shadow-xs: 0 2px 4px rgba(0,0,0,0.1);
   --shadow-md: 0 8px 16px rgba(0,0,0,0.15);
   --shadow-lg: 0 16px 32px rgba(0,0,0,0.2);
 }`}

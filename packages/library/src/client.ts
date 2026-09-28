@@ -73,6 +73,9 @@ export {
 // Interactive controls
 export * from './forms/slider.js'
 export * from './forms/combobox.js'
+export * from './forms/dropzone.js'
+export * from './forms/avatar-upload.js'
+export * from './forms/use-file-drop.js'
 export * from './inputs/switch.js'
 export * from './primitives/button.js'
 export * from './primitives/fab.js'
@@ -93,6 +96,7 @@ export * from './primitives/spinner.js'
 export * from './primitives/separator.js'
 export * from './primitives/visually-hidden.js'
 export * from './forms/field.js'
+export * from './forms/form.js'
 
 // Hooks
 export * from './hooks/use-hotkey.js'

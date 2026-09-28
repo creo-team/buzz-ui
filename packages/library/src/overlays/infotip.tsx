@@ -4,11 +4,16 @@ import { cx } from '../internal/cx.js'
 import { Tooltip, TooltipSize } from './tooltip.js'
 import { IconInfo } from '../internal/icons.js'
 
+/** Props for {@link Infotip}. */
 export interface InfotipProps {
+	/** Bold heading in the tip; also names the trigger for assistive tech. */
 	title?: string
+	/** Tip body content. */
 	description: React.ReactNode
 	className?: string
+	/** Preferred side for the tip. @default 'top' */
 	placement?: 'top' | 'right' | 'bottom' | 'left'
+	/** Width constraint override for the bubble (e.g. 'max-w-xs'). */
 	widthClassName?: string
 	/** Tooltip size preset. Default comfortable. */
 	size?: TooltipSize | 'sm' | 'md' | 'lg' | 'xl'

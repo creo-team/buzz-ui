@@ -198,7 +198,7 @@ export default function BannerDocs() {
 							onClick={() => {
 								const banner = document.createElement('div')
 								banner.innerHTML = `
-									<div class="fixed inset-x-0 top-0 z-[60] bg-gradient-to-r from-purple-600/95 via-pink-600/95 to-purple-600/95 text-white border-b border-purple-500/30 backdrop-blur-sm shadow-lg">
+									<div class="fixed inset-x-0 top-0 z-[60] bg-gradient-to-r from-purple-600/95 via-pink-600/95 to-purple-600/95 text-white border-b border-purple-500/30 backdrop-blur-xs shadow-lg">
 										<div class="relative w-full px-4 sm:px-6 lg:px-8 py-2.5">
 											<div class="flex items-center justify-center gap-3 text-sm font-medium">
 												<span>📢 This is a fixed banner at the top!</span>
@@ -222,7 +222,7 @@ export default function BannerDocs() {
 							onClick={() => {
 								const banner = document.createElement('div')
 								banner.innerHTML = `
-									<div class="fixed inset-x-0 bottom-0 z-[60] bg-gradient-to-r from-blue-600/95 to-blue-700/95 text-white border-t border-blue-500/30 backdrop-blur-sm shadow-lg">
+									<div class="fixed inset-x-0 bottom-0 z-[60] bg-gradient-to-r from-blue-600/95 to-blue-700/95 text-white border-t border-blue-500/30 backdrop-blur-xs shadow-lg">
 										<div class="relative w-full px-4 sm:px-6 lg:px-8 py-2.5">
 											<div class="flex items-center justify-center gap-3 text-sm font-medium">
 												<span>🍪 We use cookies to improve your experience</span>

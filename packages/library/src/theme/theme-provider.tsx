@@ -3,8 +3,10 @@
 import * as React from 'react'
 import { THEME_COOKIE_NAME } from './theme-types.js'
 
+/** A theme identifier — applied to `<html>` as both a class and `data-theme`. */
 export type Theme = string
 
+/** A selectable theme as registered with {@link ThemeProvider}. */
 export interface ThemeConfig {
 	value: string
 	label: string
@@ -12,10 +14,14 @@ export interface ThemeConfig {
 	icon: React.ComponentType<{ className?: string }> | string
 }
 
+/** Props for {@link ThemeProvider}. */
 export interface ThemeProviderProps {
 	children: React.ReactNode
+	/** Theme applied initially. @default 'light' */
 	defaultTheme?: string
+	/** Registered themes, exposed through {@link useTheme}; their `value`s are the classes cleared from `<html>` on a switch. */
 	themes?: ThemeConfig[]
+	/** Suppress CSS transitions for the frame a theme switch applies, preventing cross-fade flicker. */
 	disableTransitionOnChange?: boolean
 }
 
@@ -103,6 +109,11 @@ export function ThemeProvider({
 	return <ThemeProviderContext.Provider value={value}>{children}</ThemeProviderContext.Provider>
 }
 
+/**
+ * Read the surrounding {@link ThemeProvider}: the current theme, `setTheme`,
+ * the resolved (applied) theme, and the registered theme list. Throws when
+ * no provider is mounted.
+ */
 export const useTheme = () => {
 	const context = React.useContext(ThemeProviderContext)
 	if (!context) {
