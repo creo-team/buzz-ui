@@ -19,6 +19,7 @@ export enum Style {
 	Brutal = 'brutal',
 }
 
+/** A style preset as offered by pickers such as `StyleSwitcher`. */
 export interface StyleConfig {
 	value: Style | string
 	label: string
