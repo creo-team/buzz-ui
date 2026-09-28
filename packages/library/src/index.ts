@@ -41,6 +41,9 @@ export { Style, ALL_STYLES, STYLE_COOKIE_NAME, setStyleCookie, getStyleFromCooki
 // Interactive components
 export * from './forms/slider.js'
 export * from './forms/combobox.js'
+export * from './forms/dropzone.js'
+export * from './forms/avatar-upload.js'
+export * from './forms/use-file-drop.js'
 export * from './primitives/button.js'
 export * from './primitives/fab.js'
 export * from './alerts/banner.js'
