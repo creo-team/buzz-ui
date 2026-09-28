@@ -2,9 +2,12 @@
 import * as React from 'react'
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js'
 
+/** Side of the anchor the floating element attaches to. */
 export type Side = 'top' | 'right' | 'bottom' | 'left'
+/** Alignment along the anchor's edge. */
 export type Align = 'start' | 'center' | 'end'
 
+/** Options for {@link usePosition}. */
 export interface PositionOptions {
 	/** Whether the floating element is currently rendered. */
 	open: boolean
@@ -22,6 +25,7 @@ export interface PositionOptions {
 	viewportPadding?: number
 }
 
+/** Computed placement returned by {@link usePosition}. */
 export interface PositionResult {
 	/** Viewport (fixed-position) coordinates for the floating element. */
 	x: number

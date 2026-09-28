@@ -3,17 +3,25 @@ import * as React from 'react'
 import { cx } from '../internal/cx.js'
 import { IconMenu, IconX } from '../internal/icons.js'
 
+/** One entry in the {@link TopNav} bar. */
 export interface TopNavItem {
 	key: string
 	label: React.ReactNode
+	/** Renders a link; omit (with `onClick`) for a button item. */
 	href?: string
+	/** Called on activation — with `href`, runs alongside navigation. */
 	onClick?: () => void
+	/** Marks the current page: sets `aria-current` and the active highlight. */
 	active?: boolean
 }
 
+/** Props for {@link TopNav}. */
 export interface TopNavProps {
+	/** Slot at the leading edge — logo, wordmark, or a home link. */
 	brand?: React.ReactNode
+	/** Nav links — inline from 768px up, in the toggled menu below. */
 	items?: TopNavItem[]
+	/** Trailing slot (actions, theme toggle) — stays visible beside the mobile menu button. */
 	right?: React.ReactNode
 	/** Rendered above the bar (e.g. a `Banner`). */
 	before?: React.ReactNode

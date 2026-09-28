@@ -80,6 +80,7 @@ function detachListenersIfIdle() {
 	listenersAttached = false
 }
 
+/** Options for {@link useDismissableLayer}. */
 export interface DismissableLayerOptions {
 	enabled: boolean
 	onDismiss: () => void
@@ -91,6 +92,7 @@ export interface DismissableLayerOptions {
 	escapeKey?: boolean
 }
 
+/** Registers an overlay on the layer stack while `enabled` — Escape and outside presses dismiss it only when topmost. */
 export function useDismissableLayer({
 	enabled,
 	onDismiss,

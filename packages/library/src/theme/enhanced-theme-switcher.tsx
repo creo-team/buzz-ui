@@ -8,22 +8,28 @@ import { IconPalette, IconCheck } from '../internal/icons.js'
 import { useThemeSwitcher, resolveThemeIcon, type AnyThemeConfig } from './use-theme-switcher.js'
 import type { ThemeConfigWithPreset } from './theme-presets.js'
 
+/** A selectable theme for {@link EnhancedThemeSwitcher}. */
 export interface EnhancedThemeConfig {
 	value: string
 	label: string
+	/** Component or built-in icon name ('sun', 'moon', …); inferred from the theme's name when omitted. */
 	icon?: React.ComponentType<{ className?: string }> | string
+	/** Custom palette applied as CSS variables while the theme is active. */
 	colors?: ThemeConfigWithPreset['colors']
 }
 
+/** Props for {@link EnhancedThemeSwitcher}. */
 export interface EnhancedThemeSwitcherProps {
 	/** Themes shown as pills. */
 	primaryThemes?: (EnhancedThemeConfig | ThemeConfigWithPreset)[]
 	/** Full theme list; extras beyond the pills go into the dropdown. */
 	allThemes?: (EnhancedThemeConfig | ThemeConfigWithPreset)[]
+	/** Theme used before a saved cookie exists. @default 'light' */
 	defaultTheme?: string
 	/** Server-read theme for flicker-free SSR (pass from `getServerTheme`). */
 	initialTheme?: string
 	className?: string
+	/** Cap on the number of pill buttons. @default 2 */
 	maxPrimaryThemes?: number
 }
 

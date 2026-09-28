@@ -34,6 +34,7 @@ function unlock() {
 	}
 }
 
+/** Locks body scroll while `active` — reference-counted, so stacked overlays compose. */
 export function useScrollLock(active: boolean) {
 	React.useEffect(() => {
 		if (!active) return
