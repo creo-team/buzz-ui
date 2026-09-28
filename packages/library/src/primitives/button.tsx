@@ -109,6 +109,7 @@ export function resolveButtonStyle(
 /** Hotkey shorthand — `action` is optional because the button's own click is the action. */
 export type ButtonHotkey = string | (Omit<HotkeyConfig, 'action'> & { action?: () => void })
 
+/** Props for {@link Button}. */
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	/** Visual weight. Legacy v0.6 names are accepted and mapped. @default 'solid' */
 	variant?: ButtonVariantInput

@@ -228,6 +228,7 @@ const VARIANT_ICONS: Record<ToastVariant, React.ReactNode> = {
 	loading: <Spinner size="sm" />,
 }
 
+/** Props for {@link Toaster}. */
 export interface ToasterProps {
 	/** Default position for toasts. Default 'bottom-right'. */
 	position?: ToastPosition

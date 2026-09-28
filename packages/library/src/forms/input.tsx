@@ -2,10 +2,12 @@ import * as React from 'react'
 import { cx } from '../internal/cx.js'
 import { Field, fieldDescribedBy } from './field.js'
 
+/** Props for {@link TextInput}. */
 export interface TextInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	label?: React.ReactNode
 	error?: string
 	helpText?: React.ReactNode
+	/** Warning shown under the input; the warning tone applies only while there's no error. */
 	warningText?: string | null
 	/** Element rendered inside the field, before the input (e.g. an icon). */
 	startAdornment?: React.ReactNode
@@ -86,4 +88,5 @@ export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(func
 
 /** Modern alias for TextInput. */
 export const Input = TextInput
+/** Props for {@link Input} — alias of {@link TextInputProps}. */
 export type InputProps = TextInputProps

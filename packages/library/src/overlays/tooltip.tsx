@@ -6,6 +6,7 @@ import { cx } from '../internal/cx.js'
 import { usePosition, type Side } from '../internal/use-position.js'
 import { usePresence } from '../internal/use-presence.js'
 
+/** Preferred side of the trigger the tooltip appears on. */
 export enum TooltipDirection {
 	Top = 'TOP',
 	Bottom = 'BOTTOM',
@@ -13,6 +14,7 @@ export enum TooltipDirection {
 	Right = 'RIGHT',
 }
 
+/** Bubble size presets — font size, padding and max width scale together. */
 export enum TooltipSize {
 	Compact = 'COMPACT',
 	Comfortable = 'COMFORTABLE',
@@ -40,11 +42,15 @@ const SIZE_TO_DATA: Record<string, string> = {
 	xl: 'xl',
 }
 
+/** Props for {@link Tooltip}. */
 export interface TooltipProps {
+	/** Trigger the tooltip describes — a single element child gets `aria-describedby` wired while visible. */
 	children: React.ReactNode
+	/** Bubble content. */
 	content: React.ReactNode
 	/** Preferred side — enum or plain 'top' | 'bottom' | 'left' | 'right'. */
 	direction?: TooltipDirection | Side
+	/** Bubble size preset — enum or legacy 'sm' | 'md' | 'lg' | 'xl'. */
 	size?: TooltipSize | LegacySize
 	/** Hover delay before showing, in ms. Default 400. */
 	delayMs?: number

@@ -37,6 +37,7 @@ export function useFormField(name?: string): { error: string | undefined } {
 	return { error: name ? context?.errors[name] : undefined }
 }
 
+/** Props for {@link FormFieldError}. */
 export interface FormFieldErrorProps {
 	/** The control's `name` — the key errors are stored under. */
 	name?: string
@@ -92,6 +93,7 @@ export function FormFieldError({ name, htmlFor }: FormFieldErrorProps) {
 	)
 }
 
+/** Props for {@link Form}. */
 export interface FormProps
 	extends Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onSubmit' | 'noValidate'> {
 	/**

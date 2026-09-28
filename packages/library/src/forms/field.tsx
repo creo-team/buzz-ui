@@ -2,9 +2,13 @@ import * as React from 'react'
 import { cx } from '../internal/cx.js'
 import { FormFieldError } from './form.js'
 
+/** Validation and help messages rendered under a {@link Field}. */
 export interface FieldMessages {
+	/** Validation error, announced via `role="alert"`. Hides `helpText`. */
 	error?: React.ReactNode
+	/** Cautionary message in the warning tone. Hides `helpText`. */
 	warningText?: React.ReactNode
+	/** Guidance shown while there is no error or warning. */
 	helpText?: React.ReactNode
 }
 
@@ -18,6 +22,7 @@ export function fieldDescribedBy(id: string, { error, warningText, helpText }: F
 	return ids.length ? ids.join(' ') : undefined
 }
 
+/** Props for {@link Field}. */
 export interface FieldProps extends FieldMessages {
 	/** id of the control this field labels. */
 	htmlFor: string
