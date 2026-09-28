@@ -232,7 +232,7 @@ export default function FormModal() {
               type="text"
               value={formData.name}
               onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border border-[var(--c-border)] rounded bg-[var(--c-surface)]"
               required
             />
           </div>
@@ -243,7 +243,7 @@ export default function FormModal() {
               type="email"
               value={formData.email}
               onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border border-[var(--c-border)] rounded bg-[var(--c-surface)]"
               required
             />
           </div>

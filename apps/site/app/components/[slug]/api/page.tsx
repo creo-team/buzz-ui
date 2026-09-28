@@ -1,10 +1,11 @@
 import { getDocgenForSlug } from '../../../../lib/docgen'
 import { ApiTable } from '../../../../components/api-table'
 
-export default async function ApiPage({ params }: { params: { slug: string } }) {
+export default async function ApiPage({ params }: { params: Promise<{ slug: string }> }) {
+	const { slug } = await params
 	let api
 	try {
-		api = await getDocgenForSlug(params.slug)
+		api = await getDocgenForSlug(slug)
 	} catch (error) {
 		console.warn('Failed to generate API docs:', error)
 		api = {}
@@ -14,7 +15,7 @@ export default async function ApiPage({ params }: { params: { slug: string } }) 
 	
 	return (
 		<div className="mx-auto max-w-6xl px-4 py-12">
-			<h1 className="text-2xl font-semibold">{params.slug} API</h1>
+			<h1 className="text-2xl font-semibold">{slug} API</h1>
 			{entries.length === 0 && (
 				<div className="mt-8 text-center">
 					<p className="text-lg text-[var(--c-text-secondary)]">

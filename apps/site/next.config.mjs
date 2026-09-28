@@ -1,17 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	reactStrictMode: true,
-	transpilePackages: ['@creo-team/buzz-ui'],
-	webpack: config => {
-		// The library uses explicit .js specifiers in TypeScript source
-		// (native-ESM correct); map them back to .ts/.tsx when importing the
-		// workspace source through the tsconfig path aliases.
-		config.resolve.extensionAlias = {
-			...config.resolve.extensionAlias,
-			'.js': ['.ts', '.tsx', '.js'],
-		}
-		return config
-	},
+	// The site consumes the built workspace package (dist + exports map), the
+	// same artifact npm consumers install — no transpilation or resolution
+	// shims needed. `prebuild` keeps dist fresh; use `npm run dev` at the repo
+	// root to watch-rebuild the library alongside next dev.
 }
 
 export default nextConfig

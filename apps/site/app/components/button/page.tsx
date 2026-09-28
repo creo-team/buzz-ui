@@ -48,7 +48,7 @@ function ToggleButtonGroup() {
 	]
 
 	return (
-		<div className="inline-flex gap-0.5 rounded-xl border border-[var(--c-border)] bg-[var(--c-surface)]/30 backdrop-blur-sm p-0.5">
+		<div className="inline-flex gap-0.5 rounded-xl border border-[var(--c-border)] bg-[var(--c-surface)]/30 backdrop-blur-xs p-0.5">
 			{options.map((option) => (
 				<Button
 					key={option.value}
@@ -58,7 +58,7 @@ function ToggleButtonGroup() {
 					onClick={() => setSelected(option.value)}
 					className={`rounded-lg gap-1.5 ${
 						selected === option.value 
-							? 'bg-white/10 dark:bg-white/5 backdrop-blur-md shadow-sm ring-1 ring-white/10 dark:ring-white/5' 
+							? 'bg-white/10 dark:bg-white/5 backdrop-blur-md shadow-xs ring-1 ring-white/10 dark:ring-white/5' 
 							: ''
 					}`}
 					iconOnly={!option.label}

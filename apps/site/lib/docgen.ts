@@ -1,7 +1,13 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-// Dynamic docgen for a given slug - generates documentation on-demand
+// Dynamic docgen for a given slug - generates documentation on-demand.
+//
+// react-docgen-typescript drives the classic TypeScript compiler JS API,
+// which the native (Go) compiler in typescript@7 no longer ships. The repo
+// root therefore pins typescript@5.9 (hoisted — what this file resolves),
+// while packages/library declares typescript@7 and gets its own nested copy
+// for typechecking and building the published package.
 export async function getDocgenForSlug(slug: string): Promise<Record<string, any>> {
 	// Try to generate docs, but gracefully fall back if file system access fails
 	try {

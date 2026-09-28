@@ -27,7 +27,7 @@ export default function DesignTokensPage() {
 				<h2 className="text-2xl font-semibold text-[var(--c-text)] mb-4">Shadows</h2>
 				<CodeBlock
 					code={`:root {
-	--shadow-sm: 0 1px 2px rgba(0,0,0,0.05)
+	--shadow-xs: 0 1px 2px rgba(0,0,0,0.05)
 	--shadow-md: 0 8px 16px rgba(0,0,0,0.15)
 	--shadow-lg: 0 16px 32px rgba(0,0,0,0.2)
 }`}

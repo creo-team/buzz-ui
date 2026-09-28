@@ -29,8 +29,8 @@ export default function LogoDemoPage() {
 						}}
 					>
 						<div className="flex items-center justify-center gap-2">
-							<Logo width={32} className="drop-shadow-sm" />
-							<BuzzTextLogo width={65} className="drop-shadow-sm" />
+							<Logo width={32} className="drop-shadow-xs" />
+							<BuzzTextLogo width={65} className="drop-shadow-xs" />
 						</div>
 						<p className="mt-4 text-center text-sm" style={{ color: 'var(--c-text-secondary)' }}>
 							As shown in top navigation
