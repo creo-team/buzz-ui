@@ -14,13 +14,17 @@ import {
 	type IconProps,
 } from '../internal/icons.js'
 
+/** The loosest theme shape every switcher accepts — icon and custom colors optional. */
 export interface AnyThemeConfig {
 	value: string
 	label: string
+	/** Component or built-in icon name ('sun', 'moon', …); inferred from the theme's name when omitted. */
 	icon?: React.ComponentType<{ className?: string }> | string
+	/** Custom palette applied as CSS variables while the theme is active. */
 	colors?: ThemeConfigWithPreset['colors']
 }
 
+/** Icon component type the theme switchers render. */
 export type ThemeIconComponent = React.ComponentType<IconProps>
 
 const ICON_BY_NAME: Record<string, ThemeIconComponent> = {
@@ -43,6 +47,10 @@ export function smartThemeIcon(value: string, label: string): ThemeIconComponent
 	return IconPalette
 }
 
+/**
+ * Resolve a theme's icon: a component is used as-is, a name is looked up in
+ * the built-in set, and with no `icon` one is inferred via `smartThemeIcon`.
+ */
 export function resolveThemeIcon(config: AnyThemeConfig): ThemeIconComponent {
 	if (config.icon) {
 		if (typeof config.icon === 'string') return ICON_BY_NAME[config.icon] ?? IconPalette
@@ -68,8 +76,11 @@ function applyThemeToDom(value: string, allValues: string[], config?: AnyThemeCo
 	}
 }
 
+/** Options for {@link useThemeSwitcher}. */
 export interface UseThemeSwitcherOptions {
+	/** Themes to persist and cycle through. */
 	themes: AnyThemeConfig[]
+	/** Theme used before a saved cookie exists. @default 'light' */
 	defaultTheme?: string
 	/** Server-read theme for flicker-free SSR (pass from `getServerTheme`). */
 	initialTheme?: string

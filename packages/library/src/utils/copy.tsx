@@ -3,6 +3,7 @@ import * as React from 'react'
 import { cx } from '../internal/cx.js'
 import { IconCheck, IconCopy } from '../internal/icons.js'
 
+/** Props for {@link CopyButton}. */
 export interface CopyButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'value'> {
 	/** Text written to the clipboard. */
 	value: string
