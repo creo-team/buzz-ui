@@ -10,6 +10,9 @@
   "devDependencies": {
     "typescript": "^5.9.3"
   },
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "scripts": {
     "build": "npm run -w @creo-team/buzz-ui build && npm run -w @buzz-ui/site build",
     "dev": "node scripts/dev.mjs",
