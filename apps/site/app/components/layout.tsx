@@ -14,6 +14,8 @@ const componentItems = [
 
 	// Forms
 	{ key: 'forms', label: 'Forms Overview', href: '/components/forms', category: 'Forms' },
+	{ key: 'form', label: 'Form', href: '/components/form', category: 'Forms', badge: 'New' },
+	{ key: 'dropzone', label: 'Dropzone', href: '/components/dropzone', category: 'Forms', badge: 'New' },
 	{ key: 'input', label: 'Input', href: '/components/input', category: 'Forms' },
 	{ key: 'textarea', label: 'Textarea', href: '/components/textarea', category: 'Forms' },
 	{ key: 'select', label: 'Select', href: '/components/select', category: 'Forms' },
@@ -56,6 +58,7 @@ const componentItems = [
 	{ key: 'code-box', label: 'Code Box', href: '/components/code-box', category: 'Data & Display' },
 
 	// Layout
+	{ key: 'section', label: 'Section & PageHeader', href: '/components/section', category: 'Layout', badge: 'New' },
 	{ key: 'footer', label: 'Footer', href: '/components/footer', category: 'Layout' },
 	{ key: 'primitives', label: 'Primitives', href: '/components/primitives', category: 'Layout' },
 ]

@@ -1,5 +1,77 @@
 # Changelog
 
+## 0.7.0
+
+Modern toolchain, honed Button API, and forms that catch problems before
+submission.
+
+### New
+
+- **`Form`** — pre-submit inline validation, never toasts. Browser
+  constraint validation first (required, `type=email`, `minLength`,
+  `pattern`… with localized messages), then per-field `validate` functions
+  that see every value (cross-field rules are one-liners). "Reward early,
+  punish late": typing is never interrupted before the first submit
+  attempt; a failed attempt renders each problem under its field and
+  focuses the first invalid control; from then on errors clear live as
+  they're fixed. No field registration — any named control participates.
+  A native reset returns the pristine lifecycle. `useFormField` and
+  `FormFieldError` for custom controls. Field-level errors reach
+  server-rendered controls through a tiny client slot, so TextInput,
+  Textarea, Select, Combobox, Checkbox and RadioGroup stay RSC-safe.
+- **`Dropzone`** — drag-and-drop file picking (click, Enter/Space, drop)
+  with inline rejections for wrong type / too big / too many, a kept-file
+  list with sizes and per-file remove, controlled or uncontrolled.
+- **`AvatarUpload`** — the profile-photo pattern: an Avatar that accepts a
+  click or dropped image, instant FileReader preview, inline validation,
+  optional remove badge.
+- **`useFileDrop`** hook plus `isFileAccepted` / `formatFileSize`
+  utilities — the engine both upload components ride, exported for custom
+  surfaces.
+- **`Section`** — full-bleed band (`default` / `muted` / `raised`) with a
+  width-capped inner column (`narrow`/`default`/`wide`/`full`) and a
+  padding rhythm scale; alternating bands build striped landing pages
+  with no wrapper divs.
+- **`PageHeader`** — eyebrow, title, description and actions in one
+  tight-tracked type ramp (`sm`/`md`/`lg`, clamp() at `lg`), heading
+  `level` decoupled from visual size, `align="center"` for landing
+  sections, optional divider.
+- `DropdownItem.shortcut` — right-aligned, platform-formatted (⌘S /
+  Ctrl+S), aria-hidden keyboard hints on menu items.
+- `SidebarNav` `groupOrder` — explicit group ordering for `groupBy`
+  (curated order first, alphabetical for the rest).
+- Icons: `IconUpload`, `IconCamera`.
+
+### Changed
+
+- **Button: two axes instead of ten variants.** `variant` is visual
+  weight — `solid` (default) · `soft` · `outline` · `ghost` · `link` ·
+  `glass` — and the new `tone` is meaning — `primary` · `neutral` ·
+  `success` · `danger`. Tone defaults to `primary` for solid/link and
+  `neutral` for the quieter weights, so every v0.6 usage keeps its exact
+  look. All ten old names (`bold`, `subtle`, `text`, `nav`, `icon`,
+  `success`, `danger`, plus pass-through `outline`/`ghost`/`glass`) still
+  work as `@deprecated` aliases; `resolveButtonStyle()` exposes the
+  mapping. `solid` + `neutral` is a new high-contrast inverse button.
+  DOM note: `data-variant` now carries the resolved weight and
+  `data-tone` the tone — custom CSS keyed on old variant names should
+  re-key (e.g. `[data-variant='bold']` → `[data-variant='solid']`).
+  Deliberate refinement: neutral outline/ghost hovers no longer flash the
+  brand color; ask for `tone="primary"` if you want that.
+- Toolchain: TypeScript 7 (native compiler) builds and typechecks the
+  library; Vitest 5, jsdom 30, React 19 types. Peer range unchanged
+  (`react ^18.3.1 || ^19`).
+- `Field` accepts `name` to surface surrounding-`Form` errors inline;
+  `RadioGroup`'s fieldset now carries its group id.
+- `StyleSwitcher`'s trigger uses a deterministic `aria-label`
+  ("Style: Soft") — accessible-name whitespace joining varies across
+  engines; Label-in-Name still holds.
+
+### Docs
+
+- TSDoc across the public API: every exported component, hook, type and
+  prop interface now documents itself in IntelliSense.
+
 ## 0.6.0
 
 The Style system: ten holistic looks-and-feels, independent of color theme.
