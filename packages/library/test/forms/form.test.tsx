@@ -142,6 +142,25 @@ describe('Form — pre-submit inline validation', () => {
 		expect(onSubmit.mock.calls[0][0]).toEqual({ topics: ['a11y', 'perf'] })
 	})
 
+	it('a native reset clears errors and re-arms reward-early', async () => {
+		render(
+			<Form>
+				<TextInput name="email" label="Email" required />
+				<Button type="submit">Send</Button>
+				<Button type="reset">Reset</Button>
+			</Form>
+		)
+		fireEvent.click(screen.getByRole('button', { name: 'Send' }))
+		expect(screen.getByLabelText(/Email/)).toHaveAttribute('aria-invalid', 'true')
+
+		fireEvent.click(screen.getByRole('button', { name: 'Reset' }))
+		await waitFor(() => expect(screen.getByLabelText(/Email/)).not.toHaveAttribute('aria-invalid'))
+		// Back to pristine: typing must not re-trigger validation.
+		fireEvent.change(screen.getByLabelText(/Email/), { target: { value: 'x' } })
+		fireEvent.change(screen.getByLabelText(/Email/), { target: { value: '' } })
+		expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+	})
+
 	it('useFormField outside any Form reports no error and does not throw', () => {
 		function Probe() {
 			const { error } = useFormField('anything')

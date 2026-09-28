@@ -241,11 +241,26 @@ export function Form({ onSubmit, validate, onValidityChange, children, ...props 
 		applyErrors(collectErrors(event.currentTarget, validate))
 	}
 
+	// A native reset returns the form to its pristine state — including the
+	// validation lifecycle, or cleared fields would flash "required" errors.
+	const handleReset = (event: React.FormEvent<HTMLFormElement>) => {
+		attempted.current = false
+		applyErrors({})
+		props.onReset?.(event)
+	}
+
 	const context = React.useMemo(() => ({ errors }), [errors])
 
 	return (
 		<FormContext.Provider value={context}>
-			<form noValidate onSubmit={handleSubmit} onInput={revalidate} onChange={revalidate} {...props}>
+			<form
+				noValidate
+				onSubmit={handleSubmit}
+				onInput={revalidate}
+				onChange={revalidate}
+				{...props}
+				onReset={handleReset}
+			>
 				{children}
 			</form>
 		</FormContext.Provider>
