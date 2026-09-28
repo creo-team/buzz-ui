@@ -1,5 +1,5 @@
 "use client"
-import { Button, Card, Infotip, TextInput, Checkbox, CodeBox } from '@creo-team/buzz-ui/server'
+import { Button, Card, Infotip, TextInput, Checkbox, CodeBox, Section, PageHeader } from '@creo-team/buzz-ui/server'
 import { DevStatusCard } from '../components/dev-status-card'
 import { StyleGallery } from '../components/style-gallery'
 
@@ -48,22 +48,21 @@ export default function Page() {
 				</section>
 
 				{/* Features Section */}
-				<section className="py-24 bg-[var(--c-surface)]">
-					<div className="mx-auto max-w-7xl px-6">
-						<div className="text-center mb-16">
-							<h2 className="text-3xl font-bold text-[var(--c-text)]">Why Choose Buzz UI?</h2>
-							<p className="mt-4 text-lg text-[var(--c-text-secondary)]">
-								Modern design principles meet practical development needs
-							</p>
-							<div className="mt-4">
-								<a href="/logo-demo" className="inline-flex items-center gap-2 text-sm text-[var(--c-primary)] hover:text-[var(--c-primary-hover)] transition-colors no-underline">
-									<span>🔥</span>
-									<span>View our brand identity</span>
-									<span>→</span>
-								</a>
-							</div>
-						</div>
-						<div className="grid gap-8 md:grid-cols-3">
+				<Section width="wide" padding="spacious">
+					<div className="mb-16 flex flex-col items-center gap-4">
+						<PageHeader
+							level={2}
+							align="center"
+							title="Why Choose Buzz UI?"
+							description="Modern design principles meet practical development needs"
+						/>
+						<a href="/logo-demo" className="inline-flex items-center gap-2 text-sm text-[var(--c-primary)] hover:text-[var(--c-primary-hover)] transition-colors no-underline">
+							<span>🔥</span>
+							<span>View our brand identity</span>
+							<span>→</span>
+						</a>
+					</div>
+					<div className="grid gap-8 md:grid-cols-3">
 							<Card variant="elevated" header="🎨 Design-First">
 								<p className="text-[var(--c-text-secondary)]">
 									Inspired by Umbro's clean aesthetic with multiple beautiful themes. 
@@ -83,40 +82,41 @@ export default function Page() {
 								</p>
 							</Card>
 						</div>
-					</div>
-				</section>
+				</Section>
 
 				{/* Style Gallery */}
-				<section className="py-24 bg-[var(--c-surface-2)]">
-					<div className="mx-auto max-w-7xl px-6">
-						<div className="text-center mb-16">
-							<h2 className="text-3xl font-bold text-[var(--c-text)]">One library, ten personalities</h2>
-							<p className="mt-4 text-lg text-[var(--c-text-secondary)] max-w-2xl mx-auto">
-								Pick a <strong>style</strong> — corners, elevation, glass, density and motion as one
-								coherent look — independent of color theme. Lock it in during setup, or switch live.
-								Every preview below is real tokens, not a screenshot.
-							</p>
-							<div className="mt-4">
-								<a href="/docs/theme/style" className="inline-flex items-center gap-2 text-sm text-[var(--c-primary)] hover:text-[var(--c-primary-hover)] transition-colors no-underline">
-									<span>Read the style guide</span>
-									<span>→</span>
-								</a>
-							</div>
-						</div>
-						<StyleGallery />
+				<Section variant="muted" width="wide" padding="spacious">
+					<div className="mb-16 flex flex-col items-center gap-4">
+						<PageHeader
+							level={2}
+							align="center"
+							title="One library, ten personalities"
+							description={
+								<>
+									Pick a <strong>style</strong> — corners, elevation, glass, density and motion as
+									one coherent look — independent of color theme. Lock it in during setup, or switch
+									live. Every preview below is real tokens, not a screenshot.
+								</>
+							}
+						/>
+						<a href="/docs/theme/style" className="inline-flex items-center gap-2 text-sm text-[var(--c-primary)] hover:text-[var(--c-primary-hover)] transition-colors no-underline">
+							<span>Read the style guide</span>
+							<span>→</span>
+						</a>
 					</div>
-				</section>
+					<StyleGallery />
+				</Section>
 
 				{/* Component Showcase */}
-				<section className="py-24 bg-[var(--c-surface)]">
-					<div className="mx-auto max-w-7xl px-6">
-						<div className="text-center mb-16">
-							<h2 className="text-3xl font-bold text-[var(--c-text)]">Component Highlights</h2>
-							<p className="mt-4 text-lg text-[var(--c-text-secondary)]">
-								A taste of what's included in the library
-							</p>
-						</div>
-						<div className="grid gap-8 lg:grid-cols-3">
+				<Section width="wide" padding="spacious">
+					<PageHeader
+						level={2}
+						align="center"
+						className="mb-16"
+						title="Component Highlights"
+						description="A taste of what's included in the library"
+					/>
+					<div className="grid gap-8 lg:grid-cols-3">
 							<Card 
 								variant="elevated" 
 								header="Buttons" 
@@ -180,25 +180,22 @@ export default function Page() {
 								</div>
 							</Card>
 						</div>
-					</div>
-				</section>
+				</Section>
 
 				{/* Getting Started */}
-				<section className="py-24 bg-[var(--c-surface-2)]">
-					<div className="mx-auto max-w-4xl px-6 text-center">
-						<h2 className="text-3xl font-bold text-[var(--c-text)]">Ready to get started?</h2>
-						<p className="mt-4 text-lg text-[var(--c-text-secondary)]">
-							Install Buzz UI and start building beautiful interfaces today
-						</p>
-						<div className="mt-8 flex justify-center">
-							<a href="/docs" className="no-underline">
-								<Button size="lg">
-									Browse Documentation
-								</Button>
-							</a>
-						</div>
+				<Section variant="muted" width="narrow" padding="spacious">
+					<PageHeader
+						level={2}
+						align="center"
+						title="Ready to get started?"
+						description="Install Buzz UI and start building beautiful interfaces today"
+					/>
+					<div className="mt-8 flex justify-center">
+						<a href="/docs" className="no-underline">
+							<Button size="lg">Browse Documentation</Button>
+						</a>
 					</div>
-				</section>
+				</Section>
 			</main>
 		</div>
 	)
