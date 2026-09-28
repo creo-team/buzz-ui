@@ -1,17 +1,25 @@
 import * as React from 'react'
 import { cx } from '../internal/cx.js'
 
+/**
+ * Surface treatment: `default` is a bordered surface, `elevated` adds a
+ * shadow, `outlined` sits on the secondary surface with a stronger border.
+ */
 export enum CardVariant {
 	Default = 'default',
 	Elevated = 'elevated',
 	Outlined = 'outlined',
 }
 
+/** Props for {@link Card}. */
 export interface CardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'title'> {
+	/** Header content; a plain string renders as an `<h3>` title. */
 	header?: React.ReactNode
+	/** Controls aligned to the end of the header row. */
 	actions?: React.ReactNode
 	/** Footer area separated by a divider. */
 	footer?: React.ReactNode
+	/** Surface treatment. @default 'default' */
 	variant?: CardVariant | `${CardVariant}`
 	/** Adds hover elevation + pointer affordance for clickable cards. */
 	interactive?: boolean

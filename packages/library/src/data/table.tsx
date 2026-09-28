@@ -1,9 +1,12 @@
 import * as React from 'react'
 import { cx } from '../internal/cx.js'
 
+/** Column definition for {@link Table}. */
 export interface Column<T> {
+	/** Row property shown in this column (also the column's React key). */
 	key: keyof T
 	header: React.ReactNode
+	/** Custom cell renderer; without it the cell shows `String(row[key])`. */
 	render?: (row: T) => React.ReactNode
 	/** Column alignment. Default 'left'. */
 	align?: 'left' | 'center' | 'right'
@@ -11,6 +14,7 @@ export interface Column<T> {
 	width?: number | string
 }
 
+/** Props for {@link Table}. Rows must carry a stable `id` (used as the React key). */
 export interface TableProps<T> {
 	columns: Column<T>[]
 	rows: T[]

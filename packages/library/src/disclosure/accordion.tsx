@@ -4,19 +4,23 @@ import { cx } from '../internal/cx.js'
 import { useControllableState } from '../internal/use-controllable-state.js'
 import { IconChevronDown } from '../internal/icons.js'
 
+/** One accordion section. */
 export interface AccordionItem {
+	/** Stable identifier — the value `openKey` and `onChange` use. */
 	key: string
 	header: React.ReactNode
 	content: React.ReactNode
 	disabled?: boolean
 }
 
+/** Props for {@link Accordion}. */
 export interface AccordionProps {
 	items: AccordionItem[]
 	/** Controlled open key (null = all closed). */
 	openKey?: string | null
 	/** Initial open key for uncontrolled usage. */
 	defaultOpenKey?: string | null
+	/** Fires with the opened item's key, or `null` when the open item closes. */
 	onChange?: (key: string | null) => void
 	className?: string
 }

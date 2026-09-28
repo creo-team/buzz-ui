@@ -9,17 +9,26 @@ import { usePresence } from '../internal/use-presence.js'
 import { useHotkey, type HotkeyConfig } from '../hooks/use-hotkey.js'
 import { IconX } from '../internal/icons.js'
 
+/** Viewport edge a {@link Drawer} slides in from. */
 export type DrawerSide = 'left' | 'right' | 'top' | 'bottom'
+/** Panel size preset — width for left/right drawers, height for top/bottom; 'full' spans the whole edge. */
 export type DrawerSize = 'sm' | 'md' | 'lg' | 'xl' | 'full'
 
+/** Props for {@link Drawer}. */
 export interface DrawerProps {
 	children: React.ReactNode
 	open: boolean
+	/** Called with `false` when the drawer requests to close (Escape, backdrop, ✕ button). */
 	onOpenChange: (open: boolean) => void
+	/** Edge to slide in from. @default 'right' */
 	side?: DrawerSide
+	/** Panel size preset. @default 'md' */
 	size?: DrawerSize
+	/** Header heading; labels the dialog for assistive tech. */
 	title?: React.ReactNode
+	/** Secondary line under the title, wired to `aria-describedby`. */
 	description?: React.ReactNode
+	/** Show an ✕ button in the header. @default true */
 	showCloseButton?: boolean
 	/** Additional hotkeys active while the drawer is open. */
 	hotkeys?: HotkeyConfig[]

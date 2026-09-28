@@ -9,11 +9,14 @@ import { usePresence } from '../internal/use-presence.js'
 import { useHotkey, type HotkeyConfig } from '../hooks/use-hotkey.js'
 import { IconX } from '../internal/icons.js'
 
+/** Width preset for the {@link Modal} panel; 'full' stretches to the viewport (minus a small gutter). */
 export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full'
 
+/** Props for {@link Modal}. */
 export interface ModalProps {
 	/** Open state (preferred). `isOpen` remains supported. */
 	open?: boolean
+	/** Called with `false` whenever the modal closes (Escape, backdrop, ✕ button). */
 	onOpenChange?: (open: boolean) => void
 	/** @deprecated Use `open`. */
 	isOpen?: boolean
@@ -26,7 +29,9 @@ export interface ModalProps {
 	maxWidthClassName?: string
 	/** Swap the document title while open (restored on close). */
 	documentTitle?: string
+	/** Rendered as the `<h2>` heading and used to label the dialog. */
 	header?: React.ReactNode
+	/** Action row rendered in the footer. */
 	actions?: React.ReactNode
 	/** Additional hotkeys active while the modal is open. */
 	hotkeys?: HotkeyConfig[]

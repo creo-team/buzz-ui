@@ -1,6 +1,7 @@
 "use client"
 import * as React from 'react'
 
+/** Props for {@link NewsletterForm} — also the shape of the Footer's `newsletter` prop. */
 export interface NewsletterFormProps {
 	title: string
 	description: string
@@ -8,6 +9,7 @@ export interface NewsletterFormProps {
 	onSubmit?: (email: string) => void
 	/** Form action — a URL or a server action; serializable across the RSC boundary. */
 	action?: string | ((formData: FormData) => void | Promise<void>)
+	/** Submit button text. @default 'Subscribe' */
 	buttonLabel?: string
 }
 

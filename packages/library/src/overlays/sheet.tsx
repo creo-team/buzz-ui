@@ -2,10 +2,14 @@
 import * as React from 'react'
 import { Drawer } from './drawer.js'
 
+/** Props for the deprecated {@link Sheet}. */
 export interface SheetProps {
 	open: boolean
+	/** Called when the sheet requests to close. */
 	onClose: () => void
+	/** Edge to slide in from. @default 'right' */
 	position?: 'left' | 'right'
+	/** Heading content (forwarded to Drawer's `title`). */
 	header?: React.ReactNode
 	children?: React.ReactNode
 }

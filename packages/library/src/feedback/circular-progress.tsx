@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { cx } from '../internal/cx.js'
 
+/** Color of the progress arc. */
 export enum CircularProgressVariant {
 	Primary = 'primary',
 	Success = 'success',
@@ -9,12 +10,15 @@ export enum CircularProgressVariant {
 	Info = 'info',
 }
 
+/** Props for {@link CircularProgress}. */
 export interface CircularProgressProps {
 	/** Percentage 0–100. */
 	value?: number
 	/** Diameter in pixels. */
 	size?: number
+	/** Arc stroke width in pixels. @default 4 */
 	strokeWidth?: number
+	/** Arc color. @default 'primary' */
 	variant?: CircularProgressVariant | `${CircularProgressVariant}`
 	/** Show the percentage in the center. */
 	showLabel?: boolean

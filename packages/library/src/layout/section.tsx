@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { cx } from '../internal/cx.js'
 
+/** Props for {@link Section}. */
 export interface SectionProps extends React.HTMLAttributes<HTMLElement> {
 	/**
 	 * Surface treatment of the band: `default` inherits the page background,

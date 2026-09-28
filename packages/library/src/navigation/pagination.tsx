@@ -3,10 +3,12 @@ import * as React from 'react'
 import { cx } from '../internal/cx.js'
 import { IconChevronLeft, IconChevronRight } from '../internal/icons.js'
 
+/** Props for {@link Pagination}. */
 export interface PaginationProps {
 	/** Current page (1-based). */
 	page: number
 	pageCount: number
+	/** Receives the target page, clamped to 1…pageCount. */
 	onPageChange?: (page: number) => void
 	/** Pages shown on each side of the current page. Default 1. */
 	siblingCount?: number

@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { cx } from '../internal/cx.js'
 
+/** Color scheme of the badge: neutral default, four statuses, or a transparent outline. */
 export enum BadgeVariant {
 	Default = 'default',
 	Info = 'info',
@@ -12,7 +13,9 @@ export enum BadgeVariant {
 
 type BadgeVariantInput = BadgeVariant | `${BadgeVariant}`
 
+/** Props for {@link Badge}. */
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
+	/** Color scheme. @default 'default' */
 	variant?: BadgeVariantInput
 	/** Leading status dot. */
 	dot?: boolean

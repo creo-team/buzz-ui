@@ -18,6 +18,7 @@ import { Spinner } from '../primitives/spinner.js'
 
 export type ToastVariant = 'default' | 'success' | 'error' | 'warning' | 'info' | 'loading'
 
+/** Viewport corner or edge-center a toast stack renders in. */
 export type ToastPosition =
 	| 'top-left'
 	| 'top-center'
@@ -26,6 +27,7 @@ export type ToastPosition =
 	| 'bottom-center'
 	| 'bottom-right'
 
+/** Options accepted by every {@link toast} call. */
 export interface ToastOptions {
 	/** Reuse an id to update an existing toast in place. */
 	id?: string

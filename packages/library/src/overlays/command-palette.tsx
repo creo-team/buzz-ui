@@ -10,21 +10,33 @@ import { useHotkey, type HotkeyConfig } from '../hooks/use-hotkey.js'
 import { IconSearch } from '../internal/icons.js'
 import { Kbd } from '../primitives/kbd.js'
 
+/** One command offered by {@link CommandPalette}. */
 export interface CommandItem {
+	/** Unique id — also keys the option's DOM node. */
 	id: string
 	label: string
+	/** Secondary line under the label; also matched by the filter. */
 	description?: string
 	icon?: React.ReactNode
+	/** Extra search terms the filter matches besides label and description. */
 	keywords?: string[]
+	/** Runs when the item is chosen; the palette closes afterwards. */
 	onSelect: () => void
+	/** Section heading the item is listed under. Ungrouped items fall under "Commands". */
 	group?: string
 }
 
+/** Props for {@link CommandPalette}. */
 export interface CommandPaletteProps {
+	/** Controlled open state. */
 	open: boolean
+	/** Called with `false` when the palette requests to close (Escape, backdrop, selection). */
 	onOpenChange: (open: boolean) => void
+	/** Commands to list, filtered as the user types. */
 	items: CommandItem[]
+	/** Search input placeholder. @default 'Type a command or search…' */
 	placeholder?: string
+	/** Shown (and announced) when the query matches nothing. @default 'No results found.' */
 	emptyMessage?: string
 	/** Additional hotkeys active while the palette is open. */
 	hotkeys?: HotkeyConfig[]

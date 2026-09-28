@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { cx } from '../internal/cx.js'
 
+/** Color of the filled bar; `glass` is a translucent, blurred fill. */
 export enum ProgressVariant {
 	Primary = 'primary',
 	Success = 'success',
@@ -10,6 +11,7 @@ export enum ProgressVariant {
 	Glass = 'glass',
 }
 
+/** Track height presets, from hairline `xs` to `xl`. */
 export enum ProgressSize {
 	ExtraSmall = 'xs',
 	Small = 'sm',

@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { cx } from '../internal/cx.js'
 
+/** Props for {@link PageHeader}. */
 export interface PageHeaderProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
 	/** The heading itself (replaces the native tooltip `title` attribute). */
 	title: React.ReactNode

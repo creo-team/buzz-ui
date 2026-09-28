@@ -28,14 +28,19 @@ function usePopoverContext(part: string): PopoverContextValue {
 	return context
 }
 
+/** Props for {@link Popover}. */
 export interface PopoverProps {
 	children: React.ReactNode
 	/** Controlled open state. */
 	open?: boolean
+	/** Initial open state for uncontrolled usage. */
 	defaultOpen?: boolean
 	onOpenChange?: (open: boolean) => void
+	/** Preferred side of the trigger (flips when there is no room). @default 'bottom' */
 	side?: Side
+	/** Alignment along the trigger. @default 'center' */
 	align?: Align
+	/** Gap between trigger and panel, in px. @default 8 */
 	sideOffset?: number
 }
 
@@ -74,11 +79,16 @@ export function Popover({
 	return <PopoverContext.Provider value={context}>{children}</PopoverContext.Provider>
 }
 
+/** Props for {@link PopoverTrigger}. */
 export interface PopoverTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	/** Merge onto the child element instead of rendering a button. */
 	asChild?: boolean
 }
 
+/**
+ * The element that toggles the surrounding {@link Popover} and anchors its
+ * panel. Wires `aria-haspopup`/`aria-expanded`/`aria-controls` automatically.
+ */
 export const PopoverTrigger = React.forwardRef<HTMLButtonElement, PopoverTriggerProps>(
 	function PopoverTrigger({ asChild, children, onClick, ...props }, forwardedRef) {
 		const context = usePopoverContext('PopoverTrigger')
@@ -114,10 +124,16 @@ export const PopoverTrigger = React.forwardRef<HTMLButtonElement, PopoverTrigger
 	}
 )
 
+/** Props for {@link PopoverContent}. */
 export interface PopoverContentProps extends React.HTMLAttributes<HTMLDivElement> {
 	children?: React.ReactNode
 }
 
+/**
+ * The floating panel of a {@link Popover}: portalled, collision-aware
+ * positioning, Escape/outside-press dismissal, and focus moves in on open
+ * and back to the trigger on close.
+ */
 export const PopoverContent = React.forwardRef<HTMLDivElement, PopoverContentProps>(
 	function PopoverContent({ className, children, ...props }, forwardedRef) {
 		const context = usePopoverContext('PopoverContent')

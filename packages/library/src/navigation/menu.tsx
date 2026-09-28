@@ -2,6 +2,7 @@
 import * as React from 'react'
 import { Dropdown, type DropdownItem } from '../overlays/dropdown.js'
 
+/** One entry in a {@link Menu}. */
 export interface MenuItem {
 	key: string
 	label: React.ReactNode
@@ -10,8 +11,10 @@ export interface MenuItem {
 	icon?: React.ReactNode
 }
 
+/** Props for {@link Menu}. */
 export interface MenuProps {
 	items: MenuItem[]
+	/** Trigger contents — rendered inside the menu's own `<button>`, so pass a label or icon, not a button element. */
 	button: React.ReactNode
 	className?: string
 }

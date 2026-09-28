@@ -8,12 +8,16 @@ import { useDismissableLayer } from '../internal/use-dismissable-layer.js'
 import { usePresence } from '../internal/use-presence.js'
 import { formatHotkey } from '../hooks/use-hotkey.js'
 
+/** Visual treatment of a {@link DropdownItem}. */
 export enum DropdownItemVariant {
 	Default = 'default',
+	/** Danger-colored — for delete/remove actions. */
 	Destructive = 'destructive',
 }
 
+/** One entry in a {@link Dropdown} menu. */
 export interface DropdownItem {
+	/** Unique key among the menu's items. */
 	key: string
 	label: React.ReactNode
 	icon?: React.ReactNode
@@ -23,17 +27,25 @@ export interface DropdownItem {
 	 * the actual key with `useHotkey` or a Button `hotkey`.
 	 */
 	shortcut?: string
+	/** Runs on activation; the menu closes afterwards. */
 	onClick?: () => void
+	/** Renders the item as an `<a>` linking here instead of a button. */
 	href?: string
 	disabled?: boolean
 	variant?: DropdownItemVariant | `${DropdownItemVariant}`
 }
 
+/** Props for {@link Dropdown}. */
 export interface DropdownProps {
+	/** Element the menu anchors to. Receives the ARIA wiring plus click/arrow-key handlers that open the menu. */
 	trigger: React.ReactElement
+	/** Menu entries in order; the string `'separator'` renders a divider. */
 	items: (DropdownItem | 'separator')[]
+	/** Alignment along the trigger. @default 'start' */
 	align?: Align
+	/** Preferred side of the trigger (flips when there is no room). @default 'bottom' */
 	side?: Side
+	/** Gap between trigger and menu, in px. @default 4 */
 	sideOffset?: number
 	className?: string
 	/** Controlled open state. */

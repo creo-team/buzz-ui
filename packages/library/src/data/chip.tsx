@@ -2,6 +2,7 @@ import * as React from 'react'
 import { cx } from '../internal/cx.js'
 import { IconX } from '../internal/icons.js'
 
+/** Color scheme of the chip: neutral default, four statuses, or a transparent outline. */
 export enum ChipVariant {
 	Default = 'default',
 	Info = 'info',
@@ -11,7 +12,9 @@ export enum ChipVariant {
 	Outline = 'outline',
 }
 
+/** Props for {@link Chip}. */
 export interface ChipProps extends React.HTMLAttributes<HTMLSpanElement> {
+	/** Color scheme. @default 'default' */
 	variant?: ChipVariant | `${ChipVariant}`
 	/** Leading icon or avatar. */
 	icon?: React.ReactNode

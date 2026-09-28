@@ -2,6 +2,7 @@ import * as React from 'react'
 import { cx } from '../internal/cx.js'
 import { IconInfo, IconSuccess, IconWarning, IconDanger } from '../internal/icons.js'
 
+/** Status color of the alert, which also picks the default icon. */
 export enum AlertVariant {
 	Info = 'info',
 	Success = 'success',
@@ -19,8 +20,11 @@ const ICONS: Record<AlertVariant, React.ReactNode> = {
 	[AlertVariant.Danger]: <IconDanger className="bz-alert__icon-svg" />,
 }
 
+/** Props for {@link Alert}. */
 export interface AlertProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'title'> {
+	/** Status color. @default 'info' */
 	variant?: AlertVariantInput
+	/** Bold heading rendered above the body. */
 	header?: React.ReactNode
 	/** Replace the variant icon; pass `null` to hide it. */
 	icon?: React.ReactNode

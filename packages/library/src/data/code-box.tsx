@@ -2,12 +2,18 @@ import * as React from 'react'
 import { cx } from '../internal/cx.js'
 import { CopyButton } from '../utils/copy.js'
 
+/** Props for {@link CodeBox}. */
 export interface CodeBoxProps {
+	/** Source text, rendered verbatim (no syntax highlighting). */
 	code: string
+	/** Language tag shown at the end of the header. @default 'typescript' */
 	language?: string
+	/** Header title; pass an empty string to hide the header. @default 'Code' */
 	label?: string
+	/** Render a line-number gutter. @default false */
 	showLineNumbers?: boolean
 	className?: string
+	/** Show the copy-to-clipboard button. @default true */
 	copyable?: boolean
 }
 
