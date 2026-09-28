@@ -6,6 +6,7 @@ import { composeRefs } from '../internal/compose-refs.js'
 import { usePosition, type Side, type Align } from '../internal/use-position.js'
 import { useDismissableLayer } from '../internal/use-dismissable-layer.js'
 import { usePresence } from '../internal/use-presence.js'
+import { formatHotkey } from '../hooks/use-hotkey.js'
 
 export enum DropdownItemVariant {
 	Default = 'default',
@@ -16,6 +17,12 @@ export interface DropdownItem {
 	key: string
 	label: React.ReactNode
 	icon?: React.ReactNode
+	/**
+	 * Keyboard shortcut hint, right-aligned and platform-formatted
+	 * (`'mod+s'` renders ⌘S on Mac, Ctrl+S elsewhere). Display only — bind
+	 * the actual key with `useHotkey` or a Button `hotkey`.
+	 */
+	shortcut?: string
 	onClick?: () => void
 	href?: string
 	disabled?: boolean
@@ -235,6 +242,11 @@ export function Dropdown({
 								<>
 									{item.icon != null && <span className="bz-menu__item-icon">{item.icon}</span>}
 									<span className="bz-menu__item-label">{item.label}</span>
+									{item.shortcut && (
+										<span className="bz-menu__item-shortcut" aria-hidden="true">
+											{formatHotkey(item.shortcut)}
+										</span>
+									)}
 								</>
 							)
 							return item.href && !isDisabled ? (

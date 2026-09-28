@@ -26,6 +26,12 @@ export interface SidebarNavProps {
 	sortAlphabetically?: boolean
 	showSearch?: boolean
 	groupBy?: (item: SidebarNavItem) => string
+	/**
+	 * Explicit group ordering for `groupBy` — groups appear in this order,
+	 * with unlisted groups after, alphabetically. Without it, all groups
+	 * sort alphabetically.
+	 */
+	groupOrder?: string[]
 	variant?: SidebarNavVariant | `${SidebarNavVariant}`
 	stickyHeader?: boolean
 	currentPath?: string
@@ -48,6 +54,7 @@ export function SidebarNav({
 	sortAlphabetically = false,
 	showSearch = true,
 	groupBy,
+	groupOrder,
 	variant = SidebarNavVariant.Default,
 	stickyHeader = true,
 	currentPath = '',
@@ -87,8 +94,15 @@ export function SidebarNav({
 			list.push(item)
 			groups.set(group, list)
 		}
-		return Array.from(groups.entries()).sort(([a], [b]) => a.localeCompare(b))
-	}, [processed, groupBy])
+		return Array.from(groups.entries()).sort(([a], [b]) => {
+			const indexA = groupOrder?.indexOf(a) ?? -1
+			const indexB = groupOrder?.indexOf(b) ?? -1
+			if (indexA !== -1 && indexB !== -1) return indexA - indexB
+			if (indexA !== -1) return -1
+			if (indexB !== -1) return 1
+			return a.localeCompare(b)
+		})
+	}, [processed, groupBy, groupOrder])
 
 	const renderItem = (item: SidebarNavItem) => {
 		const isActive = currentPath === item.href

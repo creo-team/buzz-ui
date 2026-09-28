@@ -3,7 +3,7 @@ import './globals.css'
 // npm consumers get — so every site build exercises the shipped artifact.
 import '@creo-team/buzz-ui/styles.css'
 import { cookies } from 'next/headers'
-import { TopNav, getServerTheme, getServerStyle } from '@creo-team/buzz-ui/server'
+import { TopNav, Button, getServerTheme, getServerStyle } from '@creo-team/buzz-ui/server'
 import { ThemeSwitcher, StyleSwitcher, ToastProvider } from '@creo-team/buzz-ui/client'
 import { themeInitScript, styleInitScript } from '@creo-team/buzz-ui/server'
 import { DevBanner } from '../components/dev-banner'
@@ -41,11 +41,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 								<div className="flex items-center gap-3">
 									<StyleSwitcher initialStyle={initialStyle} />
 									<ThemeSwitcher initialTheme={initialTheme} />
-									<a href="https://github.com/creo-team/buzz-ui" className="no-underline">
-										<button className="rounded-[var(--radius-md)] border border-[var(--c-border)] bg-[var(--c-surface-2)] px-3 py-2 text-sm text-[var(--c-text)] hover:bg-[var(--c-hover)] transition-colors">
-											GitHub
-										</button>
-									</a>
+									<Button asChild variant="soft" size="sm">
+										<a href="https://github.com/creo-team/buzz-ui">GitHub</a>
+									</Button>
 								</div>
 							}
 							items={[
