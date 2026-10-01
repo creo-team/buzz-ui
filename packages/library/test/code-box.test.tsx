@@ -53,7 +53,7 @@ describe('CodeBox', () => {
 		
 		render(<CodeBox code={code} copyable={true} />)
 
-		const copyButton = screen.getByTitle('Copy code')
+		const copyButton = screen.getByRole('button', { name: 'Copy code' })
 		fireEvent.click(copyButton)
 
 		await waitFor(() => {
@@ -66,12 +66,23 @@ describe('CodeBox', () => {
 		
 		render(<CodeBox code={code} copyable={true} />)
 
-		const copyButton = screen.getByTitle('Copy code')
+		const copyButton = screen.getByRole('button', { name: 'Copy code' })
 		fireEvent.click(copyButton)
 
 		await waitFor(() => {
-			expect(screen.getByTitle('Copied!')).toBeInTheDocument()
+			expect(copyButton).toHaveAttribute('data-copy-status', 'copied')
 		})
+		await waitFor(() => expect(screen.getByRole('tooltip')).toHaveTextContent('Copied'))
+	})
+
+	it('positions the tooltip anchor, not the button, so the tooltip sits on the button', () => {
+		render(<CodeBox code="const x = 1" copyable={true} />)
+		const button = screen.getByRole('button', { name: 'Copy code' })
+		const anchor = button.parentElement
+		expect(anchor).toHaveClass('bz-tooltip-anchor')
+		expect(button).not.toHaveClass('bz-code-box__copy')
+		expect(anchor?.parentElement).toHaveClass('bz-code-box__copy')
+		expect(anchor?.children).toHaveLength(1)
 	})
 
 	it('should not show copy button when copyable is false', () => {
@@ -79,7 +90,7 @@ describe('CodeBox', () => {
 		
 		render(<CodeBox code={code} copyable={false} />)
 
-		expect(screen.queryByTitle('Copy code')).not.toBeInTheDocument()
+		expect(screen.queryByRole('button', { name: 'Copy code' })).not.toBeInTheDocument()
 	})
 
 	it('should handle copy errors gracefully', async () => {
@@ -88,14 +99,14 @@ describe('CodeBox', () => {
 		const code = 'test code'
 		render(<CodeBox code={code} copyable={true} />)
 
-		const copyButton = screen.getByTitle('Copy code')
+		const copyButton = screen.getByRole('button', { name: 'Copy code' })
 		fireEvent.click(copyButton)
 
-		// Failure is swallowed: the button stays in its idle state
+		// Failure is shown, never swallowed: the button reports it and the tooltip offers the text
 		await waitFor(() => {
-			expect(navigator.clipboard.writeText).toHaveBeenCalledWith(code)
+			expect(copyButton).toHaveAttribute('data-copy-status', 'failed')
 		})
-		expect(screen.getByTitle('Copy code')).toBeInTheDocument()
+		expect(navigator.clipboard.writeText).toHaveBeenCalledWith(code)
 	})
 
 	it('should apply custom className', () => {

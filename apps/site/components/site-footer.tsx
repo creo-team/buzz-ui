@@ -1,6 +1,6 @@
 "use client"
 import { Footer } from '@creo-team/buzz-ui/server'
-import { Tooltip, TooltipDirection, TooltipSize } from '@creo-team/buzz-ui/client'
+import { TimestampFormat, Tooltip, TooltipDirection, TooltipSize, useTimestamp } from '@creo-team/buzz-ui/client'
 import packageJson from '../package.json'
 
 // This will be generated at build time
@@ -22,33 +22,25 @@ try {
 }
 
 export function SiteFooter() {
+	// The deploy time in the viewer's own locale and zone, as plain text: the full form carries the
+	// zone, so keyboard, touch and screen-reader users get it through the link's description.
+	// Nothing interactive (and no nested hover-only tooltip) goes inside role="tooltip".
+	const deployed = useTimestamp(deploymentTime, { format: TimestampFormat.Absolute })
+
 	const formatDeploymentInfo = () => {
 		if (deploymentTime === 'local') {
 			return 'Local Development'
 		}
-		
-		try {
-			const date = new Date(deploymentTime)
-			const formatted = date.toLocaleString('en-US', {
-				year: 'numeric',
-				month: 'short',
-				day: 'numeric',
-				hour: '2-digit',
-				minute: '2-digit',
-				hour12: true,
-				timeZoneName: 'short'
-			})
-			
-			// Include build ID for production deployments
-			if (buildId && buildId !== 'local') {
-				const shortBuildId = buildId.substring(0, 7)
-				return `Deployed: ${formatted} (${shortBuildId})`
-			}
-			
-			return `Deployed: ${formatted}`
-		} catch {
-			return 'Deployment info unavailable'
+
+		const deployedAt = deployed && !deployed.pending ? deployed.full : ''
+
+		// Include build ID for production deployments
+		if (buildId && buildId !== 'local') {
+			const shortBuildId = buildId.substring(0, 7)
+			return <>Deployed: {deployedAt} ({shortBuildId})</>
 		}
+
+		return <>Deployed: {deployedAt}</>
 	}
 
 	const versionElement = (

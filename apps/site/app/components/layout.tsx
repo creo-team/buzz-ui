@@ -56,6 +56,7 @@ const componentItems = [
 	{ key: 'avatar', label: 'Avatar', href: '/components/avatar', category: 'Data & Display' },
 	{ key: 'accordion', label: 'Accordion', href: '/components/accordion', category: 'Data & Display' },
 	{ key: 'code-box', label: 'Code Box', href: '/components/code-box', category: 'Data & Display' },
+	{ key: 'timestamp', label: 'Timestamp', href: '/components/timestamp', category: 'Data & Display', badge: 'New' },
 
 	// Layout
 	{ key: 'section', label: 'Section & PageHeader', href: '/components/section', category: 'Layout', badge: 'New' },

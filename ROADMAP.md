@@ -30,6 +30,7 @@ This roadmap outlines the planned features and components for the Buzz UI compon
 - [x] **Combobox / Autocomplete** — filterable select built on the overlay engine (ARIA combobox pattern, controlled/uncontrolled, async-ready)
 
 ### Phase 3: Advanced Components
+- [x] **Timestamp** — hover for the full local time, click to copy a zone-safe string; six formats, one shared clock
 - [ ] **Date Picker** — full-featured calendar with range selection
 - [ ] **Time Picker** — elegant time selection interface
 - [ ] **Data Grid** — advanced table with sorting, filtering, and virtualization
@@ -91,5 +92,5 @@ Have suggestions for the roadmap? We'd love to hear from you:
 
 ---
 
-*Last updated: August 2026*
+*Last updated: October 2026*
 *This roadmap is subject to change based on community feedback and priorities.*

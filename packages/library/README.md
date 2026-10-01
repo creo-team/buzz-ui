@@ -24,7 +24,7 @@ npm install @creo-team/buzz-ui
   CSS-driven and honors `prefers-reduced-motion`.
 - **Collision-aware overlays.** Tooltips, popovers, and menus render in a
   portal with flip/shift positioning — never clipped by `overflow: hidden`.
-- **React 18.3 & 19.** Modern hooks (`useSyncExternalStore`, `useId`),
+- **React 19.2+.** Modern hooks (`useSyncExternalStore`, `useId`),
   controlled *and* uncontrolled modes everywhere, `asChild` polymorphism.
 
 ## Setup

@@ -14,6 +14,8 @@ interface Layer {
 	outsidePress: boolean
 	/** When false, Escape never dismisses this layer. */
 	escapeKey: boolean
+	/** A transient layer (a tooltip) closes on an outside press without consuming it: the layer beneath still sees the same press. */
+	transient: boolean
 }
 
 const layers: Layer[] = []
@@ -35,19 +37,27 @@ function handleKeydown(event: KeyboardEvent) {
 
 let lastPointerDownAt = 0
 
+function isPressInside(layer: Layer, event: PointerEvent | MouseEvent, path: EventTarget[]): boolean {
+	return layer.refs.some(ref => {
+		const el = ref.current
+		return el != null && (path.includes(el) || el.contains(event.target as Node))
+	})
+}
+
+/**
+ * Transient layers on top (tooltips) close when the press is outside them and never block it; the
+ * first non-transient layer then handles the same press as the topmost one.
+ */
 function handleOutsidePress(event: PointerEvent | MouseEvent) {
-	const layer = topLayer()
-	if (!layer || !layer.outsidePress) return
 	// Branches (e.g. the toast viewport) float above every layer without
 	// belonging to any — pressing them dismisses nothing.
 	const target = event.target as Element | null
 	if (target?.closest?.('[data-bz-layer-branch]')) return
 	const path = event.composedPath()
-	const inside = layer.refs.some(ref => {
-		const el = ref.current
-		return el != null && (path.includes(el) || el.contains(event.target as Node))
-	})
-	if (!inside) layer.onDismiss()
+	for (const layer of [...layers].reverse()) {
+		if (layer.outsidePress && !isPressInside(layer, event, path)) layer.onDismiss()
+		if (!layer.transient) return
+	}
 }
 
 function handlePointerDown(event: PointerEvent) {
@@ -90,6 +100,8 @@ export interface DismissableLayerOptions {
 	outsidePress?: boolean
 	/** Dismiss on Escape. Default true. */
 	escapeKey?: boolean
+	/** Close on an outside press without consuming it, so the layer beneath still dismisses on the same press (tooltips). Default false. */
+	transient?: boolean
 }
 
 /** Registers an overlay on the layer stack while `enabled` — Escape and outside presses dismiss it only when topmost. */
@@ -99,6 +111,7 @@ export function useDismissableLayer({
 	refs,
 	outsidePress = true,
 	escapeKey = true,
+	transient = false,
 }: DismissableLayerOptions) {
 	const onDismissRef = React.useRef(onDismiss)
 	onDismissRef.current = onDismiss
@@ -115,6 +128,7 @@ export function useDismissableLayer({
 			onDismiss: () => onDismissRef.current(),
 			outsidePress,
 			escapeKey,
+			transient,
 		}
 		layers.push(layer)
 		attachListeners()
@@ -123,7 +137,7 @@ export function useDismissableLayer({
 			if (index !== -1) layers.splice(index, 1)
 			detachListenersIfIdle()
 		}
-	}, [enabled, outsidePress, escapeKey])
+	}, [enabled, outsidePress, escapeKey, transient])
 }
 
 /** Number of active overlay layers (used by scroll-lock coordination/tests). */

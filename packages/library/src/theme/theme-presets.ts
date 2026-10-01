@@ -96,6 +96,8 @@ export interface ThemeColorPalette {
 	// Component-specific
 	tooltipBg?: string
 	tooltipText?: string
+	/** Secondary tooltip lines (relative time, copy hints); keep it at 4.5:1 or more against `tooltipBg`. */
+	tooltipTextMuted?: string
 	tooltipBorder?: string
 	
 	modalBg?: string
@@ -202,6 +204,7 @@ export const THEME_PRESETS = {
 			// Component-specific
 			tooltipBg: '#1f2937',
 			tooltipText: '#f9fafb',
+			tooltipTextMuted: '#9ca3af', // 5.78:1 on #1f2937
 			tooltipBorder: 'rgba(31, 41, 55, 0.1)',
 			
 			modalBg: '#ffffff',
@@ -294,6 +297,7 @@ export const THEME_PRESETS = {
 			// Component-specific
 			tooltipBg: '#f9fafb',
 			tooltipText: '#111827',
+			tooltipTextMuted: '#4b5563', // 7.23:1 on #f9fafb
 			tooltipBorder: 'rgba(249, 250, 251, 0.1)',
 			
 			modalBg: '#111827',
@@ -386,6 +390,7 @@ export const THEME_PRESETS = {
 			// Component-specific
 			tooltipBg: '#e2e8f0',
 			tooltipText: '#0f172a',
+			tooltipTextMuted: '#475569', // 6.15:1 on #e2e8f0
 			tooltipBorder: 'rgba(226, 232, 240, 0.1)',
 			
 			modalBg: '#0f172a',
@@ -478,6 +483,7 @@ export const THEME_PRESETS = {
 			// Component-specific
 			tooltipBg: '#15803d',
 			tooltipText: '#ffffff',
+			tooltipTextMuted: '#f0fdf4', // 4.79:1 on #15803d
 			tooltipBorder: 'rgba(21, 128, 61, 0.2)',
 			
 			modalBg: '#f0fdf4',
@@ -570,6 +576,7 @@ export const THEME_PRESETS = {
 			// Component-specific
 			tooltipBg: '#0369a1',
 			tooltipText: '#ffffff',
+			tooltipTextMuted: '#e0f2fe', // 5.17:1 on #0369a1
 			tooltipBorder: 'rgba(3, 105, 161, 0.2)',
 			
 			modalBg: '#0c4a6e',
@@ -662,6 +669,7 @@ export const THEME_PRESETS = {
 			// Component-specific
 			tooltipBg: 'rgba(229, 231, 235, 0.95)',
 			tooltipText: '#111827',
+			tooltipTextMuted: '#4b5563', // 5.46:1 on the tooltip composited over black, its darkest case
 			tooltipBorder: 'rgba(229, 231, 235, 0.1)',
 			
 			modalBg: 'rgba(17, 24, 39, 0.95)',

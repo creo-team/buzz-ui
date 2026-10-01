@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.8.0
+
+### Breaking
+- React peer is now `^19.2.0` (was `^18.3.1 || ^19.0.0`).
+
+### New
+- `Timestamp`: a date or time label that shows the full local date, time and zone on hover or focus and copies an explicit, zone-safe string (`Thu, Oct 1, 2026, 3:04 PM MDT (UTC-6)`) on click, Enter or Space, with "Copied" announced politely. Six formats (`TimestampFormat`): Compact, Relative, Contextual, Time, Absolute, Date. Live labels share one document-wide timer that pauses while the tab is hidden and re-render only when their text changes. Server-rendered without hydration errors.
+- `TimestampProvider` sets locale, time zone, 12/24-hour clock, messages and an `onError` reporter once for a subtree, and falls back safely on invalid settings. `useTimestamp` exposes the same engine for custom displays.
+- Server-safe formatters: `formatTimestamp`, `formatTimestampRelative`, `formatTimestampFull`, `formatTimestampCopy`, `parseTimestamp`, `isSupportedTimeZone`. Calendar-day logic runs in the viewer's zone; a past day within the week reads as its weekday (`Monday`) and an upcoming one carries its date (`Mon, Oct 5`), so a bare weekday never means both last week and next; date-only `YYYY-MM-DD` values never shift a day; Postgres timestamp text parses.
+- `useCopyToClipboard` with `CopyStatus`.
+
+### Changed
+- `Tooltip`: opens on tap for touch, closes on an outside tap, and registers on the overlay layer stack, so Escape closes the tooltip without closing the dialog beneath it. While a tooltip is open, Escape is consumed (capture phase): it closes the tooltip and no longer reaches your own Escape handlers, so a field that clears on Escape needs a second press while its tooltip shows. An outside press closes the tooltip without being consumed, so the same press still closes a Popover, Dropdown or Modal beneath it. In controlled mode, hover and focus now request changes through `onOpenChange`. New `describeTrigger` prop.
+- `CopyButton` is built on `useCopyToClipboard`. Its native `title` is replaced by the shared Tooltip, so it now renders inside `span.bz-tooltip-anchor`; put positioning classes on a wrapper, not on the button. `CodeBox` now positions a `span.bz-code-box__copy` wrapper instead of the button. A failed copy is shown (`data-copy-status="failed"`, the value selected with a shortcut hint) and reported through the new `onCopyError`, instead of being silently ignored. `onCopied` now receives the copied text. `data-copied` is deprecated in favor of `data-copy-status`.
+
+- Theme presets set the new `tooltipTextMuted` (`--c-tooltip-text-muted`) to a color at 4.5:1 or more against their own `tooltipBg`.
+
+### Fixed
+- Closed overlays no longer schedule an exit timer on mount, so a page of closed tooltips holds no timers.
+
+### Docs
+- New Timestamp page; the site footer's deploy time uses `Timestamp`.
+
 ## 0.7.0
 
 Modern toolchain, honed Button API, and forms that catch problems before

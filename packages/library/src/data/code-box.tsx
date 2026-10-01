@@ -56,7 +56,13 @@ export function CodeBox({
 						)}
 					</code>
 				</pre>
-				{copyable && <CopyButton value={code} label="code" className="bz-code-box__copy" />}
+				{copyable && (
+					// The wrapper takes the absolute position: CopyButton renders inside its tooltip anchor, which
+					// must sit where the button is, or the tooltip floats away from it.
+					<span className="bz-code-box__copy">
+						<CopyButton value={code} label="code" />
+					</span>
+				)}
 			</div>
 		</div>
 	)
