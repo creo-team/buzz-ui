@@ -286,6 +286,18 @@ describe('Timestamp copy', () => {
 		expect(getAnnouncer()).toHaveTextContent('Copied')
 	})
 
+	it('creates the announcer region inside the dialog before the first copy', () => {
+		render(
+			<Denver>
+				<Modal open onOpenChange={() => undefined} header="Activity">
+					<Timestamp value={FIVE_MINUTES_AGO} />
+				</Modal>
+			</Denver>
+		)
+		expect(getAnnouncer()?.parentElement).toBe(screen.getByRole('dialog'))
+		expect(getAnnouncer()).toHaveTextContent('')
+	})
+
 	it('shows a failure with the text selected, announces it and reports it', async () => {
 		const failure = new DOMException('Write permission denied.', 'NotAllowedError')
 		writeText.mockRejectedValue(failure)

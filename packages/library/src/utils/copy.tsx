@@ -1,7 +1,7 @@
 "use client"
 import * as React from 'react'
 import { cx } from '../internal/cx.js'
-import { announcePolite } from '../internal/announcer.js'
+import { announcePolite, prepareAnnouncer } from '../internal/announcer.js'
 import { CopyFallback } from '../internal/copy-fallback.js'
 import { IconCheck, IconCopy, IconX } from '../internal/icons.js'
 import { CopyStatus, useCopyToClipboard } from '../hooks/use-copy-to-clipboard.js'
@@ -70,6 +70,10 @@ export function CopyButton({
 			onCopyError?.(error)
 		},
 	})
+
+	React.useEffect(() => {
+		prepareAnnouncer(buttonRef.current)
+	}, [])
 
 	const handleOpenChange = (next: boolean) => {
 		setOpen(next)

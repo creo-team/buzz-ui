@@ -24,6 +24,19 @@ function getAnnouncerRegion(container: Element): Element {
 	return region
 }
 
+function getAnnouncerContainer(origin: Element | null): Element {
+	return origin?.closest(MODAL_CONTAINER_SELECTOR) ?? document.body
+}
+
+/**
+ * Creates the region for `origin` ahead of its first announcement. Screen readers, VoiceOver in
+ * particular, can miss a live region that is inserted at the moment it first speaks.
+ */
+export function prepareAnnouncer(origin: Element | null): void {
+	if (typeof document === 'undefined' || origin === null) return
+	getAnnouncerRegion(getAnnouncerContainer(origin))
+}
+
 /**
  * Announces a message through one polite status region per container: the nearest modal dialog
  * around `origin`, else `document.body`. Looks the region up before creating it, so rows and
@@ -31,8 +44,7 @@ function getAnnouncerRegion(container: Element): Element {
  */
 export function announcePolite(message: string, origin: Element | null): void {
 	if (typeof document === 'undefined') return
-	const container = origin?.closest(MODAL_CONTAINER_SELECTOR) ?? document.body
-	const region = getAnnouncerRegion(container)
+	const region = getAnnouncerRegion(getAnnouncerContainer(origin))
 	const pending = pendingAnnouncements.get(region)
 	if (pending !== undefined) clearTimeout(pending)
 	region.textContent = ''

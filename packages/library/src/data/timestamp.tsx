@@ -1,7 +1,7 @@
 "use client"
 import * as React from 'react'
 import { cx } from '../internal/cx.js'
-import { announcePolite } from '../internal/announcer.js'
+import { announcePolite, prepareAnnouncer } from '../internal/announcer.js'
 import { getClockSnapshot, subscribeClock } from '../internal/clock-store.js'
 import { CopyFallback } from '../internal/copy-fallback.js'
 import type { Side } from '../internal/use-position.js'
@@ -532,6 +532,11 @@ export function Timestamp({
 			context.onError?.({ kind: TimestampIssueKind.CopyFailed, error })
 		},
 	})
+
+	const hasCopyTrigger = copyable && view !== null
+	React.useEffect(() => {
+		if (hasCopyTrigger) prepareAnnouncer(triggerRef.current)
+	}, [hasCopyTrigger])
 
 	const handleOpenChange = (next: boolean) => {
 		if (next) {
