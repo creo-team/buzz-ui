@@ -1,24 +1,42 @@
+# Publishes @creo-team/buzz-ui with npm trusted publishing (GitHub OIDC): no stored npm token.
+# npmjs.com must list this repository and this workflow file name as the package's trusted publisher.
 name: Node Publish
-run-name: Node Publish [${{ github.ref_name }}] triggered by [${{ github.event_name }}/${{ github.actor }}]
+run-name: Node Publish [${{ github.event.release.tag_name || inputs.tag || github.ref_name }}] triggered by [${{ github.event_name }}/${{ github.actor }}]
 
 on:
   release:
-    types: published
+    types: [published]
   push:
-    branches: '*'
+    branches: ['*']
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to publish (e.g. 0.8.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
   publish:
-    uses: krauters/shared-workflows/.github/workflows/node-publish.yaml@b34c0968945cbd3d091d1d621effedb43029c3dd
-    secrets:
-      NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-    with:
-      # Must equal .nvmrc: prepublishOnly runs the exact-string ICU tests, which are pinned to this
-      # Node's ICU. The input takes a string, so it cannot read .nvmrc; CI asserts the two match.
-      node_version: '24.14.0'
-      node_install: true
-      dry_run: ${{ github.event_name != 'release' }}
-      scope: '@creo-team'
-      registry_url: 'https://registry.npmjs.org'
-      workspace: '@creo-team/buzz-ui'
+    name: Publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag || github.ref }}
+
+      # prepublishOnly runs the ICU-pinned exact-string tests, so publish on the .nvmrc Node.
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install
+        run: npm ci
+
+      # Branch pushes rehearse the publish (prepublishOnly, pack) without uploading.
+      - name: Publish
+        run: npm publish -w @creo-team/buzz-ui --provenance --access public ${{ github.event_name == 'push' && '--dry-run' || '' }}

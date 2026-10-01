@@ -21,16 +21,6 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      # The publish workflow runs the same ICU-pinned tests (prepublishOnly) and cannot read .nvmrc.
-      - name: Publish workflow pins the .nvmrc Node
-        run: |
-          expected="$(tr -d '[:space:]' < .nvmrc)"
-          actual="$(sed -n "s/^ *node_version: *'\([^']*\)'.*/\1/p" .github/workflows/node-publish.yaml)"
-          if [ "$actual" != "$expected" ]; then
-            echo "::error file=.github/workflows/node-publish.yaml::node_version '$actual' must equal .nvmrc '$expected'"
-            exit 1
-          fi
-
       - name: Install
         run: npm ci
 
