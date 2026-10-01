@@ -72,8 +72,12 @@ function tap(element: HTMLElement) {
 }
 
 beforeEach(() => {
-	vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date', 'requestAnimationFrame', 'cancelAnimationFrame'] })
-	vi.setSystemTime(NOW)
+	// Install at NOW rather than setting it afterwards: fake requestAnimationFrame aligns frames to the
+	// install time, so once the real clock passes NOW a frame lands up to 31 ms out, beyond FRAME_MS.
+	vi.useFakeTimers({
+		now: NOW,
+		toFake: ['setTimeout', 'clearTimeout', 'Date', 'requestAnimationFrame', 'cancelAnimationFrame'],
+	})
 	writeText.mockReset().mockResolvedValue(undefined)
 	Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } })
 	window.getSelection()?.removeAllRanges()
