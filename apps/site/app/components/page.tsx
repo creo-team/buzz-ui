@@ -83,6 +83,7 @@ export default function ComponentsPage() {
 		{ key: 'switch', label: 'Switch', href: '/components/forms' },
 		{ key: 'tabs', label: 'Tabs', href: '/components/tabs' },
 		{ key: 'textarea', label: 'Textarea', href: '/components/textarea' },
+		{ key: 'timestamp', label: 'Timestamp', href: '/components/timestamp' },
 		{ key: 'toast', label: 'Toast', href: '/components/toast' },
 
 		{ key: 'top-nav', label: 'Top Nav', href: '/components/top-nav' },

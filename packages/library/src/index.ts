@@ -17,6 +17,23 @@ export * from './navigation/breadcrumbs.js'
 export * from './data/skeleton.js'
 export * from './data/table.js'
 export * from './data/code-box.js'
+export {
+	TimestampFormat,
+	TimestampKind,
+	TimestampIssueKind,
+	parseTimestamp,
+	formatTimestamp,
+	formatTimestampRelative,
+	formatTimestampFull,
+	formatTimestampCopy,
+	isSupportedTimeZone,
+	type LiveTimestampFormat,
+	type FixedTimestampFormat,
+	type TimestampValue,
+	type TimestampLocaleOptions,
+	type TimestampFormatOptions,
+	type ParsedTimestamp,
+} from './utils/format-timestamp.js'
 export * from './feedback/progress.js'
 export * from './media/avatar.js'
 export * from './process/stepper.js'
@@ -57,6 +74,7 @@ export * from './navigation/sidebar-nav.js'
 export * from './inputs/switch.js'
 export * from './disclosure/accordion.js'
 export * from './utils/copy.js'
+export * from './data/timestamp.js'
 export * from './feedback/circular-progress.js'
 
 // Overlays
@@ -105,6 +123,7 @@ export {
 // Hooks & utilities
 export * from './hooks/use-hotkey.js'
 export * from './hooks/use-modal-query.js'
+export * from './hooks/use-copy-to-clipboard.js'
 export { useReducedMotion } from './internal/use-reduced-motion.js'
 export { Portal, type PortalProps } from './internal/portal.js'
 export type { Side, Align } from './internal/use-position.js'

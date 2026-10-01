@@ -87,7 +87,27 @@ export * from './navigation/sidebar-nav.js'
 export * from './navigation/tabs.js'
 export * from './navigation/top-nav.js'
 export * from './utils/copy.js'
+export * from './data/timestamp.js'
 export * from './feedback/circular-progress.js'
+
+// Server-safe timestamp formatters (pure, no directive)
+export {
+	TimestampFormat,
+	TimestampKind,
+	TimestampIssueKind,
+	parseTimestamp,
+	formatTimestamp,
+	formatTimestampRelative,
+	formatTimestampFull,
+	formatTimestampCopy,
+	isSupportedTimeZone,
+	type LiveTimestampFormat,
+	type FixedTimestampFormat,
+	type TimestampValue,
+	type TimestampLocaleOptions,
+	type TimestampFormatOptions,
+	type ParsedTimestamp,
+} from './utils/format-timestamp.js'
 
 // Server-safe primitives, re-exported here so client-focused imports (Kbd
 // next to useHotkey, Field around a custom control) work from one entry.
@@ -101,6 +121,7 @@ export * from './forms/form.js'
 // Hooks
 export * from './hooks/use-hotkey.js'
 export * from './hooks/use-modal-query.js'
+export * from './hooks/use-copy-to-clipboard.js'
 export { useReducedMotion } from './internal/use-reduced-motion.js'
 export { Portal, type PortalProps } from './internal/portal.js'
 export type { Side, Align } from './internal/use-position.js'

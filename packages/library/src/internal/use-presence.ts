@@ -12,8 +12,10 @@ export function usePresence(open: boolean, duration = 180): boolean {
 			setMounted(true)
 			return
 		}
+		// Nothing to exit: a closed overlay that never opened schedules no timer.
+		if (!mounted) return
 		const timer = setTimeout(() => setMounted(false), duration)
 		return () => clearTimeout(timer)
-	}, [open, duration])
+	}, [open, duration, mounted])
 	return open || mounted
 }

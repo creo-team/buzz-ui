@@ -1,6 +1,6 @@
 "use client"
 import { Footer } from '@creo-team/buzz-ui/server'
-import { Tooltip, TooltipDirection, TooltipSize } from '@creo-team/buzz-ui/client'
+import { Timestamp, TimestampFormat, Tooltip, TooltipDirection, TooltipSize } from '@creo-team/buzz-ui/client'
 import packageJson from '../package.json'
 
 // This will be generated at build time
@@ -26,29 +26,18 @@ export function SiteFooter() {
 		if (deploymentTime === 'local') {
 			return 'Local Development'
 		}
-		
-		try {
-			const date = new Date(deploymentTime)
-			const formatted = date.toLocaleString('en-US', {
-				year: 'numeric',
-				month: 'short',
-				day: 'numeric',
-				hour: '2-digit',
-				minute: '2-digit',
-				hour12: true,
-				timeZoneName: 'short'
-			})
-			
-			// Include build ID for production deployments
-			if (buildId && buildId !== 'local') {
-				const shortBuildId = buildId.substring(0, 7)
-				return `Deployed: ${formatted} (${shortBuildId})`
-			}
-			
-			return `Deployed: ${formatted}`
-		} catch {
-			return 'Deployment info unavailable'
+
+		// The deploy time renders in the viewer's own locale and zone. Inside this tooltip it stays
+		// non-interactive (nothing interactive belongs in role="tooltip"); its own tooltip shows the zone.
+		const deployedAt = <Timestamp value={deploymentTime} format={TimestampFormat.Absolute} copyable={false} />
+
+		// Include build ID for production deployments
+		if (buildId && buildId !== 'local') {
+			const shortBuildId = buildId.substring(0, 7)
+			return <>Deployed: {deployedAt} ({shortBuildId})</>
 		}
+
+		return <>Deployed: {deployedAt}</>
 	}
 
 	const versionElement = (

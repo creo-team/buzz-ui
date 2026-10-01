@@ -369,6 +369,8 @@ html[data-theme='light'], .light {
 	--c-danger-light: #fef2f2;
 	--c-info: #2563eb;
 	--c-info-light: #eff6ff;
+	/* Secondary tooltip lines. 4.83:1 on the tooltip's default background (--c-surface #ffffff), WCAG AA. */
+	--c-tooltip-text-muted: #6b7280;
 }
 
 html[data-theme='dark'], .dark {
@@ -397,6 +399,8 @@ html[data-theme='dark'], .dark {
 	--c-danger-light: rgba(239, 68, 68, 0.1);
 	--c-info: #3b82f6;
 	--c-info-light: rgba(59, 130, 246, 0.1);
+	/* Secondary tooltip lines. 6.99:1 on the tooltip's default background (--c-surface #111827), WCAG AA. */
+	--c-tooltip-text-muted: #9ca3af;
 }
 
 html[data-theme='midnight'] {
@@ -2031,7 +2035,9 @@ html[data-theme='umbro'] {
 	transition: color var(--bz-duration) var(--bz-ease), background-color var(--bz-duration) var(--bz-ease);
 }
 .bz-copy-button:hover { background: var(--c-hover); color: var(--c-text); }
+.bz-copy-button[data-copy-status='copied'],
 .bz-copy-button[data-copied] { color: var(--c-success); }
+.bz-copy-button[data-copy-status='failed'] { color: var(--c-danger); }
 .bz-copy-button__icon { width: 0.875rem; height: 0.875rem; }
 
 .bz-code-box { position: relative; }
@@ -2151,6 +2157,42 @@ html[data-theme='umbro'] {
 	border-left: var(--bz-border-w) solid var(--c-tooltip-border, var(--bz-border-c));
 	border-bottom: var(--bz-border-w) solid var(--c-tooltip-border, var(--bz-border-c));
 	margin-top: -4px;
+}
+
+/* Timestamp ---------------------------------------------------------------- */
+
+.bz-timestamp { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.bz-timestamp__trigger {
+	font: inherit;
+	color: inherit;
+	background: none;
+	border: 0;
+	padding: 0;
+	margin: 0;
+	position: relative;
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+}
+.bz-timestamp[data-copyable='false'] .bz-timestamp__trigger { cursor: inherit; }
+.bz-timestamp__trigger:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) {
+	button.bz-timestamp__trigger:hover { text-decoration: underline dotted 1px; text-underline-offset: 0.2em; }
+}
+/* Grows the touch target to at least 24px (WCAG 2.5.8) without moving layout or overlapping table neighbors. */
+@media (pointer: coarse) {
+	button.bz-timestamp__trigger::after { content: ''; position: absolute; inset: -4px -6px; }
+}
+.bz-timestamp__tooltip { display: grid; gap: 2px; text-align: start; }
+.bz-timestamp__full { font-weight: 500; }
+.bz-timestamp__relative,
+.bz-timestamp__hint,
+.bz-copy-fallback__hint { color: var(--c-tooltip-text-muted, var(--c-text-secondary)); }
+.bz-copy-fallback { display: grid; gap: 2px; }
+.bz-copy-fallback__text { user-select: text; font-weight: 500; }
+@media (forced-colors: active) {
+	.bz-timestamp__trigger:focus-visible { outline-color: Highlight; }
 }
 
 .bz-infotip {

@@ -1,5 +1,6 @@
 "use client"
 import { Card, CodeBox } from '@creo-team/buzz-ui/server'
+import { Button, CopyStatus, useCopyToClipboard } from '@creo-team/buzz-ui/client'
 import { CodeBlock } from '../../../components/code-block'
 import { ApiTable } from '../../../components/api-table'
 
@@ -29,6 +30,32 @@ const cssExample = `.container {
 	padding: 2rem
 	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
 }`
+
+const SHARE_URL = 'https://buzz-ui.dev/components/code-box'
+
+const COPY_HOOK_USAGE = `import { CopyStatus, useCopyToClipboard } from '@creo-team/buzz-ui/client'
+
+function ShareLink({ url }: { url: string }) {
+  const { copy, status } = useCopyToClipboard({
+    onCopyError: error => logger.warn({ error }, 'copy failed'),
+  })
+  // Call copy directly in the handler: no await before it, or Safari drops the gesture.
+  return (
+    <button type="button" onClick={() => void copy(url)}>
+      {status === CopyStatus.Copied ? 'Copied' : status === CopyStatus.Failed ? "Couldn't copy" : 'Copy link'}
+    </button>
+  )
+}`
+
+function CopyHookDemo() {
+	const { copy, status } = useCopyToClipboard()
+	const label = status === CopyStatus.Copied ? 'Copied' : status === CopyStatus.Failed ? "Couldn't copy" : 'Copy link'
+	return (
+		<Button variant="outline" onClick={() => void copy(SHARE_URL)}>
+			{label}
+		</Button>
+	)
+}
 
 export default function CodeBoxDocs() {
 	return (
@@ -116,6 +143,19 @@ export default function Example() {
 	language="javascript"
 	label=""
 />`} />
+				</div>
+			</Card>
+
+			<h2 className="mt-12 text-2xl font-semibold text-[var(--c-text)]">useCopyToClipboard</h2>
+			<p className="mt-2 text-sm text-[var(--c-text-secondary)]">
+				The hook behind CopyButton and Timestamp, for custom copy controls. It writes synchronously inside the
+				gesture, reports <code>COPIED</code> for 1.5 s, and keeps <code>FAILED</code> until you reset it, so a refusal is
+				never silent. It renders and announces nothing; your component does.
+			</p>
+			<Card variant="elevated" className="mt-4">
+				<CopyHookDemo />
+				<div className="mt-6">
+					<CodeBlock code={COPY_HOOK_USAGE} label="useCopyToClipboard" />
 				</div>
 			</Card>
 
