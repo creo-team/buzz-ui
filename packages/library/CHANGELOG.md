@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.1
+
+### Fixed
+- Timestamp tests install fake timers already set to their fixed instant, so the suite no longer depends on the real date. It failed from 2026-10-01T21:04Z, which also blocked publishing 0.8.0.
+
+### Changed
+- Development toolchain uses Microsoft's official TypeScript 6/7 side-by-side pair (`@typescript/native` for `tsc`, `@typescript/typescript6` for tools that need the 6.0 API), with a check that the site's `tsc` is TypeScript 7.
+- Publishing uses npm trusted publishing (GitHub OIDC) with provenance instead of a stored token.
+
 ## 0.8.0
 
 ### Breaking
