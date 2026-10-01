@@ -8,7 +8,7 @@
 		"build": "next build",
 		"dev": "next dev",
 		"start": "next start",
-		"typecheck": "node ../../node_modules/typescript7/bin/tsc --noEmit"
+		"typecheck": "node ../../node_modules/typescript-native/bin/tsc --noEmit"
 	},
 	"dependencies": {
 		"@creo-team/buzz-ui": "file:../../packages/library",

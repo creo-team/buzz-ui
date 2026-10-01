@@ -9,7 +9,7 @@ export enum TimestampFormat {
 	Compact = 'COMPACT',
 	/** Activity, comments, notifications: `5 minutes ago`, `yesterday`, `6 days ago`, then `Sep 23`. */
 	Relative = 'RELATIVE',
-	/** Chat messages, schedules, reminders: `Today at 3:04 PM`, `Monday at 9:00 AM`, `Sep 23 at 3:04 PM`. */
+	/** Chat messages, schedules, reminders: `Today at 3:04 PM`, `Monday at 9:00 AM` (past), `Mon, Oct 5 at 9:00 AM` (upcoming), `Sep 23 at 3:04 PM`. */
 	Contextual = 'CONTEXTUAL',
 	/** Rows under a day divider: `3:04 PM`. A date-only value shows the Date format instead. */
 	Time = 'TIME',
@@ -93,7 +93,7 @@ export interface ParsedTimestamp {
 const MAX_EPOCH_MS = 8.64e15
 /** A future instant up to 60 s ahead counts as "now" (clock skew, optimistic writes). */
 const FUTURE_SKEW_TOLERANCE_MS = MINUTE_MS
-/** Up to ±6 calendar days, use day names. */
+/** Within 6 calendar days, use day names: bare for the past, with the date for the future. */
 const NAMED_DAY_WINDOW_DAYS = 6
 /** `formatTimestampRelative` uses weeks below this many days, months from it. */
 const WEEK_BAND_LIMIT_DAYS = 30
@@ -135,6 +135,7 @@ const DASH_VARIANTS = /[−–]/g
 enum DateTimePreset {
 	Time = 'TIME',
 	Weekday = 'WEEKDAY',
+	WeekdayMonthDay = 'WEEKDAY_MONTH_DAY',
 	MonthDay = 'MONTH_DAY',
 	MonthDayYear = 'MONTH_DAY_YEAR',
 	Absolute = 'ABSOLUTE',
@@ -160,6 +161,7 @@ enum HourClock {
 const PRESET_OPTIONS: Record<DateTimePreset, Intl.DateTimeFormatOptions> = {
 	[DateTimePreset.Time]: { hour: 'numeric', minute: '2-digit' },
 	[DateTimePreset.Weekday]: { weekday: 'long' },
+	[DateTimePreset.WeekdayMonthDay]: { weekday: 'short', month: 'short', day: 'numeric' },
 	[DateTimePreset.MonthDay]: { month: 'short', day: 'numeric' },
 	[DateTimePreset.MonthDayYear]: { year: 'numeric', month: 'short', day: 'numeric' },
 	[DateTimePreset.Absolute]: { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' },
@@ -488,13 +490,15 @@ function capitalize(text: string, locale: string): string {
 	return text.charAt(0).toLocaleUpperCase(locale) + text.slice(1)
 }
 
-/** `today` / `yesterday` / `tomorrow`, the weekday within ±6 days, otherwise the date. */
+/**
+ * `today` / `yesterday` / `tomorrow`; a past weekday within 6 days (`Monday`); an upcoming one with its
+ * date (`Mon, Oct 5`), so a bare `Monday` never means both last Monday and next Monday; otherwise the date.
+ */
 function formatDayLabel(context: FormatContext, dayDiff: number): string {
 	if (Math.abs(dayDiff) <= 1) return getRelativeTimeFormat(context.locale, 'auto').format(dayDiff, 'day')
-	if (Math.abs(dayDiff) <= NAMED_DAY_WINDOW_DAYS) {
-		return getDateTimeFormat(context.locale, getLabelZone(context), DateTimePreset.Weekday).format(context.parsed.epochMs)
-	}
-	return formatShortDate(context, dayDiff)
+	if (Math.abs(dayDiff) > NAMED_DAY_WINDOW_DAYS) return formatShortDate(context, dayDiff)
+	const preset = dayDiff < 0 ? DateTimePreset.Weekday : DateTimePreset.WeekdayMonthDay
+	return getDateTimeFormat(context.locale, getLabelZone(context), preset).format(context.parsed.epochMs)
 }
 
 /** The locale's own date-time joiner, found by removing the date-only and time-only strings from a combined one. */

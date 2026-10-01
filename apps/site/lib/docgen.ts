@@ -6,7 +6,7 @@ import path from 'node:path'
 // react-docgen-typescript drives the classic TypeScript compiler JS API,
 // which the native (Go) compiler in typescript@7 no longer ships. The repo
 // root therefore keeps typescript@6.0 under the `typescript` name (hoisted —
-// what this file resolves) and installs 7 as the `typescript7` alias, which
+// what this file resolves) and installs 7 as the `typescript-native` alias, which
 // the site's typecheck calls by path; packages/library declares typescript@7
 // and gets its own nested copy for typechecking and building the package.
 // Drop the 6.0 copy once react-docgen-typescript supports 7.

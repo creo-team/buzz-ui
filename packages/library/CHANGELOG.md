@@ -8,7 +8,7 @@
 ### New
 - `Timestamp`: a date or time label that shows the full local date, time and zone on hover or focus and copies an explicit, zone-safe string (`Thu, Oct 1, 2026, 3:04 PM MDT (UTC-6)`) on click, Enter or Space, with "Copied" announced politely. Six formats (`TimestampFormat`): Compact, Relative, Contextual, Time, Absolute, Date. Live labels share one document-wide timer that pauses while the tab is hidden and re-render only when their text changes. Server-rendered without hydration errors.
 - `TimestampProvider` sets locale, time zone, 12/24-hour clock, messages and an `onError` reporter once for a subtree, and falls back safely on invalid settings. `useTimestamp` exposes the same engine for custom displays.
-- Server-safe formatters: `formatTimestamp`, `formatTimestampRelative`, `formatTimestampFull`, `formatTimestampCopy`, `parseTimestamp`, `isSupportedTimeZone`. Calendar-day logic runs in the viewer's zone; date-only `YYYY-MM-DD` values never shift a day; Postgres timestamp text parses.
+- Server-safe formatters: `formatTimestamp`, `formatTimestampRelative`, `formatTimestampFull`, `formatTimestampCopy`, `parseTimestamp`, `isSupportedTimeZone`. Calendar-day logic runs in the viewer's zone; a past day within the week reads as its weekday (`Monday`) and an upcoming one carries its date (`Mon, Oct 5`), so a bare weekday never means both last week and next; date-only `YYYY-MM-DD` values never shift a day; Postgres timestamp text parses.
 - `useCopyToClipboard` with `CopyStatus`.
 
 ### Changed

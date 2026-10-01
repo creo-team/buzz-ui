@@ -51,7 +51,7 @@ const DENVER_LADDER: LadderRow[] = [
 	['+5 m', 5 * MINUTE, '3:09 PM', 'in 5 minutes', 'Today at 3:09 PM', '3:09 PM', 'Oct 1, 2026, 3:09 PM', 'Thu, Oct 1, 2026', 'in 5 minutes'],
 	['+3 h', 3 * HOUR, '6:04 PM', 'in 3 hours', 'Today at 6:04 PM', '6:04 PM', 'Oct 1, 2026, 6:04 PM', 'Thu, Oct 1, 2026', 'in 3 hours'],
 	['+1 d', DAY, 'Oct 2', 'tomorrow', 'Tomorrow at 3:04 PM', '3:04 PM', 'Oct 2, 2026, 3:04 PM', 'Fri, Oct 2, 2026', 'tomorrow'],
-	['+4 d', 4 * DAY, 'Oct 5', 'in 4 days', 'Monday at 3:04 PM', '3:04 PM', 'Oct 5, 2026, 3:04 PM', 'Mon, Oct 5, 2026', 'in 4 days'],
+	['+4 d', 4 * DAY, 'Oct 5', 'in 4 days', 'Mon, Oct 5 at 3:04 PM', '3:04 PM', 'Oct 5, 2026, 3:04 PM', 'Mon, Oct 5, 2026', 'in 4 days'],
 	['+40 d', 40 * DAY, 'Nov 10', 'Nov 10', 'Nov 10 at 2:04 PM', '2:04 PM', 'Nov 10, 2026, 2:04 PM', 'Tue, Nov 10, 2026', 'in 1 month'],
 ]
 
@@ -200,7 +200,7 @@ describe('tooltip and copy text', () => {
 describe('date-only values', () => {
 	const DATE_ONLY_TABLE: [viewer: TimestampLocaleOptions, value: string, compact: string, relative: string, date: string, full: string, line2: string, copy: string][] = [
 		[DENVER, '2026-10-01', 'Today', 'today', 'Thu, Oct 1, 2026', 'Thursday, October 1, 2026', 'today', 'Thu, Oct 1, 2026'],
-		[DENVER, '2026-10-05', 'Monday', 'in 4 days', 'Mon, Oct 5, 2026', 'Monday, October 5, 2026', 'in 4 days', 'Mon, Oct 5, 2026'],
+		[DENVER, '2026-10-05', 'Mon, Oct 5', 'in 4 days', 'Mon, Oct 5, 2026', 'Monday, October 5, 2026', 'in 4 days', 'Mon, Oct 5, 2026'],
 		[DENVER, '2026-10-20', 'Oct 20', 'Oct 20', 'Tue, Oct 20, 2026', 'Tuesday, October 20, 2026', 'in 2 weeks', 'Tue, Oct 20, 2026'],
 		[DENVER, '2027-06-01', 'Jun 1, 2027', 'Jun 1, 2027', 'Tue, Jun 1, 2027', 'Tuesday, June 1, 2027', 'in 8 months', 'Tue, Jun 1, 2027'],
 		[{ locale: 'en-US', timeZone: 'Asia/Tokyo' }, '2026-10-01', 'Yesterday', 'yesterday', 'Thu, Oct 1, 2026', 'Thursday, October 1, 2026', 'yesterday', 'Thu, Oct 1, 2026'],
@@ -295,6 +295,14 @@ describe('edge cases', () => {
 		expect(formatTimestamp('0000-06-01T00:00:00Z', TimestampFormat.Absolute, utc)).toBe('Jun 1, 1 BC, 12:00 AM')
 		expect(formatTimestamp('0000-06-01', TimestampFormat.Date, utc)).toBe('Thu, Jun 1, 1 BC')
 		expect(formatTimestamp('0050-06-01T00:00:00Z', TimestampFormat.Absolute, utc)).toBe('Jun 1, 50, 12:00 AM')
+	})
+
+	it('never lets a bare weekday mean both last week and next week', () => {
+		const viewer = { ...DENVER, now: NOW }
+		expect(formatTimestamp(NOW - 3 * DAY, TimestampFormat.Contextual, viewer)).toBe('Monday at 3:04 PM')
+		expect(formatTimestamp(NOW + 4 * DAY, TimestampFormat.Contextual, viewer)).toBe('Mon, Oct 5 at 3:04 PM')
+		expect(formatTimestamp('2026-09-28', TimestampFormat.Compact, viewer)).toBe('Monday')
+		expect(formatTimestamp('2026-10-05', TimestampFormat.Compact, viewer)).toBe('Mon, Oct 5')
 	})
 
 	it('treats 61 seconds ahead as the future, not now', () => {
