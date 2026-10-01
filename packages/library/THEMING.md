@@ -150,6 +150,7 @@ html[data-theme="custom"] {
   
   --c-tooltip-bg: #333333;
   --c-tooltip-text: #ffffff;
+  --c-tooltip-text-muted: #d1d5db; /* 8.57:1 on #333333 */
 }
 ```
 
@@ -261,6 +262,7 @@ Tooltips automatically adjust their position to stay within the viewport and use
 html[data-theme="custom"] {
   --c-tooltip-bg: #1a1a1a;
   --c-tooltip-text: #ffffff;
+  --c-tooltip-text-muted: #d1d5db; /* 11.81:1 on #1a1a1a */
   --c-tooltip-border: rgba(255, 255, 255, 0.1);
 }
 ```

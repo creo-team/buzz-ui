@@ -40,7 +40,8 @@ const COPY_FEEDBACK_MS = 1500
  * Copies text to the clipboard and tracks the result. The write happens synchronously inside
  * `copy`, so the browser still sees the user's gesture. Failures (no secure context, a missing API,
  * a refused permission) set FAILED and call `onCopyError`; they are never thrown or swallowed. The
- * hook renders nothing and announces nothing: the component shows and announces the outcome.
+ * hook renders nothing and announces nothing: the component shows and announces the outcome. A write
+ * that settles after unmount still resolves, but changes no state and calls neither callback.
  *
  * @example
  * const { copy, status } = useCopyToClipboard({ onCopyError: error => logger.warn({ error }, 'copy failed') })
@@ -51,19 +52,31 @@ export function useCopyToClipboard(options: UseCopyToClipboardOptions = {}): Cop
 	const [status, setStatus] = React.useState<CopyStatus>(CopyStatus.Idle)
 	const [error, setError] = React.useState<unknown>(null)
 	const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+	// A write can settle after unmount; it must then change no state, call no callback and start no timer.
+	const mountedRef = React.useRef(false)
+	// The latest committed callbacks, read when a write settles. Updated after commit, never during render.
 	const optionsRef = React.useRef(options)
-	optionsRef.current = options
 	const resetMsRef = React.useRef(resetMs)
-	resetMsRef.current = resetMs
+	React.useLayoutEffect(() => {
+		optionsRef.current = options
+		resetMsRef.current = resetMs
+	})
 
 	const clearTimer = React.useCallback(() => {
 		if (timerRef.current !== null) clearTimeout(timerRef.current)
 		timerRef.current = null
 	}, [])
 
-	React.useEffect(() => clearTimer, [clearTimer])
+	React.useEffect(() => {
+		mountedRef.current = true
+		return () => {
+			mountedRef.current = false
+			clearTimer()
+		}
+	}, [clearTimer])
 
 	const fail = React.useCallback((failure: unknown) => {
+		if (!mountedRef.current) return false
 		setStatus(CopyStatus.Failed)
 		setError(failure)
 		optionsRef.current.onCopyError?.(failure)
@@ -85,6 +98,7 @@ export function useCopyToClipboard(options: UseCopyToClipboardOptions = {}): Cop
 			}
 			return write.then(
 				() => {
+					if (!mountedRef.current) return true
 					setStatus(CopyStatus.Copied)
 					setError(null)
 					optionsRef.current.onCopied?.(text)

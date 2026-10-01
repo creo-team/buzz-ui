@@ -116,6 +116,19 @@ describe('formatTimestamp ladders', () => {
 		expect(zhToday).toMatch(/^今天 \d{2}:\d{2}$/)
 		expect(zhWeekday).toMatch(/^星期三 \d{2}:\d{2}$/)
 	})
+
+	it('keeps Georgian day labels in Mkhedruli, never Mtavruli capitals', () => {
+		const [today, weekday] = [0, -5 * DAY].map(offset =>
+			formatTimestamp(NOW + offset, TimestampFormat.Contextual, { locale: 'ka-GE', timeZone: 'Europe/Berlin', now: NOW })
+		)
+		const mtavruli = /[\u1C90-\u1CBF]/
+		expect(today).toMatch(/^დღეს, \d{2}:\d{2}$/)
+		expect(today).not.toMatch(mtavruli)
+		expect(weekday).toMatch(/^შაბათი, \d{2}:\d{2}$/)
+		expect(formatTimestamp('2026-10-01', TimestampFormat.Compact, { locale: 'ka-GE', timeZone: 'Europe/Berlin', now: NOW })).not.toMatch(
+			mtavruli
+		)
+	})
 })
 
 describe('hour cycle and padding', () => {
@@ -131,6 +144,16 @@ describe('hour cycle and padding', () => {
 			formatTimestamp('2026-10-01T15:00:00Z', TimestampFormat.Time, { locale: 'ja-JP', timeZone: 'Asia/Tokyo', hour12: true })
 		).toBe('午前0:00')
 		expect(formatTimestamp(NOW, TimestampFormat.Time, { ...LONDON, hour12: true })).toBe('10:04 pm')
+	})
+
+	it('uses the locale’s own unpadded 12-hour form when hour12 forces it on a 24-hour locale', () => {
+		const value = '2026-10-01T09:05:00Z'
+		expect(formatTimestamp(value, TimestampFormat.Time, { locale: 'en-GB', timeZone: 'UTC', hour12: true })).toBe('9:05 am')
+		expect(formatTimestamp(value, TimestampFormat.Time, { locale: 'en-US-u-hc-h23', timeZone: 'UTC', hour12: true })).toBe(
+			'9:05 AM'
+		)
+		expect(formatTimestampCopy(value, { locale: 'en-GB', timeZone: 'UTC', hour12: true })).toBe('Thu, 1 Oct 2026, 9:05 am UTC')
+		expect(formatTimestamp(value, TimestampFormat.Time, { locale: 'en-GB', timeZone: 'UTC' })).toBe('09:05')
 	})
 
 	it('pads the hour only where the locale does', () => {
@@ -159,6 +182,18 @@ describe('tooltip and copy text', () => {
 	it.each(COPY_TABLE)('%s, %s, %s', (locale, timeZone, instant, full, copy) => {
 		expect(formatTimestampFull(instant, { locale, timeZone })).toBe(full)
 		expect(formatTimestampCopy(instant, { locale, timeZone })).toBe(copy)
+	})
+
+	// Historical local mean time: tzdata offsets with seconds. Each offset must agree with the local time beside it.
+	const LOCAL_MEAN_TIME_TABLE: [timeZone: string, instant: string, full: string, copy: string][] = [
+		['Africa/Monrovia', '1970-06-01T12:00:00Z', 'Monday, June 1, 1970 at 11:15:30 AM UTC-0:44:30', 'Mon, Jun 1, 1970, 11:15 AM UTC-0:44:30'],
+		['America/Denver', '1850-01-01T19:00:00Z', 'Tuesday, January 1, 1850 at 12:00:04 PM UTC-6:59:56', 'Tue, Jan 1, 1850, 12:00 PM UTC-6:59:56'],
+		['Asia/Kolkata', '1900-01-01T12:00:00Z', 'Monday, January 1, 1900 at 5:21:10 PM UTC+5:21:10', 'Mon, Jan 1, 1900, 5:21 PM UTC+5:21:10'],
+	]
+
+	it.each(LOCAL_MEAN_TIME_TABLE)('labels a seconds offset exactly: %s %s', (timeZone, instant, full, copy) => {
+		expect(formatTimestampFull(instant, { locale: 'en-US', timeZone })).toBe(full)
+		expect(formatTimestampCopy(instant, { locale: 'en-US', timeZone })).toBe(copy)
 	})
 })
 
@@ -251,6 +286,17 @@ describe('edge cases', () => {
 		expect(formatTimestampRelative('2027-01-01T19:00:00Z', live)).toBe('1 month ago')
 	})
 
+	it('counts years before 100 CE and BCE as signed proleptic Gregorian years', () => {
+		const utc = { locale: 'en-US', timeZone: 'UTC', now: Date.parse('2026-06-01T00:00:00Z') }
+		expect(formatTimestampRelative('0000-06-01T00:00:00Z', utc)).toBe('2,026 years ago')
+		expect(formatTimestampRelative('0050-06-01T00:00:00Z', utc)).toBe('1,976 years ago')
+		expect(formatTimestampRelative(new Date(0).setUTCFullYear(-1, 0, 1), utc)).toBe('2,027 years ago')
+		expect(formatTimestampRelative(-8.64e15, { ...DENVER, now: NOW })).toBe('273,847 years ago')
+		expect(formatTimestamp('0000-06-01T00:00:00Z', TimestampFormat.Absolute, utc)).toBe('Jun 1, 1 BC, 12:00 AM')
+		expect(formatTimestamp('0000-06-01', TimestampFormat.Date, utc)).toBe('Thu, Jun 1, 1 BC')
+		expect(formatTimestamp('0050-06-01T00:00:00Z', TimestampFormat.Absolute, utc)).toBe('Jun 1, 50, 12:00 AM')
+	})
+
 	it('treats 61 seconds ahead as the future, not now', () => {
 		const live = { ...DENVER, now: NOW }
 		expect(formatTimestamp(NOW + 61 * SECOND, TimestampFormat.Compact, live)).toBe('3:05 PM')
@@ -323,6 +369,18 @@ describe('configuration errors', () => {
 			RangeError
 		)
 		expect(() => formatTimestampCopy(NOW, { locale: 'en-US', timeZone: 'Mars/Olympus' })).toThrow(RangeError)
+	})
+
+	it.each([
+		['an Invalid Date', new Date('x')],
+		['NaN', Number.NaN],
+		['a string from plain JavaScript', '2026-10-01T21:04:09Z'],
+	])('throws a named TypeError when now is %s', (_label, now) => {
+		const error = new TypeError('now must be a finite epoch ms or a valid Date')
+		const options = { ...DENVER, now: now as number }
+		expect(() => formatTimestamp(NOW, TimestampFormat.Relative, options)).toThrow(error)
+		expect(() => formatTimestampRelative(NOW, options)).toThrow(error)
+		expect(formatTimestamp(NOW, TimestampFormat.Absolute, options)).toBe('Oct 1, 2026, 3:04 PM')
 	})
 
 	it('requires now for live formats', () => {

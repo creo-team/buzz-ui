@@ -2087,7 +2087,7 @@ html[data-theme='umbro'] {
 	transition: opacity var(--bz-duration) var(--bz-ease);
 }
 .bz-code-box:hover .bz-code-box__copy,
-.bz-code-box__copy:focus-visible { opacity: 1; }
+.bz-code-box__copy:focus-within { opacity: 1; }
 
 /* ========================================================================
    6. Overlays
@@ -2176,7 +2176,11 @@ html[data-theme='umbro'] {
 	-webkit-tap-highlight-color: transparent;
 }
 .bz-timestamp[data-copyable='false'] .bz-timestamp__trigger { cursor: inherit; }
-.bz-timestamp__trigger:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 2px; }
+/* The ring is the trigger's only focus indicator (no border or fill), so it uses the label's own color:
+   as legible as the text it surrounds in every theme (4.83:1 for --c-text-secondary on #ffffff,
+   14.7:1 for --c-text), clearing WCAG 1.4.11's 3:1. The 0.5-alpha --c-focus measured 1.83:1 on #ffffff
+   and 2.15:1 on #111827. */
+.bz-timestamp__trigger:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 @media (hover: hover) and (pointer: fine) {
 	button.bz-timestamp__trigger:hover { text-decoration: underline dotted 1px; text-underline-offset: 0.2em; }
 }

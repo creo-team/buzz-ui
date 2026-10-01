@@ -95,4 +95,33 @@ describe('useCopyToClipboard', () => {
 		unmount()
 		expect(vi.getTimerCount()).toBe(0)
 	})
+
+	it('changes nothing and calls nothing when the write settles after unmount', async () => {
+		const onCopied = vi.fn()
+		const onCopyError = vi.fn()
+		let resolveWrite: () => void = () => undefined
+		let rejectWrite: (error: unknown) => void = () => undefined
+		writeText
+			.mockImplementationOnce(() => new Promise<void>(resolve => (resolveWrite = resolve)))
+			.mockImplementationOnce(() => new Promise<void>((_resolve, reject) => (rejectWrite = reject)))
+		const first = renderHook(() => useCopyToClipboard({ onCopied, onCopyError }))
+		const second = renderHook(() => useCopyToClipboard({ onCopied, onCopyError }))
+		let copied: Promise<boolean> | undefined
+		let failed: Promise<boolean> | undefined
+		act(() => {
+			copied = first.result.current.copy('pending')
+			failed = second.result.current.copy('refused')
+		})
+		first.unmount()
+		second.unmount()
+		resolveWrite()
+		rejectWrite(notAllowed())
+		await act(async () => {
+			await expect(copied).resolves.toBe(true)
+			await expect(failed).resolves.toBe(false)
+		})
+		expect(onCopied).not.toHaveBeenCalled()
+		expect(onCopyError).not.toHaveBeenCalled()
+		expect(vi.getTimerCount()).toBe(0)
+	})
 })

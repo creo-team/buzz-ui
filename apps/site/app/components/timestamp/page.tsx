@@ -65,12 +65,30 @@ export function AppTimestampProvider({ children, ...settings }: TimestampProvide
   return <TimestampProvider {...settings} onError={issue => logger.warn(issue, 'timestamp issue')}>{children}</TimestampProvider>
 }`
 
-/** Read once after mount, so the prerendered page never bakes in a build-time clock. */
-function useMountedNow(): number | null {
-	const [now, setNow] = React.useState<number | null>(null)
-	React.useEffect(() => setNow(Date.now()), [])
-	return now
+function subscribeNothing(): () => void {
+	return () => undefined
 }
+
+function getServerNow(): null {
+	return null
+}
+
+/**
+ * The demos' anchor instant, read once per mount on the client and never on the server, so the
+ * prerendered page never bakes in a build-time clock. Null on the server and during hydration;
+ * the client value arrives in the next commit with no effect (the same pattern Timestamp uses).
+ */
+function useMountedNow(): number | null {
+	const anchorRef = React.useRef<number | null>(null)
+	const getNow = React.useCallback(() => {
+		if (anchorRef.current === null) anchorRef.current = Date.now()
+		return anchorRef.current
+	}, [])
+	return React.useSyncExternalStore(subscribeNothing, getNow, getServerNow)
+}
+
+/** Keys that open a focused row, matching a native button. */
+const ROW_ACTIVATION_KEYS = new Set(['Enter', ' '])
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
 	return <h2 className="mt-12 mb-4 text-2xl font-semibold text-[var(--c-text)]">{children}</h2>
@@ -230,11 +248,21 @@ export default function TimestampDocs() {
 			<SectionTitle>Clickable row</SectionTitle>
 			<Card>
 				<p className="mb-4 text-sm text-[var(--c-text-secondary)]">
-					The row opens on click; clicking the timestamp copies and stops there. Row clicks: {rowClicks}
+					The row opens on click, or on Enter or Space when it has focus; a click, Enter or Space on the timestamp copies
+					and stops there. Row opens: {rowClicks}
 				</p>
 				<table className="min-w-full text-sm">
 					<tbody>
-						<tr className="cursor-pointer hover:bg-[var(--c-hover)]" onClick={() => setRowClicks(count => count + 1)}>
+						<tr
+							className="cursor-pointer hover:bg-[var(--c-hover)]"
+							tabIndex={0}
+							onClick={() => setRowClicks(count => count + 1)}
+							onKeyDown={event => {
+								if (!ROW_ACTIVATION_KEYS.has(event.key)) return
+								event.preventDefault()
+								setRowClicks(count => count + 1)
+							}}
+						>
 							<td className="py-2 pr-4">Invoice #1042</td>
 							<td className="py-2">{now !== null && <Timestamp value={now - 26 * HOUR} format={TimestampFormat.Compact} />}</td>
 						</tr>

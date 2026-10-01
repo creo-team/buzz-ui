@@ -23,6 +23,7 @@ let snapshot: ClockSnapshot | null = null
 let timer: ReturnType<typeof setTimeout> | null = null
 let timerCadenceMs: number | null = null
 let pageListenersAttached = false
+let catchUpQueued = false
 
 function readSnapshot(): ClockSnapshot {
 	const { locale, timeZone } = new Intl.DateTimeFormat().resolvedOptions()
@@ -34,8 +35,8 @@ function isDocumentHidden(): boolean {
 }
 
 /** Stale when older than the fast cadence, or from the future after the system clock moved back. */
-function refreshIfStale(): void {
-	if (snapshot === null || Math.abs(Date.now() - snapshot.now) >= FAST_TICK_MS) snapshot = readSnapshot()
+function isStale(current: ClockSnapshot | null): boolean {
+	return current === null || Math.abs(Date.now() - current.now) >= FAST_TICK_MS
 }
 
 function clearTimer(): void {
@@ -78,6 +79,26 @@ function schedule(): void {
 	timer = setTimeout(tick, cadenceMs - (now % cadenceMs))
 }
 
+/** Moves every existing subscriber onto a snapshot a new reader just refreshed, once per refresh, after the current render. */
+function queueCatchUp(): void {
+	if (catchUpQueued || listeners.size === 0) return
+	catchUpQueued = true
+	queueMicrotask(() => {
+		catchUpQueued = false
+		notifyAll()
+	})
+}
+
+/**
+ * Replaces a snapshot older than the fast cadence, whether or not a timer runs: a slow 60 s timer,
+ * or one that fires late after the system slept, must not hand a new reader a minute-old `now`.
+ */
+function refreshIfStale(): void {
+	if (!isStale(snapshot)) return
+	snapshot = readSnapshot()
+	queueCatchUp()
+}
+
 function resync(): void {
 	snapshot = readSnapshot()
 	notifyAll()
@@ -111,7 +132,7 @@ function detachPageListenersIfIdle(): void {
  * change every minute, or null. Returns the unsubscribe function.
  */
 export function subscribeClock(listener: Listener, minuteBandEpochMs: number | null): () => void {
-	if (timer === null) refreshIfStale()
+	refreshIfStale()
 	listeners.set(listener, minuteBandEpochMs)
 	attachPageListeners()
 	schedule()
@@ -123,11 +144,12 @@ export function subscribeClock(listener: Listener, minuteBandEpochMs: number | n
 }
 
 /**
- * The current snapshot. While no timer runs (no subscribers, or a hidden tab), a snapshot older
- * than the fast cadence is replaced first, so a read after an idle period is never stale; calls
- * within that window return the same object, as `useSyncExternalStore` requires.
+ * The current snapshot. A snapshot older than the fast cadence is replaced first, whether the store
+ * is idle, on its slow cadence, or behind a late timer, so a first render is never stale; calls
+ * within that window return the same object, as `useSyncExternalStore` requires. When a read
+ * replaces the snapshot, existing subscribers are notified once so they move to it too.
  */
 export function getClockSnapshot(): ClockSnapshot {
-	if (timer === null || snapshot === null) refreshIfStale()
+	refreshIfStale()
 	return snapshot ?? readSnapshot()
 }

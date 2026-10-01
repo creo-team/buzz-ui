@@ -75,6 +75,16 @@ describe('CodeBox', () => {
 		await waitFor(() => expect(screen.getByRole('tooltip')).toHaveTextContent('Copied'))
 	})
 
+	it('positions the tooltip anchor, not the button, so the tooltip sits on the button', () => {
+		render(<CodeBox code="const x = 1" copyable={true} />)
+		const button = screen.getByRole('button', { name: 'Copy code' })
+		const anchor = button.parentElement
+		expect(anchor).toHaveClass('bz-tooltip-anchor')
+		expect(button).not.toHaveClass('bz-code-box__copy')
+		expect(anchor?.parentElement).toHaveClass('bz-code-box__copy')
+		expect(anchor?.children).toHaveLength(1)
+	})
+
 	it('should not show copy button when copyable is false', () => {
 		const code = 'test code'
 		

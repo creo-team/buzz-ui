@@ -32,8 +32,10 @@ export interface TimestampMessages {
 	enterToCopy: string
 	/** @default 'Tap again to copy' */
 	tapToCopy: string
-	/** Appended to the accessible description. @default 'Copies the date and time.' */
+	/** Appended to the accessible description of an instant. @default 'Copies the date and time.' */
 	copyDescription: string
+	/** Appended to the accessible description of a calendar date, which copies no time. @default 'Copies the date.' */
+	copyDateDescription: string
 	/** Shown and announced after a successful copy. @default 'Copied' */
 	copied: string
 	/** Shown and announced when the clipboard refuses, on keyboard or mouse. `{shortcut}` becomes formatHotkey('mod+c'). @default "Couldn't copy. Press {shortcut} to copy the selected text." */
@@ -58,7 +60,7 @@ export interface TimestampIssue {
 export interface TimestampProps {
 	/** Extra classes on the root span. */
 	className?: string
-	/** Whether clicking copies. Set false inside an `<a>` or a stretched-link card: renders a non-focusable span with a hover tooltip and no copy. In a row with its own onClick, keep the default; the click stops at the timestamp. @default true */
+	/** Whether clicking copies. Set false inside an `<a>` or a stretched-link card: renders a non-focusable span with a hover tooltip and no copy. In a row with its own onClick or onKeyDown, keep the default; the click, Enter and Space stop at the timestamp. @default true */
 	copyable?: boolean
 	/** Side the tooltip prefers. @default TooltipDirection.Top */
 	direction?: TooltipDirection | Side
@@ -137,6 +139,7 @@ const DEFAULT_MESSAGES: TimestampMessages = {
 	enterToCopy: 'Press Enter to copy',
 	tapToCopy: 'Tap again to copy',
 	copyDescription: 'Copies the date and time.',
+	copyDateDescription: 'Copies the date.',
 	copied: 'Copied',
 	copyFailed: "Couldn't copy. Press {shortcut} to copy the selected text.",
 	copyFailedTouch: "Couldn't copy. Press and hold the text to copy it.",
@@ -224,8 +227,7 @@ function useIssueReport(
 	active: boolean,
 	onError: ((issue: TimestampIssue) => void) | undefined
 ): void {
-	const onErrorRef = React.useRef(onError)
-	onErrorRef.current = onError
+	const report = React.useEffectEvent((issue: TimestampIssue) => onError?.(issue))
 	const reportedRef = React.useRef<string | null>(null)
 	React.useEffect(() => {
 		if (!active || input === undefined) {
@@ -234,7 +236,7 @@ function useIssueReport(
 		}
 		if (reportedRef.current === input) return
 		reportedRef.current = input
-		onErrorRef.current?.({ kind, input: truncateInput(input) })
+		report({ kind, input: truncateInput(input) })
 	}, [kind, input, active])
 }
 
@@ -463,8 +465,15 @@ function getFailureHint(messages: TimestampMessages, modality: InputModality): s
 	return messages.copyFailed.split(SHORTCUT_PLACEHOLDER).join(formatHotkey(COPY_HOTKEY))
 }
 
+/** Keys that activate the trigger; a keyboard-operable row must not also act on them. */
+const ACTIVATION_KEYS: ReadonlySet<string> = new Set(['Enter', ' '])
+
 function stopPropagation(event: React.SyntheticEvent): void {
 	event.stopPropagation()
+}
+
+function stopActivationKeys(event: React.KeyboardEvent): void {
+	if (ACTIVATION_KEYS.has(event.key)) event.stopPropagation()
 }
 
 /**
@@ -474,7 +483,8 @@ function stopPropagation(event: React.SyntheticEvent): void {
  *
  * - Live formats (Compact, Relative, Contextual) render after hydration from one shared clock that
  *   pauses while the tab is hidden; fixed formats with a known locale and zone render on the server.
- * - A click stops at the timestamp, so a clickable row's `onClick` does not fire.
+ * - A click, Enter or Space stops at the timestamp, so a clickable or keyboard-operable row's
+ *   `onClick` and `onKeyDown` do not fire for it; other keys (arrows, Tab, Escape) still reach the row.
  * - Inside an `<a>` or a stretched-link card, pass `copyable={false}`: the label becomes a
  *   non-focusable span with a hover tooltip; keyboard and screen-reader users get the label inside
  *   the link's name and the full time on the destination page.
@@ -508,8 +518,6 @@ export function Timestamp({
 	const triggerRef = React.useRef<HTMLButtonElement>(null)
 	const [open, setOpen] = React.useState(false)
 	const [modality, setModality] = React.useState<InputModality>(InputModality.Keyboard)
-	const modalityRef = React.useRef(modality)
-	modalityRef.current = modality
 	const pointerTypeRef = React.useRef<string | null>(null)
 	const hoveringRef = React.useRef(false)
 	const touchWhileClosedRef = React.useRef(false)
@@ -520,7 +528,7 @@ export function Timestamp({
 			onCopied?.(text)
 		},
 		onCopyError: error => {
-			announcePolite(getFailureHint(messages, modalityRef.current), triggerRef.current)
+			announcePolite(getFailureHint(messages, modality), triggerRef.current)
 			context.onError?.({ kind: TimestampIssueKind.CopyFailed, error })
 		},
 	})
@@ -635,10 +643,11 @@ export function Timestamp({
 			data-copy-status={COPY_STATUS_DATA[status]}
 			data-format={formatData}
 			onClick={stopPropagation}
+			onKeyDown={stopActivationKeys}
 		>
 			{renderTooltip(hint, trigger)}
 			<span id={descriptionId} hidden suppressHydrationWarning={isStatic}>
-				{`${view.full}. ${messages.copyDescription}`}
+				{`${view.full}. ${parsed.kind === TimestampKind.DateOnly ? messages.copyDateDescription : messages.copyDescription}`}
 			</span>
 		</span>
 	)

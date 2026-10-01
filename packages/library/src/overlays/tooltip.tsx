@@ -145,10 +145,12 @@ export function Tooltip({
 
 	React.useEffect(() => clearTimers, [])
 
-	// Escape and outside presses go through the layer stack: only the topmost layer closes, and
-	// Escape is consumed, so a tooltip inside a Modal closes first and the Modal stays open.
+	// Escape goes through the layer stack: only the topmost layer closes and Escape is consumed, so a
+	// tooltip inside a Modal closes first and the Modal stays open. An outside press closes the tooltip
+	// without consuming it (transient), so the same press still dismisses a Popover or Modal beneath.
 	useDismissableLayer({
 		enabled: open,
+		transient: true,
 		refs: [anchorRef, floatingRef],
 		onDismiss: () => {
 			clearTimers()

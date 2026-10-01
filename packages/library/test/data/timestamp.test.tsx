@@ -159,6 +159,15 @@ describe('Timestamp rendering', () => {
 		expect(trigger.getAttribute('aria-describedby')).toBe(descriptionId)
 		expect(trigger).toHaveAccessibleDescription(DESCRIPTION)
 	})
+
+	it('describes a calendar date as copying the date only', () => {
+		render(
+			<Denver>
+				<Timestamp value="2026-10-05" format={TimestampFormat.Date} />
+			</Denver>
+		)
+		expect(getTrigger()).toHaveAccessibleDescription('Monday, October 5, 2026. Copies the date.')
+	})
 })
 
 describe('Timestamp tooltip', () => {
@@ -391,6 +400,38 @@ describe('Timestamp copy', () => {
 		expect(writeText).toHaveBeenCalled()
 		expect(onRowClick).not.toHaveBeenCalled()
 	})
+
+	it('stops Enter and Space before a keyboard-operable row, and lets other keys through', async () => {
+		vi.useRealTimers()
+		const user = userEvent.setup()
+		const write = vi.spyOn(navigator.clipboard, 'writeText')
+		const onRowClick = vi.fn()
+		const onRowKeyDown = vi.fn()
+		render(
+			<Denver>
+				<table>
+					<tbody>
+						<tr tabIndex={0} onClick={onRowClick} onKeyDown={event => onRowKeyDown(event.key)}>
+							<td>
+								<Timestamp value={FIVE_MINUTES_AGO} />
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</Denver>
+		)
+		await user.tab()
+		await user.tab()
+		expect(getTrigger()).toHaveFocus()
+		onRowKeyDown.mockClear()
+		await user.keyboard('{Enter}')
+		await user.keyboard(' ')
+		expect(write).toHaveBeenCalledTimes(2)
+		expect(onRowClick).not.toHaveBeenCalled()
+		expect(onRowKeyDown).not.toHaveBeenCalled()
+		await user.keyboard('{ArrowDown}')
+		expect(onRowKeyDown).toHaveBeenCalledWith('ArrowDown')
+	})
 })
 
 describe('Timestamp live updates', () => {
@@ -476,6 +517,34 @@ describe('Timestamp live updates', () => {
 			</Denver>
 		)
 		expect(committed[0]).toBe('1 minute ago')
+	})
+
+	it('commits a fresh label first while another timestamp keeps a slow timer running', async () => {
+		vi.setSystemTime(Date.parse('2026-10-01T21:04:00Z'))
+		render(
+			<Denver>
+				<Timestamp value={Date.now()} format={TimestampFormat.Contextual} />
+			</Denver>
+		)
+		// The Contextual timestamp keeps the 60 s cadence; its first tick is at 21:05:00.
+		advance(58 * SECOND)
+		const committed: string[] = []
+		const recordFirstCommit = (node: HTMLSpanElement | null) => {
+			if (node) committed.push(node.querySelector('time')?.textContent ?? '')
+		}
+		const skewed = Date.now() + 5 * SECOND
+		render(
+			<Denver>
+				<Timestamp ref={recordFirstCommit} value={skewed} />
+				<Timestamp value={skewed} format={TimestampFormat.Compact} data-testid="compact" />
+				<Timestamp value={Date.now() - 5 * MINUTE} data-testid="five" />
+			</Denver>
+		)
+		expect(committed[0]).toBe('now')
+		expect(screen.getByTestId('compact').querySelector('time')).toHaveTextContent(/^now$/)
+		expect(screen.getByTestId('five').querySelector('time')).toHaveTextContent('5 minutes ago')
+		await flushPromises()
+		expect(screen.getAllByText('Today at 3:04 PM')).toHaveLength(1)
 	})
 
 	it('creates one timer and one announcer region under StrictMode', async () => {

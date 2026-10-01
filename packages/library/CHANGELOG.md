@@ -12,8 +12,10 @@
 - `useCopyToClipboard` with `CopyStatus`.
 
 ### Changed
-- `Tooltip`: opens on tap for touch, closes on an outside tap, and registers on the overlay layer stack, so Escape closes the tooltip without closing the dialog beneath it. In controlled mode, hover and focus now request changes through `onOpenChange`. New `describeTrigger` prop.
-- `CopyButton` is built on `useCopyToClipboard`. Its native `title` is replaced by the shared Tooltip, so it now renders inside `span.bz-tooltip-anchor`. A failed copy is shown (`data-copy-status="failed"`, the value selected with a shortcut hint) and reported through the new `onCopyError`, instead of being silently ignored. `onCopied` now receives the copied text. `data-copied` is deprecated in favor of `data-copy-status`.
+- `Tooltip`: opens on tap for touch, closes on an outside tap, and registers on the overlay layer stack, so Escape closes the tooltip without closing the dialog beneath it. While a tooltip is open, Escape is consumed (capture phase): it closes the tooltip and no longer reaches your own Escape handlers, so a field that clears on Escape needs a second press while its tooltip shows. An outside press closes the tooltip without being consumed, so the same press still closes a Popover, Dropdown or Modal beneath it. In controlled mode, hover and focus now request changes through `onOpenChange`. New `describeTrigger` prop.
+- `CopyButton` is built on `useCopyToClipboard`. Its native `title` is replaced by the shared Tooltip, so it now renders inside `span.bz-tooltip-anchor`; put positioning classes on a wrapper, not on the button. `CodeBox` now positions a `span.bz-code-box__copy` wrapper instead of the button. A failed copy is shown (`data-copy-status="failed"`, the value selected with a shortcut hint) and reported through the new `onCopyError`, instead of being silently ignored. `onCopied` now receives the copied text. `data-copied` is deprecated in favor of `data-copy-status`.
+
+- Theme presets set the new `tooltipTextMuted` (`--c-tooltip-text-muted`) to a color at 4.5:1 or more against their own `tooltipBg`.
 
 ### Fixed
 - Closed overlays no longer schedule an exit timer on mount, so a page of closed tooltips holds no timers.

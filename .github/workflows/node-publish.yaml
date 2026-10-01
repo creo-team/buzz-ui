@@ -14,6 +14,9 @@ jobs:
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
     with:
+      # Must equal .nvmrc: prepublishOnly runs the exact-string ICU tests, which are pinned to this
+      # Node's ICU. The input takes a string, so it cannot read .nvmrc; CI asserts the two match.
+      node_version: '24.14.0'
       node_install: true
       dry_run: ${{ github.event_name != 'release' }}
       scope: '@creo-team'

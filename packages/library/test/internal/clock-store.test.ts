@@ -127,6 +127,34 @@ describe('clock store', () => {
 		expect(vi.getTimerCount()).toBe(1)
 	})
 
+	it('refreshes a stale snapshot on read while a slow timer runs, and moves existing subscribers to it once', async () => {
+		vi.setSystemTime(Date.parse('2026-10-01T21:04:00Z'))
+		const store = await loadStore()
+		const listener = vi.fn()
+		store.subscribeClock(listener, null)
+		const first = store.getClockSnapshot()
+
+		// The 60 s timer fires at 21:05:00; 58 s in, a new reader must not get the 21:04:00 snapshot.
+		vi.advanceTimersByTime(58 * SECOND)
+		expect(listener).not.toHaveBeenCalled()
+		const fresh = store.getClockSnapshot()
+		expect(fresh.now).toBe(Date.now())
+		expect(fresh).not.toBe(first)
+		expect(store.getClockSnapshot()).toBe(fresh)
+		await Promise.resolve()
+		expect(listener).toHaveBeenCalledTimes(1)
+		expect(vi.getTimerCount()).toBe(1)
+	})
+
+	it('refreshes on subscribe while another subscriber keeps the timer running', async () => {
+		vi.setSystemTime(Date.parse('2026-10-01T21:04:00Z'))
+		const store = await loadStore()
+		store.subscribeClock(() => undefined, null)
+		vi.advanceTimersByTime(50 * SECOND)
+		store.subscribeClock(() => undefined, Date.now())
+		expect(store.getClockSnapshot().now).toBe(Date.now())
+	})
+
 	it('resyncs on a back-forward cache restore', async () => {
 		const store = await loadStore()
 		const listener = vi.fn()

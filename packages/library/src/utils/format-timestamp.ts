@@ -101,6 +101,10 @@ const WEEK_BAND_LIMIT_DAYS = 30
 const YEAR_OMIT_WINDOW_DAYS = 182
 /** 9:30 AM UTC, used to detect whether the locale pads hours. */
 const HOUR_PROBE_EPOCH_MS = Date.UTC(2026, 0, 15, 9, 30)
+/** 0001-01-01T00:00Z, the first instant of the common era (`Date.UTC` cannot build it: it reads years 0–99 as 1900–1999). */
+const COMMON_ERA_START_EPOCH_MS = -62_135_596_800_000
+/** The era part Intl reports for years before 1 CE in the fixed parts locale. */
+const BEFORE_COMMON_ERA = 'BC'
 const DAYS_PER_WEEK = 7
 const MONTHS_PER_YEAR = 12
 const MINUTES_PER_HOUR = 60
@@ -118,7 +122,12 @@ const PARTS_LOCALE = 'en-US'
 const DATE_ONLY_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/
 const INSTANT_PATTERN =
 	/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})(?::(\d{2})(?:[.,](\d{1,9}))?)?\s?(Z|[+-]\d{2}(?::?\d{2})?)$/i
-const LONG_OFFSET_PATTERN = /^GMT(?:([+-])(\d{1,2})(?::(\d{2}))?)?$/
+/** `GMT`, `GMT-06:00`, `GMT+05:30`, and historical local-mean-time offsets with seconds (`GMT-00:44:30`). */
+const LONG_OFFSET_PATTERN = /^GMT(?:([+-])(\d{1,2})(?::(\d{2}))?(?::(\d{2}))?)?$/
+const GMT_PREFIX = 'GMT'
+const ZERO_TIME_PART = '00'
+/** Georgian sentence case keeps Mkhedruli lowercase; upper-casing it yields Mtavruli, which Georgian does not use there. */
+const UNCAPITALIZED_SCRIPT_PATTERN = /^\p{Script=Georgian}/u
 const SPACE_VARIANTS = /[    ]/g
 const DASH_VARIANTS = /[−–]/g
 
@@ -182,6 +191,7 @@ const PRESET_OPTIONS: Record<DateTimePreset, Intl.DateTimeFormatOptions> = {
 	[DateTimePreset.ZonedParts]: {
 		calendar: 'gregory',
 		numberingSystem: 'latn',
+		era: 'short',
 		year: 'numeric',
 		month: 'numeric',
 		day: 'numeric',
@@ -209,6 +219,7 @@ interface DateTimeGlue {
 }
 
 interface ZonedDate {
+	/** Signed proleptic Gregorian year: 0 is 1 BCE, -1 is 2 BCE. */
 	year: number
 	month: number
 	day: number
@@ -247,33 +258,56 @@ function getClockOptions(clock: HourClock): Intl.DateTimeFormatOptions {
 	return {}
 }
 
+/**
+ * The locale to probe for hour padding. A forced 12-hour clock probes the locale's own 12-hour
+ * pattern: `hour12: true` on a 24-hour locale only swaps `HH` for `hh` and keeps the padding
+ * (en-GB `09:30 am`), while the locale's 12-hour form is unpadded (`9:30 am`).
+ */
+function getHourProbeLocale(locale: string, clock: HourClock): string {
+	if (clock !== HourClock.H12) return locale
+	return new Intl.Locale(locale, { hourCycle: 'h12' }).toString()
+}
+
 /** `'2-digit'` when the locale's own short time pads the hour (`09:30`), so labels, tooltip and copy agree. */
 function getHourStyle(locale: string, clock: HourClock): 'numeric' | '2-digit' {
 	const key = `${locale}|${clock}`
 	const cached = hourStyleCache.get(key)
 	if (cached) return cached
-	const probe = new Intl.DateTimeFormat(locale, { timeZone: UTC_ZONE, timeStyle: 'short', ...getClockOptions(clock) })
+	const probeClock = clock === HourClock.H12 ? HourClock.Locale : clock
+	const probe = new Intl.DateTimeFormat(getHourProbeLocale(locale, clock), {
+		timeZone: UTC_ZONE,
+		timeStyle: 'short',
+		...getClockOptions(probeClock),
+	})
 	const hour = probe.formatToParts(HOUR_PROBE_EPOCH_MS).find(part => part.type === 'hour')?.value ?? ''
 	const style = hour.length === PADDED_HOUR_LENGTH ? '2-digit' : 'numeric'
 	hourStyleCache.set(key, style)
 	return style
 }
 
+/** Whether a year-bearing label needs its era: only before 1 CE, where the bare year would read as a CE year. */
+enum EraDisplay {
+	Omit = 'OMIT',
+	Show = 'SHOW',
+}
+
 function getDateTimeFormat(
 	locale: string,
 	timeZone: string,
 	preset: DateTimePreset,
-	hour12?: boolean
+	hour12?: boolean,
+	era: EraDisplay = EraDisplay.Omit
 ): Intl.DateTimeFormat {
 	const base = PRESET_OPTIONS[preset]
 	const hasHour = base.hour !== undefined
 	const clock = hasHour ? getHourClock(hour12) : HourClock.Locale
-	const key = `${locale}|${timeZone}|${preset}|${clock}`
+	const key = `${locale}|${timeZone}|${preset}|${clock}|${era}`
 	const cached = dateTimeFormatCache.get(key)
 	if (cached) return cached
+	const eraOptions: Intl.DateTimeFormatOptions = era === EraDisplay.Show ? { era: 'short' } : {}
 	const options: Intl.DateTimeFormatOptions = hasHour
-		? { ...base, hour: getHourStyle(locale, clock), ...getClockOptions(clock), timeZone }
-		: { ...base, timeZone }
+		? { ...base, ...eraOptions, hour: getHourStyle(locale, clock), ...getClockOptions(clock), timeZone }
+		: { ...base, ...eraOptions, timeZone }
 	const format = new Intl.DateTimeFormat(locale, options)
 	dateTimeFormatCache.set(key, format)
 	return format
@@ -383,18 +417,40 @@ export function parseTimestamp(value: TimestampValue): ParsedTimestamp | null {
 	return null
 }
 
+/** The calendar date in a zone. Intl reports an unsigned era year, so a BCE year is converted to a signed one. */
 function getZonedDate(epochMs: number, timeZone: string): ZonedDate {
 	const zoned: ZonedDate = { year: 0, month: 0, day: 0 }
+	let beforeCommonEra = false
 	for (const part of getDateTimeFormat(PARTS_LOCALE, timeZone, DateTimePreset.ZonedParts).formatToParts(epochMs)) {
+		if (part.type === 'era') beforeCommonEra = part.value === BEFORE_COMMON_ERA
 		if (part.type === 'year') zoned.year = Number(part.value)
 		if (part.type === 'month') zoned.month = Number(part.value)
 		if (part.type === 'day') zoned.day = Number(part.value)
 	}
+	if (beforeCommonEra) zoned.year = 1 - zoned.year
 	return zoned
 }
 
+/** Days since the epoch for a calendar date. `setUTCFullYear`, not `Date.UTC`, so years 0–99 are not read as 1900–1999. */
 function getEpochDay(zoned: ZonedDate): number {
-	return Date.UTC(zoned.year, zoned.month - 1, zoned.day) / DAY_MS
+	return new Date(0).setUTCFullYear(zoned.year, zoned.month - 1, zoned.day) / DAY_MS
+}
+
+/** Shows the era only for a date before 1 CE in the label's zone; any later instant skips the zone lookup. */
+function getEraDisplay(epochMs: number, timeZone: string): EraDisplay {
+	if (epochMs >= COMMON_ERA_START_EPOCH_MS + DAY_MS) return EraDisplay.Omit
+	return getZonedDate(epochMs, timeZone).year < 1 ? EraDisplay.Show : EraDisplay.Omit
+}
+
+/** A year-bearing preset for a value, with the era added when the year is before 1 CE. */
+function getYearFormat(
+	locale: string,
+	timeZone: string,
+	preset: DateTimePreset,
+	epochMs: number,
+	hour12?: boolean
+): Intl.DateTimeFormat {
+	return getDateTimeFormat(locale, timeZone, preset, hour12, getEraDisplay(epochMs, timeZone))
 }
 
 /** The zone a value's labels are drawn in: the viewer's, or UTC for a calendar date. */
@@ -411,7 +467,8 @@ function getDayDiff(context: FormatContext): number {
 
 function formatShortDate(context: FormatContext, dayDiff: number): string {
 	const preset = Math.abs(dayDiff) <= YEAR_OMIT_WINDOW_DAYS ? DateTimePreset.MonthDay : DateTimePreset.MonthDayYear
-	return getDateTimeFormat(context.locale, getLabelZone(context), preset).format(context.parsed.epochMs)
+	const zone = getLabelZone(context)
+	return getYearFormat(context.locale, zone, preset, context.parsed.epochMs).format(context.parsed.epochMs)
 }
 
 function formatTimeOfDay(context: FormatContext): string {
@@ -421,10 +478,13 @@ function formatTimeOfDay(context: FormatContext): string {
 }
 
 function formatDateLabel(context: FormatContext): string {
-	return getDateTimeFormat(context.locale, getLabelZone(context), DateTimePreset.Date).format(context.parsed.epochMs)
+	const { epochMs } = context.parsed
+	return getYearFormat(context.locale, getLabelZone(context), DateTimePreset.Date, epochMs).format(epochMs)
 }
 
+/** Sentence-cases a leading day label (`Today`, `Gestern`), except in scripts whose sentence case stays lowercase. */
 function capitalize(text: string, locale: string): string {
+	if (UNCAPITALIZED_SCRIPT_PATTERN.test(text)) return text
 	return text.charAt(0).toLocaleUpperCase(locale) + text.slice(1)
 }
 
@@ -555,15 +615,23 @@ function getTimeZoneNamePart(format: Intl.DateTimeFormat, epochMs: number): stri
 	return format.formatToParts(epochMs).find(part => part.type === 'timeZoneName')?.value ?? ''
 }
 
-/** ASCII offset from the zone's long offset: `UTC-6`, `UTC+5:30`, `UTC+13:45`, `UTC+0`. */
+/**
+ * ASCII offset from the zone's long offset: `UTC-6`, `UTC+5:30`, `UTC+13:45`, `UTC+0`, and a
+ * historical local-mean-time offset to the second (`UTC-0:44:30`). Never guesses: text the pattern
+ * does not know is passed through with `GMT` read as `UTC`.
+ */
 function getOffsetLabel(epochMs: number, timeZone: string): string {
 	const longOffset = normalizeSpacing(
 		getTimeZoneNamePart(getDateTimeFormat(PARTS_LOCALE, timeZone, DateTimePreset.LongOffset), epochMs)
 	)
 	const match = LONG_OFFSET_PATTERN.exec(longOffset)
-	if (!match || !match[1]) return `${UTC_ZONE}+0`
-	const minutes = match[3] && match[3] !== '00' ? `:${match[3]}` : ''
-	return `${UTC_ZONE}${match[1]}${Number(match[2])}${minutes}`
+	if (!match) return longOffset.replace(GMT_PREFIX, UTC_ZONE)
+	const [, sign, hours, minutes = ZERO_TIME_PART, seconds = ZERO_TIME_PART] = match
+	if (!sign) return `${UTC_ZONE}+0`
+	let label = `${UTC_ZONE}${sign}${Number(hours)}`
+	if (minutes !== ZERO_TIME_PART || seconds !== ZERO_TIME_PART) label += `:${minutes}`
+	if (seconds !== ZERO_TIME_PART) label += `:${seconds}`
+	return label
 }
 
 /**
@@ -583,14 +651,27 @@ function formatZoneLabel(zoneName: string, context: FormatContext, appendOffset:
 }
 
 function formatWithZoneLabel(context: FormatContext, preset: DateTimePreset, appendOffset: boolean): string {
-	return getDateTimeFormat(context.locale, context.timeZone, preset, context.hour12)
+	return getYearFormat(context.locale, context.timeZone, preset, context.parsed.epochMs, context.hour12)
 		.formatToParts(context.parsed.epochMs)
 		.map(part => (part.type === 'timeZoneName' ? formatZoneLabel(part.value, context, appendOffset) : part.value))
 		.join('')
 }
 
-function toEpochMs(now: Date | number): number {
-	return typeof now === 'number' ? now : now.getTime()
+/** Reads the injected clock; anything but a finite epoch ms or a valid Date is a programmer error. */
+function toEpochMs(now: unknown): number {
+	const epochMs =
+		typeof now === 'object' && now !== null && typeof (now as Date).getTime === 'function' ? (now as Date).getTime() : now
+	if (typeof epochMs !== 'number' || !Number.isFinite(epochMs)) {
+		throw new TypeError('now must be a finite epoch ms or a valid Date')
+	}
+	return epochMs
+}
+
+/** The validated `now` for a live format (which requires it), or null for a fixed format, which never reads it. */
+function getLiveNow(format: TimestampFormat | `${TimestampFormat}`, now: Date | number | undefined): number | null {
+	if (!isLiveTimestampFormat(format)) return null
+	if (now === undefined) throw new TypeError(`now is required for ${format}`)
+	return toEpochMs(now)
 }
 
 /**
@@ -609,9 +690,9 @@ export function formatParsedTimestamp(
 	format: TimestampFormat | `${TimestampFormat}`,
 	options: TimestampFormatOptions
 ): string {
-	const live = isLiveTimestampFormat(format)
-	if (live && options.now === undefined) throw new TypeError(`now is required for ${format}`)
-	const context: FormatContext = { ...options, parsed, now: options.now === undefined ? 0 : toEpochMs(options.now) }
+	const liveNow = getLiveNow(format, options.now)
+	const live = liveNow !== null
+	const context: FormatContext = { ...options, parsed, now: liveNow ?? parsed.epochMs }
 	if (parsed.kind === TimestampKind.DateOnly && !live) return normalizeSpacing(formatDateLabel(context))
 	switch (format) {
 		case TimestampFormat.Time:
@@ -620,7 +701,9 @@ export function formatParsedTimestamp(
 			return normalizeSpacing(formatDateLabel(context))
 		case TimestampFormat.Absolute:
 			return normalizeSpacing(
-				getDateTimeFormat(context.locale, context.timeZone, DateTimePreset.Absolute, context.hour12).format(parsed.epochMs)
+				getYearFormat(context.locale, context.timeZone, DateTimePreset.Absolute, parsed.epochMs, context.hour12).format(
+					parsed.epochMs
+				)
 			)
 		case TimestampFormat.Compact: {
 			const dayDiff = getDayDiff(context)
@@ -647,7 +730,8 @@ export function formatParsedRelative(parsed: ParsedTimestamp, options: Timestamp
 /** Full tooltip line for an already-parsed value. Internal; see {@link formatTimestampFull}. */
 export function formatParsedFull(parsed: ParsedTimestamp, options: TimestampLocaleOptions): string {
 	if (parsed.kind === TimestampKind.DateOnly) {
-		return normalizeSpacing(getDateTimeFormat(options.locale, UTC_ZONE, DateTimePreset.FullDate).format(parsed.epochMs))
+		const format = getYearFormat(options.locale, UTC_ZONE, DateTimePreset.FullDate, parsed.epochMs)
+		return normalizeSpacing(format.format(parsed.epochMs))
 	}
 	return normalizeSpacing(formatWithZoneLabel({ ...options, parsed, now: parsed.epochMs }, DateTimePreset.Full, false))
 }
@@ -655,7 +739,8 @@ export function formatParsedFull(parsed: ParsedTimestamp, options: TimestampLoca
 /** Clipboard text for an already-parsed value. Internal; see {@link formatTimestampCopy}. */
 export function formatParsedCopy(parsed: ParsedTimestamp, options: TimestampLocaleOptions): string {
 	if (parsed.kind === TimestampKind.DateOnly) {
-		return normalizeSpacing(getDateTimeFormat(options.locale, UTC_ZONE, DateTimePreset.Date).format(parsed.epochMs))
+		const format = getYearFormat(options.locale, UTC_ZONE, DateTimePreset.Date, parsed.epochMs)
+		return normalizeSpacing(format.format(parsed.epochMs))
 	}
 	return normalizeSpacing(formatWithZoneLabel({ ...options, parsed, now: parsed.epochMs }, DateTimePreset.Copy, true))
 }
@@ -669,7 +754,7 @@ export function formatParsedCopy(parsed: ParsedTimestamp, options: TimestampLoca
  * @param options - Locale, IANA zone, optional 12/24-hour override, and `now` for live formats.
  * @returns The label with plain spaces, or null when the value is invalid.
  * @throws RangeError when the locale or time zone is invalid.
- * @throws TypeError when a live format is called without `now`.
+ * @throws TypeError when a live format is called without `now`, or `now` is not a finite epoch ms or a valid Date.
  * @example
  * const now = Date.parse('2026-10-01T21:04:09Z')
  * const viewer = { locale: 'en-US', timeZone: 'America/Denver', now }
@@ -698,7 +783,7 @@ export function formatTimestamp(
 	format: TimestampFormat | `${TimestampFormat}`,
 	options: TimestampFormatOptions
 ): string | null {
-	if (isLiveTimestampFormat(format) && options.now === undefined) throw new TypeError(`now is required for ${format}`)
+	getLiveNow(format, options.now)
 	const parsed = parseTimestamp(value)
 	if (!parsed) return null
 	return formatParsedTimestamp(parsed, format, options)
@@ -712,6 +797,7 @@ export function formatTimestamp(
  * @param options - Locale, IANA zone and `now`.
  * @returns The phrase with plain spaces, or null when the value is invalid.
  * @throws RangeError when the locale or time zone is invalid.
+ * @throws TypeError when `now` is not a finite epoch ms or a valid Date.
  * @example
  * const now = Date.parse('2026-10-01T21:04:09Z')
  * formatTimestampRelative(now - 8 * 86_400_000, { locale: 'en-US', timeZone: 'America/Denver', now }) // '1 week ago'
@@ -721,6 +807,7 @@ export function formatTimestampRelative(
 	value: TimestampValue,
 	options: TimestampLocaleOptions & { now: Date | number }
 ): string | null {
+	toEpochMs(options.now)
 	const parsed = parseTimestamp(value)
 	if (!parsed) return null
 	return formatParsedRelative(parsed, options)
